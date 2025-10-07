@@ -18,7 +18,7 @@ internal class UnitOfWork : IUnitOfWork
         Providers = new ProviderRepository(context);
         Images = new ProductImageRepository(context);
     }
-    public async Task Complete()
+    public async Task SaveChangesAsync()
     {
         await context.SaveChangesAsync();
     }
