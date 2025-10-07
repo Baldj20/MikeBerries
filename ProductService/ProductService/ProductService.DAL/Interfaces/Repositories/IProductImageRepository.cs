@@ -4,5 +4,5 @@ namespace ProductService.DAL.Interfaces.Repositories;
 
 public interface IProductImageRepository : IRepository<ProductImage>
 {
-    public Task<ICollection<ProductImage>> GetAllProductImagesByArticle(string article);
+    public Task<ICollection<ProductImage>> GetAllProductImagesByArticle(string article, CancellationToken token);
 }
