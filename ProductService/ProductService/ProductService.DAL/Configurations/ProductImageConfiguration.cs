@@ -8,11 +8,11 @@ internal class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage
 {
     public void Configure(EntityTypeBuilder<ProductImage> builder)
     {
-        builder.HasKey(i => i.Id);
+        builder.Property(p => p.Id).ValueGeneratedNever();
 
         builder.HasOne(i => i.Product)
                .WithMany(p => p.Images)
-               .HasForeignKey(i => i.ProductArticle);
+               .HasForeignKey(i => i.ProductId);
 
         builder.Property(i => i.Url);
     }

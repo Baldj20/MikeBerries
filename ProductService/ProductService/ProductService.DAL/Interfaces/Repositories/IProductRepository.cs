@@ -4,5 +4,5 @@ namespace ProductService.DAL.Interfaces.Repositories;
 
 public interface IProductRepository : IRepository<Product>
 {
-    public Task<Product?> GetByArticle(string article);
+
 }

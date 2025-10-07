@@ -1,8 +1,10 @@
-﻿using ProductService.DAL.Interfaces.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using ProductService.DAL.Entities;
+using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.DAL.Repositories;
 
-public class Repository<T> : IRepository<T> where T : class
+public class Repository<T> : IRepository<T> where T : BaseEntity
 {
     protected readonly MikeBerriesDBContext _context;
     public Repository(MikeBerriesDBContext context)
@@ -17,6 +19,14 @@ public class Repository<T> : IRepository<T> where T : class
     public async Task Delete(T entity)
     {
         _context.Set<T>().Remove(entity);
+    }
+
+    public async Task<T?> GetById(Guid id)
+    {
+        var entity = await _context.Set<T>().Where(e => e.Id == id)
+            .FirstOrDefaultAsync();
+
+        return entity;
     }
 
     public async Task Update(T entity)

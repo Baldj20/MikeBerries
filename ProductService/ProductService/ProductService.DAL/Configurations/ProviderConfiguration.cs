@@ -8,12 +8,15 @@ internal class ProviderConfiguration : IEntityTypeConfiguration<Provider>
 {
     public void Configure(EntityTypeBuilder<Provider> builder)
     {
-        builder.HasKey(p => p.Email);
+        builder.Property(p => p.Id).ValueGeneratedNever();
 
         builder.HasMany(prov => prov.Products)
                .WithOne(prod => prod.Provider)
-               .HasForeignKey(prod => prod.ProviderEmail);
+               .HasForeignKey(prod => prod.ProviderId);
 
         builder.Property(p => p.Name);
+
+        builder.HasIndex(p => p.Email)
+               .IsUnique();
     }
 }

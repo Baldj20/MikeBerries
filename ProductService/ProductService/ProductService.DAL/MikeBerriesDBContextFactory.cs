@@ -12,7 +12,7 @@ internal class MikeBerriesDBContextFactory : IDesignTimeDbContextFactory<MikeBer
 
         var config = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false)
+            .AddUserSecrets<MikeBerriesDBContextFactory>()
             .Build();
 
         var connectionString = config.GetConnectionString("DefaultConnection");

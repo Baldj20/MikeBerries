@@ -6,9 +6,9 @@ namespace ProductService.DAL.Repositories;
 
 public class ProductImageRepository(MikeBerriesDBContext context) : Repository<ProductImage>(context), IProductImageRepository
 {
-    public async Task<ICollection<ProductImage>> GetAllProductImagesByArticle(string article, CancellationToken token)
+    public async Task<ICollection<ProductImage>> GetAllImagesByProductId(Guid id, CancellationToken token)
     {
-        var images = await context.ProductImages.Where(i => i.ProductArticle == article).ToListAsync(token);
+        var images = await context.ProductImages.Where(i => i.Id == id).ToListAsync(token);
        
         return images;
     }

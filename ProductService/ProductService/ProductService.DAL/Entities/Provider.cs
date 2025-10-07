@@ -1,6 +1,6 @@
 ﻿namespace ProductService.DAL.Entities;
 
-public class Provider
+public class Provider : BaseEntity
 {
     public string Email { get; set; }
     public string Name { get; set; }
