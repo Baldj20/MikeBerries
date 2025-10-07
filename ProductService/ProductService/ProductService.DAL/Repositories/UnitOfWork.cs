@@ -2,26 +2,16 @@
 
 namespace ProductService.DAL.Repositories;
 
-internal class UnitOfWork : IUnitOfWork
+internal class UnitOfWork(MikeBerriesDBContext context) : IUnitOfWork
 {
-    public UnitOfWork(MikeBerriesDBContext context)
-    {
-        _context = context;
+    public IProductRepository Products { get; } = new ProductRepository(context);
 
-        Products = new ProductRepository(context);
-        Providers = new ProviderRepository(context);
-        Images = new ProductImageRepository(context);
-    }
+    public IProviderRepository Providers { get; } = new ProviderRepository(context);
 
-    private readonly MikeBerriesDBContext _context;
-    public IProductRepository Products { get; private set; }
+    public IProductImageRepository Images { get; } = new ProductImageRepository(context);
 
-    public IProviderRepository Providers { get; private set; }
-
-    public IProductImageRepository Images { get; private set; }
-    
     public async Task SaveChangesAsync()
     {
-        await _context.SaveChangesAsync();
+        await context.SaveChangesAsync();
     }
 }
