@@ -4,23 +4,23 @@ namespace ProductService.DAL.Repositories;
 
 internal class Repository<T> : IRepository<T> where T : class
 {
-    protected readonly MikeBerriesDBContext context;
+    protected readonly MikeBerriesDBContext _context;
     public Repository(MikeBerriesDBContext context)
     {
-        this.context = context;
+        _context = context;
     }
     public async Task Add(T entity)
     {
-        context.Set<T>().Add(entity);
+        _context.Set<T>().Add(entity);
     }
 
     public async Task Delete(T entity)
     {
-        context.Set<T>().Remove(entity);
+        _context.Set<T>().Remove(entity);
     }
 
     public async Task Update(T entity)
     {
-        context.Set<T>().Update(entity);
+        _context.Set<T>().Update(entity);
     }
 }

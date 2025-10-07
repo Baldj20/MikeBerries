@@ -2,8 +2,8 @@
 
 public class ProductImage
 {
-    public int ID { get; set; }
+    public int Id { get; set; }
     public Product Product { get; set; }
     public string ProductArticle { get; set; }
-    public string URL { get; set; }
+    public string Url { get; set; }
 }
