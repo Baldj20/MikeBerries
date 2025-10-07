@@ -4,13 +4,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ProductService.DAL.Repositories;
 
-internal class ProductImageRepository : Repository<ProductImage>, IProductImageRepository
+internal class ProductImageRepository(MikeBerriesDBContext context) : Repository<ProductImage>(context), IProductImageRepository
 {
-    public ProductImageRepository(MikeBerriesDBContext context)
-        : base(context)
-    {
-        
-    }
     public async Task<ICollection<ProductImage>> GetAllProductImagesByArticle(string article)
     {
         var images = await context.ProductImages.Where(i => i.ProductArticle == article).ToListAsync();
