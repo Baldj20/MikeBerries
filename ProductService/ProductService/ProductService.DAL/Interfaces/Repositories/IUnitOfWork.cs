@@ -5,5 +5,5 @@ public interface IUnitOfWork
     IProductRepository Products { get; }
     IProviderRepository Providers { get; }
     IProductImageRepository Images { get; }
-    public Task SaveChangesAsync();
+    Task SaveChangesAsync();
 }
