@@ -4,5 +4,5 @@ namespace ProductService.DAL.Interfaces.Repositories;
 
 public interface IProductImageRepository : IRepository<ProductImage>
 {
-    public Task<ICollection<ProductImage>> GetAllImagesByProductId(Guid id, CancellationToken token);
+    public Task<ICollection<ProductImage>> GetAllImagesByProductIdAsync(Guid id, CancellationToken token);
 }
