@@ -1,6 +1,6 @@
 ﻿namespace ProductService.DAL.Interfaces.Repositories;
 
-internal interface IUnitOfWork
+public interface IUnitOfWork
 {
     IProductRepository Products { get; }
     IProviderRepository Providers { get; }

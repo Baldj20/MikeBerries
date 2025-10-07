@@ -1,6 +1,6 @@
 ﻿namespace ProductService.DAL.Interfaces.Repositories;
 
-internal interface IRepository<T>
+public interface IRepository<T>
 {
     public Task Add(T entity);
     public Task Delete(T entity);
