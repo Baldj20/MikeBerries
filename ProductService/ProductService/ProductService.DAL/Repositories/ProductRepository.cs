@@ -4,7 +4,7 @@ using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.DAL.Repositories;
 
-internal class ProductRepository(MikeBerriesDBContext context) : Repository<Product>(context), IProductRepository
+public class ProductRepository(MikeBerriesDBContext context) : Repository<Product>(context), IProductRepository
 {
     public async Task<Product?> GetByArticle(string article)
     {

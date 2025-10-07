@@ -10,6 +10,8 @@ public class Program
 
         builder.Services.ConfigureDatabase(builder.Configuration);
 
+        builder.Services.ConfigureDIContainer();
+
         builder.Services.AddControllers();
 
         builder.Services.AddEndpointsApiExplorer();

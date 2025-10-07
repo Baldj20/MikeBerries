@@ -4,7 +4,7 @@ using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.DAL.Repositories;
 
-internal class ProviderRepository(MikeBerriesDBContext context) : Repository<Provider>(context), IProviderRepository
+public class ProviderRepository(MikeBerriesDBContext context) : Repository<Provider>(context), IProviderRepository
 {
     public async Task<Provider?> GetByEmail(string email)
     {

@@ -2,7 +2,7 @@
 
 namespace ProductService.DAL.Repositories;
 
-internal class UnitOfWork(MikeBerriesDBContext context) : IUnitOfWork
+public class UnitOfWork(MikeBerriesDBContext context) : IUnitOfWork
 {
     public IProductRepository Products { get; } = new ProductRepository(context);
 

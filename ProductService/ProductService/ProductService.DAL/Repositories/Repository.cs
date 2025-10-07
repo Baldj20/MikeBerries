@@ -2,7 +2,7 @@
 
 namespace ProductService.DAL.Repositories;
 
-internal class Repository<T> : IRepository<T> where T : class
+public class Repository<T> : IRepository<T> where T : class
 {
     protected readonly MikeBerriesDBContext _context;
     public Repository(MikeBerriesDBContext context)
