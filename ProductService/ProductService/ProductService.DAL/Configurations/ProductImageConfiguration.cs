@@ -8,12 +8,12 @@ internal class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage
 {
     public void Configure(EntityTypeBuilder<ProductImage> builder)
     {
-        builder.HasKey(i => i.ID);
+        builder.HasKey(i => i.Id);
 
         builder.HasOne(i => i.Product)
                .WithMany(p => p.Images)
                .HasForeignKey(i => i.ProductArticle);
 
-        builder.Property(i => i.URL);
+        builder.Property(i => i.Url);
     }
 }
