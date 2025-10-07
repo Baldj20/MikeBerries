@@ -3,14 +3,8 @@ using ProductService.DAL.Entities;
 
 namespace ProductService.DAL;
 
-public class MikeBerriesDBContext : DbContext
+public class MikeBerriesDBContext(DbContextOptions<MikeBerriesDBContext> options) : DbContext(options)
 {
-    public MikeBerriesDBContext(DbContextOptions<MikeBerriesDBContext> options) 
-        : base(options) 
-    { 
-
-    }
-    public MikeBerriesDBContext() { }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
