@@ -1,5 +1,4 @@
-using Microsoft.EntityFrameworkCore;
-using ProductService.DAL;
+using ProductService.API.Configuration;
 
 namespace ProductService.API;
 
@@ -9,8 +8,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.AddDbContext<MikeBerriesDBContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));      
+        builder.Services.ConfigureDatabase(builder.Configuration);
 
         builder.Services.AddControllers();
 
