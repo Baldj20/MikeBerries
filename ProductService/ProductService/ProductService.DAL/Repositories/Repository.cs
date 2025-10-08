@@ -21,7 +21,7 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         _context.Set<T>().Remove(entity);
     }
 
-    public async Task<T?> GetByIdAsync(Guid id)
+    public async Task<T?> GetByIdAsync(Guid id, CancellationToken token)
     {
         var entity = await _context.Set<T>().Where(e => e.Id == id)
             .FirstOrDefaultAsync();
