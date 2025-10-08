@@ -13,12 +13,14 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
     }
     public async Task Add(T entity)
     {
-        _context.Set<T>().Add(entity);
+        await _context.Set<T>().AddAsync(entity);
     }
 
-    public async Task Delete(T entity)
+    public Task Delete(T entity)
     {
         _context.Set<T>().Remove(entity);
+
+        return Task.CompletedTask;
     }
 
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken token)
@@ -29,8 +31,10 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         return entity;
     }
 
-    public async Task Update(T entity)
+    public Task Update(T entity)
     {
         _context.Set<T>().Update(entity);
+
+        return Task.CompletedTask;
     }
 }
