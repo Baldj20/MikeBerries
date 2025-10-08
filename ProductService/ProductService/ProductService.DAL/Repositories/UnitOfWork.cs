@@ -4,8 +4,6 @@ namespace ProductService.DAL.Repositories;
 
 public class UnitOfWork(MikeBerriesDBContext context) : IUnitOfWork
 {
-    public IProductRepository Products { get; } = new ProductRepository(context);
-
     public IProviderRepository Providers { get; } = new ProviderRepository(context);
 
     public IProductImageRepository Images { get; } = new ProductImageRepository(context);

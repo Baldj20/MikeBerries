@@ -8,9 +8,9 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        builder.Services.ConfigureDatabase(builder.Configuration);
+        builder.Configuration.AddUserSecrets<Program>();
 
-        builder.Services.ConfigureDIContainer();
+        builder.Services.ConfigureDataAccessLayerDependencies(builder.Configuration);
 
         builder.Services.AddControllers();
 

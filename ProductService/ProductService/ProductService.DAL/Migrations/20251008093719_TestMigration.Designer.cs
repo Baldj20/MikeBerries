@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using ProductService.DAL;
@@ -11,9 +12,11 @@ using ProductService.DAL;
 namespace ProductService.DAL.Migrations
 {
     [DbContext(typeof(MikeBerriesDBContext))]
-    partial class MikeBerriesDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251008093719_TestMigration")]
+    partial class TestMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -7,14 +7,12 @@ namespace ProductService.API.Configuration;
 
 public static class DataAccessLayerExtention
 {
-    public static void ConfigureDatabase(this IServiceCollection services, IConfiguration configuration)
+    public static void ConfigureDataAccessLayerDependencies(this IServiceCollection services, IConfiguration configuration)
     {
+        var connectionString = configuration["ConnectionStrings:DefaultConnection"];
         services.AddDbContext<MikeBerriesDBContext>(options =>
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
-    }
+            options.UseNpgsql(connectionString));
 
-    public static void ConfigureDIContainer(this IServiceCollection services)
-    {
         services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 }

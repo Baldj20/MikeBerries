@@ -8,8 +8,6 @@ public class MikeBerriesDBContext(DbContextOptions<MikeBerriesDBContext> options
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(MikeBerriesDBContext).Assembly);
     }
 
     public DbSet<Product> Products { get; set; }
