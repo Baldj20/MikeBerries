@@ -1,4 +1,4 @@
-using ProductService.API.Configuration;
+using ProductService.DAL.Configurations;
 
 namespace ProductService.API;
 
