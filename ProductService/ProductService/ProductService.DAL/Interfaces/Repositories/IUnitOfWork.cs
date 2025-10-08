@@ -4,5 +4,5 @@ public interface IUnitOfWork
 {
     IProviderRepository Providers { get; }
     IProductImageRepository Images { get; }
-    Task SaveChangesAsync();
+    Task SaveChangesAsync(CancellationToken token);
 }

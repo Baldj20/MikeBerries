@@ -8,8 +8,8 @@ public class UnitOfWork(MikeBerriesDBContext context) : IUnitOfWork
 
     public IProductImageRepository Images { get; } = new ProductImageRepository(context);
 
-    public async Task SaveChangesAsync()
+    public async Task SaveChangesAsync(CancellationToken token)
     {
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(token);
     }
 }
