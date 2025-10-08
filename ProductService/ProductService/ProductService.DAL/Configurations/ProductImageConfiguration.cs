@@ -8,8 +8,6 @@ internal class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage
 {
     public void Configure(EntityTypeBuilder<ProductImage> builder)
     {
-        builder.Property(p => p.Id).ValueGeneratedNever();
-
         builder.HasOne(i => i.Product)
                .WithMany(p => p.Images)
                .HasForeignKey(i => i.ProductId);

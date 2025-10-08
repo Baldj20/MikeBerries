@@ -8,8 +8,6 @@ internal class ProviderConfiguration : IEntityTypeConfiguration<Provider>
 {
     public void Configure(EntityTypeBuilder<Provider> builder)
     {
-        builder.Property(p => p.Id).ValueGeneratedNever();
-
         builder.HasMany(prov => prov.Products)
                .WithOne(prod => prod.Provider)
                .HasForeignKey(prod => prod.ProviderId);
