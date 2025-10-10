@@ -45,7 +45,7 @@ public class ProductService : IProductService
     {
         var product = await _unitOfWork.Products.Value.GetByIdAsync(id, token);
 
-        return product is null? 
+        return product is null ? 
             Result.Failure(CustomError.ResourceNotFound("resource with this id does not exist")):
             new Result<GetProductDTO>(product.Adapt<GetProductDTO>());
     }
