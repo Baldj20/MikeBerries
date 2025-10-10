@@ -7,14 +7,10 @@ using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.BLL.Services;
 
-public class ProductService : IProductService
+public class ProductService(IUnitOfWork unitOfWork) : IProductService
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private IUnitOfWork _unitOfWork => unitOfWork;
 
-    public ProductService(IUnitOfWork unitOfWork)
-    {
-        _unitOfWork = unitOfWork;
-    }
     public async Task AddProductAsync(CreateProductDTO dto, CancellationToken token)
     {
         var product = dto.Adapt<Product>();
