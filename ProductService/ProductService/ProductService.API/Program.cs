@@ -1,4 +1,4 @@
-using ProductService.BLL;
+using ProductService.BLL.Configurations;
 using ProductService.DAL.Configurations;
 
 namespace ProductService.API;
@@ -13,7 +13,7 @@ public class Program
 
         builder.Services.ConfigureDataAccessLayerDependencies(builder.Configuration);
 
-        builder.Services.RegisterMappingConfiguration();
+        builder.Services.ConfigureBusinessLogicLayerDependencies();
 
         builder.Services.AddControllers();
 

@@ -1,12 +1,13 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
 using ProductService.BLL.DTO;
+using ProductService.BLL.Interfaces.Services;
 using ProductService.DAL.Entities;
 using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.BLL.Services;
 
-public class ProductService
+public class ProductService : IProductService
 {
     private readonly IUnitOfWork _unitOfWork;
 
