@@ -30,7 +30,6 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
             .ToListAsync(token);
 
         return collection.AsQueryable();
-
     }
 
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken token)
