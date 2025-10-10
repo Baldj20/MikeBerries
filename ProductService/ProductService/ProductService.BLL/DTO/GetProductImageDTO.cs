@@ -1,6 +1,6 @@
 ﻿namespace ProductService.BLL.DTO;
 
-public class ProductImageGetDTO
+public class GetProductImageDTO
 {
     public string Url { get; set; }
 }
