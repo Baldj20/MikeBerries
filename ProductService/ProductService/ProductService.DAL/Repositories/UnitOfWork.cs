@@ -1,4 +1,5 @@
-﻿using ProductService.DAL.Interfaces.Repositories;
+﻿using ProductService.DAL.Entities;
+using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.DAL.Repositories;
 
@@ -11,10 +12,12 @@ public class UnitOfWork : IUnitOfWork
 
         Providers = new Lazy<IProviderRepository>(() => new ProviderRepository(_context));
         Images = new Lazy<IProductImageRepository>(() => new ProductImageRepository(_context));
+        Products = new Lazy<IRepository<Product>>(() => new Repository<Product>(_context));
     }
 
     public Lazy<IProviderRepository> Providers { get; } 
     public Lazy<IProductImageRepository> Images { get; }
+    public Lazy<IRepository<Product>> Products { get; }
     public async Task SaveChangesAsync(CancellationToken token)
     {
         await _context.SaveChangesAsync(token);

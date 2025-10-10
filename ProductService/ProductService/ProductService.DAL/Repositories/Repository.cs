@@ -11,9 +11,9 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
     {
         _context = context;
     }
-    public async Task AddAsync(T entity)
+    public async Task AddAsync(T entity, CancellationToken token)
     {
-        await _context.Set<T>().AddAsync(entity);
+        await _context.Set<T>().AddAsync(entity, token);
     }
 
     public Task Delete(T entity)
@@ -21,6 +21,16 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         _context.Set<T>().Remove(entity);
 
         return Task.CompletedTask;
+    }
+
+    public async Task<IQueryable<T>> GetAllAsync(CancellationToken token)
+    {
+        var collection = await _context.Set<T>()
+            .AsNoTracking()
+            .ToListAsync(token);
+
+        return collection.AsQueryable();
+
     }
 
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken token)
