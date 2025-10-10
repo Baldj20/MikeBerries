@@ -6,18 +6,21 @@ namespace ProductService.DAL.Repositories;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly MikeBerriesDBContext _context;
+    private Lazy<IProviderRepository> _providers;
+    private Lazy<IProductImageRepository> _images;
+    private Lazy<IRepository<Product>> _products;
     public UnitOfWork(MikeBerriesDBContext context)
     {
         _context = context;
 
-        Providers = new Lazy<IProviderRepository>(() => new ProviderRepository(_context));
-        Images = new Lazy<IProductImageRepository>(() => new ProductImageRepository(_context));
-        Products = new Lazy<IRepository<Product>>(() => new Repository<Product>(_context));
+        _providers = new Lazy<IProviderRepository>(() => new ProviderRepository(_context));
+        _images = new Lazy<IProductImageRepository>(() => new ProductImageRepository(_context));
+        _products = new Lazy<IRepository<Product>>(() => new Repository<Product>(_context));
     }
 
-    public Lazy<IProviderRepository> Providers { get; } 
-    public Lazy<IProductImageRepository> Images { get; }
-    public Lazy<IRepository<Product>> Products { get; }
+    public IProviderRepository Providers => _providers.Value;
+    public IProductImageRepository Images => _images.Value;
+    public IRepository<Product> Products => _products.Value;
     public async Task SaveChangesAsync(CancellationToken token)
     {
         await _context.SaveChangesAsync(token);

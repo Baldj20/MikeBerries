@@ -15,18 +15,18 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
     {
         var product = dto.Adapt<Product>();
 
-        await _unitOfWork.Products.Value.AddAsync(product, token);
+        await _unitOfWork.Products.AddAsync(product, token);
 
         await _unitOfWork.SaveChangesAsync(token);
     }
 
     public async Task<Result> DeleteProductAsync(Guid id, CancellationToken token)
     {
-        var product = await _unitOfWork.Products.Value.GetByIdAsync(id, token);
+        var product = await _unitOfWork.Products.GetByIdAsync(id, token);
 
         if (product is not null)
         {
-            await _unitOfWork.Products.Value.Delete(product);
+            await _unitOfWork.Products.Delete(product);
 
             return Result.Success();
         }
@@ -39,7 +39,7 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
 
     public async Task<Result> GetProductByIdAsync(Guid id, CancellationToken token)
     {
-        var product = await _unitOfWork.Products.Value.GetByIdAsync(id, token);
+        var product = await _unitOfWork.Products.GetByIdAsync(id, token);
 
         return product is null ? 
             Result.Failure(CustomError.ResourceNotFound("resource with this id does not exist")):
@@ -49,7 +49,7 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
     public async Task<Result> GetProductsAsync(string? title, string? provider, 
         decimal? minPrice, decimal? maxPrice, CancellationToken token)
     {
-        var query = await _unitOfWork.Products.Value.GetAllAsync(token);
+        var query = await _unitOfWork.Products.GetAllAsync(token);
 
         if (title is not null) query = query.Where(p => p.Title == title);
 
@@ -68,12 +68,12 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
 
     public async Task<Result> UpdateAsync(UpdateProductDTO dto, CancellationToken token)
     {
-        var product = await _unitOfWork.Products.Value.GetByIdAsync(dto.ProductId, token);
+        var product = await _unitOfWork.Products.GetByIdAsync(dto.ProductId, token);
 
         if (product is null) 
             return Result.Failure(CustomError.ResourceNotFound("resource to update does not exist"));
 
-        await _unitOfWork.Products.Value.Update(dto.Adapt<Product>());
+        await _unitOfWork.Products.Update(dto.Adapt<Product>());
 
         await _unitOfWork.SaveChangesAsync(token);
 
