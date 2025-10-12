@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using ProductService.BLL.DTO;
 using ProductService.BLL.Interfaces.Services;
+using ProductService.DAL;
 using ProductService.DAL.Entities;
+using ProductService.DAL.Filters;
 using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.BLL.Services;
@@ -46,18 +48,10 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
             new Result<GetProductDTO>(product.Adapt<GetProductDTO>());
     }
 
-    public async Task<Result> GetProductsAsync(string? title, string? provider, 
-        decimal? minPrice, decimal? maxPrice, CancellationToken token)
+    public async Task<Result> GetProductsAsync(PaginationParams paginationParams, 
+        ProductFilter filter, CancellationToken token)
     {
-        var query = await _unitOfWork.Products.GetAllAsync(token);
-
-        if (title is not null) query = query.Where(p => p.Title == title);
-
-        if (provider is not null) query = query.Where(p => p.Provider.Name == provider);
-
-        if (minPrice is not null) query = query.Where(p => p.Price >= minPrice);
-
-        if (maxPrice is not null) query = query.Where(p => p.Price <= maxPrice);
+        var query = _unitOfWork.Products.GetPagedAsync(paginationParams, filter, token);
 
         var result = await query.ToListAsync(token); 
 
@@ -73,7 +67,11 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
         if (product is null) 
             return Result.Failure(CustomError.ResourceNotFound("resource to update does not exist"));
 
-        await _unitOfWork.Products.Update(dto.Adapt<Product>());
+        product.Title = dto.Title;
+        product.Description = dto.Description;
+        product.Provider = dto.Adapt<Provider>();
+        product.Images = dto.Adapt<List<ProductImage>>();
+        product.Price = dto.Price;
 
         await _unitOfWork.SaveChangesAsync(token);
 

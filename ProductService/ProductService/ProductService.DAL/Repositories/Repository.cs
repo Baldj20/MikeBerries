@@ -23,15 +23,6 @@ public class Repository<T> : IRepository<T> where T : BaseEntity
         return Task.CompletedTask;
     }
 
-    public async Task<IQueryable<T>> GetAllAsync(CancellationToken token)
-    {
-        var collection = await _context.Set<T>()
-            .AsNoTracking()
-            .ToListAsync(token);
-
-        return collection.AsQueryable();
-    }
-
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken token)
     {
         var entity = await _context.Set<T>().Where(e => e.Id == id)
