@@ -7,7 +7,7 @@ namespace ProductService.DAL.Repositories;
 
 public class ProductRepository(MikeBerriesDBContext context) : Repository<Product>(context), IProductRepository
 {
-    public IQueryable<Product> GetPagedAsync(PaginationParams paginationParams, ProductFilter filter, CancellationToken token)
+    public IQueryable<Product> GetPaged(PaginationParams paginationParams, ProductFilter filter)
     {
         var (title, provider, minPrice, maxPrice) = filter;
 

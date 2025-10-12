@@ -51,7 +51,7 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
     public async Task<Result> GetProductsAsync(PaginationParams paginationParams, 
         ProductFilter filter, CancellationToken token)
     {
-        var query = _unitOfWork.Products.GetPagedAsync(paginationParams, filter, token);
+        var query = _unitOfWork.Products.GetPaged(paginationParams, filter);
 
         var result = await query.ToListAsync(token); 
 
