@@ -16,4 +16,13 @@ public static class BusinessLogicLayerExtension
             .NewConfig()
             .Map(dest => dest.Id, src => src.ProductId);
     }
+
+    public static void Update(this Product product, UpdateProductDTO dto)
+    {
+        product.Title = dto.Title;
+        product.Description = dto.Description;
+        product.Provider = dto.Adapt<Provider>();
+        product.Images = dto.Adapt<List<ProductImage>>();
+        product.Price = dto.Price;
+    }
 }

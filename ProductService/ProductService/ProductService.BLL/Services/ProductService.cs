@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
+using ProductService.BLL.Configurations;
 using ProductService.BLL.DTO;
 using ProductService.BLL.Interfaces.Services;
 using ProductService.DAL;
@@ -69,11 +70,7 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
         if (product is null) 
             return Result.Failure(CustomError.ResourceNotFound("resource to update does not exist"));
 
-        product.Title = dto.Title;
-        product.Description = dto.Description;
-        product.Provider = dto.Adapt<Provider>();
-        product.Images = dto.Adapt<List<ProductImage>>();
-        product.Price = dto.Price;
+        product.Update(dto);
 
         await _unitOfWork.SaveChangesAsync(token);
 
