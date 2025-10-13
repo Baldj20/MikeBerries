@@ -12,26 +12,24 @@ namespace ProductService.BLL.Services;
 
 public class ProductService(IUnitOfWork unitOfWork) : IProductService
 {
-    private IUnitOfWork _unitOfWork => unitOfWork;
-
     public async Task<Result> AddProductAsync(ProductModel productModel, CancellationToken token)
     {
         var product = productModel.Adapt<Product>();
 
-        await _unitOfWork.Products.AddAsync(product, token);
+        await unitOfWork.Products.AddAsync(product, token);
 
-        await _unitOfWork.SaveChangesAsync(token);
+        await unitOfWork.SaveChangesAsync(token);
 
         return Result.Success();
     }
 
     public async Task<Result> DeleteProductAsync(Guid id, CancellationToken token)
     {
-        var product = await _unitOfWork.Products.GetByIdAsync(id, token);
+        var product = await unitOfWork.Products.GetByIdAsync(id, token);
 
         if (product is not null)
         {
-            await _unitOfWork.Products.Delete(product);
+            await unitOfWork.Products.Delete(product);
 
             return Result.Success();
         }
@@ -44,7 +42,7 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
 
     public async Task<Result<ProductModel>> GetProductByIdAsync(Guid id, CancellationToken token)
     {
-        var product = await _unitOfWork.Products.GetByIdAsync(id, token);
+        var product = await unitOfWork.Products.GetByIdAsync(id, token);
 
         return product is null ?
             new Result<ProductModel>(CustomError.ResourceNotFound("resource with this id does not exist")):
@@ -54,7 +52,7 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
     public async Task<Result<List<ProductModel>>> GetProductsAsync(PaginationParams paginationParams, 
         ProductFilter filter, CancellationToken token)
     {
-        var query = _unitOfWork.Products.GetPaged(paginationParams, filter);
+        var query = unitOfWork.Products.GetPaged(paginationParams, filter);
 
         var result = await query.ToListAsync(token); 
 
@@ -65,14 +63,14 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
 
     public async Task<Result> UpdateAsync(Guid id, ProductModel productModel, CancellationToken token)
     {
-        var product = await _unitOfWork.Products.GetByIdAsync(id, token);
+        var product = await unitOfWork.Products.GetByIdAsync(id, token);
 
         if (product is null) 
             return Result.Failure(CustomError.ResourceNotFound("resource to update does not exist"));
 
         product.Update(productModel);
 
-        await _unitOfWork.SaveChangesAsync(token);
+        await unitOfWork.SaveChangesAsync(token);
 
         return Result.Success();
     }
