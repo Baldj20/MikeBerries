@@ -16,6 +16,7 @@ public record Result
 
 public record Result<T> : Result
 {
-    public T Value { get; }
+    public T? Value { get; }
     public Result(T value) : base(true, null) => Value = value;
+    public Result(CustomError error) : base(false, error) { }
 }

@@ -6,10 +6,10 @@ namespace ProductService.BLL.Interfaces.Services;
 
 public interface IProductService
 {
-    public Task AddProductAsync(CreateProductDTO dto, CancellationToken token);
+    public Task<Result> AddProductAsync(CreateProductDTO dto, CancellationToken token);
     public Task<Result> DeleteProductAsync(Guid id, CancellationToken token);
-    public Task<Result> GetProductByIdAsync(Guid id, CancellationToken token);
-    public Task<Result> GetProductsAsync(PaginationParams paginationParams,
+    public Task<Result<GetProductDTO>> GetProductByIdAsync(Guid id, CancellationToken token);
+    public Task<Result<List<GetProductDTO>>> GetProductsAsync(PaginationParams paginationParams,
         ProductFilter filter, CancellationToken token);
     public Task<Result> UpdateAsync(UpdateProductDTO dto, CancellationToken token);
 }

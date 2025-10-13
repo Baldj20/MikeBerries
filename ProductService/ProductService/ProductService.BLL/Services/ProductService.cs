@@ -13,13 +13,15 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
 {
     private IUnitOfWork _unitOfWork => unitOfWork;
 
-    public async Task AddProductAsync(CreateProductDTO dto, CancellationToken token)
+    public async Task<Result> AddProductAsync(CreateProductDTO dto, CancellationToken token)
     {
         var product = dto.Adapt<Product>();
 
         await _unitOfWork.Products.AddAsync(product, token);
 
         await _unitOfWork.SaveChangesAsync(token);
+
+        return Result.Success();
     }
 
     public async Task<Result> DeleteProductAsync(Guid id, CancellationToken token)
@@ -39,16 +41,16 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
         }
     }
 
-    public async Task<Result> GetProductByIdAsync(Guid id, CancellationToken token)
+    public async Task<Result<GetProductDTO>> GetProductByIdAsync(Guid id, CancellationToken token)
     {
         var product = await _unitOfWork.Products.GetByIdAsync(id, token);
 
-        return product is null ? 
-            Result.Failure(CustomError.ResourceNotFound("resource with this id does not exist")):
+        return product is null ?
+            new Result<GetProductDTO>(CustomError.ResourceNotFound("resource with this id does not exist")):
             new Result<GetProductDTO>(product.Adapt<GetProductDTO>());
     }
 
-    public async Task<Result> GetProductsAsync(PaginationParams paginationParams, 
+    public async Task<Result<List<GetProductDTO>>> GetProductsAsync(PaginationParams paginationParams, 
         ProductFilter filter, CancellationToken token)
     {
         var query = _unitOfWork.Products.GetPaged(paginationParams, filter);
@@ -56,7 +58,7 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
         var result = await query.ToListAsync(token); 
 
         return result.Count == 0?
-            Result.Failure(CustomError.ResourceNotFound("resources with these filters do not exist")) :
+            new Result<List<GetProductDTO>>(CustomError.ResourceNotFound("resources with these filters do not exist")) :
             new Result<List<GetProductDTO>>(result.Adapt<List<GetProductDTO>>());
     }
 
