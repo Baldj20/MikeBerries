@@ -11,7 +11,7 @@ public class ProductRepository(MikeBerriesDBContext context) : Repository<Produc
     {
         var (title, provider, minPrice, maxPrice) = filter;
 
-        var initialQuery = _context.Products.AsQueryable();
+        var initialQuery = Context.Products.AsQueryable();
 
         var queryBuilder = new ProductQueryBuilder(initialQuery);
 

@@ -2,13 +2,8 @@
 
 namespace ProductService.DAL.Builders;
 
-public class ProductQueryBuilder
+public class ProductQueryBuilder(IQueryable<Product> query)
 {
-    private IQueryable<Product> query;
-    public ProductQueryBuilder(IQueryable<Product> query)
-    {
-        this.query = query;
-    }
     public ProductQueryBuilder WithTitle(string? title)
     {
         if (title is not null)
