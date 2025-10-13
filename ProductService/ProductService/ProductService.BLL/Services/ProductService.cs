@@ -1,8 +1,8 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
 using ProductService.BLL.Configurations;
-using ProductService.BLL.DTO;
 using ProductService.BLL.Interfaces.Services;
+using ProductService.BLL.Models;
 using ProductService.DAL;
 using ProductService.DAL.Entities;
 using ProductService.DAL.Filters;
@@ -14,9 +14,9 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
 {
     private IUnitOfWork _unitOfWork => unitOfWork;
 
-    public async Task<Result> AddProductAsync(CreateProductDTO dto, CancellationToken token)
+    public async Task<Result> AddProductAsync(ProductModel productModel, CancellationToken token)
     {
-        var product = dto.Adapt<Product>();
+        var product = productModel.Adapt<Product>();
 
         await _unitOfWork.Products.AddAsync(product, token);
 
@@ -42,16 +42,16 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
         }
     }
 
-    public async Task<Result<GetProductDTO>> GetProductByIdAsync(Guid id, CancellationToken token)
+    public async Task<Result<ProductModel>> GetProductByIdAsync(Guid id, CancellationToken token)
     {
         var product = await _unitOfWork.Products.GetByIdAsync(id, token);
 
         return product is null ?
-            new Result<GetProductDTO>(CustomError.ResourceNotFound("resource with this id does not exist")):
-            new Result<GetProductDTO>(product.Adapt<GetProductDTO>());
+            new Result<ProductModel>(CustomError.ResourceNotFound("resource with this id does not exist")):
+            new Result<ProductModel>(product.Adapt<ProductModel>());
     }
 
-    public async Task<Result<List<GetProductDTO>>> GetProductsAsync(PaginationParams paginationParams, 
+    public async Task<Result<List<ProductModel>>> GetProductsAsync(PaginationParams paginationParams, 
         ProductFilter filter, CancellationToken token)
     {
         var query = _unitOfWork.Products.GetPaged(paginationParams, filter);
@@ -59,18 +59,18 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
         var result = await query.ToListAsync(token); 
 
         return result.Count == 0?
-            new Result<List<GetProductDTO>>(CustomError.ResourceNotFound("resources with these filters do not exist")) :
-            new Result<List<GetProductDTO>>(result.Adapt<List<GetProductDTO>>());
+            new Result<List<ProductModel>>(CustomError.ResourceNotFound("resources with these filters do not exist")) :
+            new Result<List<ProductModel>>(result.Adapt<List<ProductModel>>());
     }
 
-    public async Task<Result> UpdateAsync(UpdateProductDTO dto, CancellationToken token)
+    public async Task<Result> UpdateAsync(Guid id, ProductModel productModel, CancellationToken token)
     {
-        var product = await _unitOfWork.Products.GetByIdAsync(dto.ProductId, token);
+        var product = await _unitOfWork.Products.GetByIdAsync(id, token);
 
         if (product is null) 
             return Result.Failure(CustomError.ResourceNotFound("resource to update does not exist"));
 
-        product.Update(dto);
+        product.Update(productModel);
 
         await _unitOfWork.SaveChangesAsync(token);
 
