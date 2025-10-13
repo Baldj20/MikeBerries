@@ -8,7 +8,7 @@ public static class ProductQueryBuilder
     {
         if (title is not null)
         {
-            query.Where(p => p.Title == title);
+            query.Where(p => p.Title.Contains(title));
         }
 
         return query;
@@ -17,7 +17,7 @@ public static class ProductQueryBuilder
     {
         if (provider is not null)
         {
-            query.Where(p => p.Provider.Name == provider);
+            query.Where(p => p.Provider.Name.Contains(provider));
         }
 
         return query;
