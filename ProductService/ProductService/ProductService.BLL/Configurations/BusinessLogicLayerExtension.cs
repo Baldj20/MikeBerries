@@ -13,12 +13,12 @@ public static class BusinessLogicLayerExtension
         services.AddScoped<IProductService, Services.ProductService>();
     }
 
-    public static void Update(this Product product, ProductModel dto)
+    public static void Update(this Product product, ProductModel model)
     {
-        product.Title = dto.Title;
-        product.Description = dto.Description;
-        product.Provider = dto.Adapt<Provider>();
-        product.Images = dto.Adapt<List<ProductImage>>();
-        product.Price = dto.Price;
+        product.Title = model.Title;
+        product.Description = model.Description;
+        product.Provider = model.Adapt<Provider>();
+        product.Images = model.Adapt<List<ProductImage>>();
+        product.Price = model.Price;
     }
 }
