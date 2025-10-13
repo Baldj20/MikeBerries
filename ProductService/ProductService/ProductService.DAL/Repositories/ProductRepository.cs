@@ -13,15 +13,12 @@ public class ProductRepository(MikeBerriesDBContext context) : Repository<Produc
 
         var initialQuery = Context.Products.AsQueryable();
 
-        var queryBuilder = new ProductQueryBuilder(initialQuery);
-
-        var query = queryBuilder
+        var query = initialQuery
                         .WithTitle(title)
                         .WithProvider(provider)
                         .HasMinPrice(minPrice)
                         .HasMaxPrice(maxPrice)
-                        .TakePage(paginationParams)
-                        .Build();
+                        .TakePage(paginationParams);
         
         return query;
     }

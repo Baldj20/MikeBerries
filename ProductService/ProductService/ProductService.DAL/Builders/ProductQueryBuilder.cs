@@ -2,45 +2,45 @@
 
 namespace ProductService.DAL.Builders;
 
-public class ProductQueryBuilder(IQueryable<Product> query)
+public static class ProductQueryBuilder
 {
-    public ProductQueryBuilder WithTitle(string? title)
+    public static IQueryable<Product> WithTitle(this IQueryable<Product> query, string? title)
     {
         if (title is not null)
         {
             query.Where(p => p.Title == title);
         }
 
-        return this;
+        return query;
     }
-    public ProductQueryBuilder WithProvider(string? provider)
+    public static IQueryable<Product> WithProvider(this IQueryable<Product> query, string? provider)
     {
         if (provider is not null)
         {
             query.Where(p => p.Provider.Name == provider);
         }
 
-        return this;
+        return query;
     }
-    public ProductQueryBuilder HasMaxPrice(decimal? maxPrice)
+    public static IQueryable<Product> HasMaxPrice(this IQueryable<Product> query, decimal? maxPrice)
     {
         if (maxPrice is not null)
         {
             query.Where(p => p.Price <= maxPrice);
         }
 
-        return this;
+        return query;
     }
-    public ProductQueryBuilder HasMinPrice(decimal? minPrice)
+    public static IQueryable<Product> HasMinPrice(this IQueryable<Product> query, decimal? minPrice)
     {
         if (minPrice is not null)
         {
             query.Where(p => p.Price >= minPrice);
         }
 
-        return this;
+        return query;
     }
-    public ProductQueryBuilder TakePage(PaginationParams? paginationParams)
+    public static IQueryable<Product> TakePage(this IQueryable<Product> query, PaginationParams? paginationParams)
     {
         if (paginationParams is not null)
         {
@@ -51,10 +51,6 @@ public class ProductQueryBuilder(IQueryable<Product> query)
                 .Take(pageSize);
         }
 
-        return this;
-    }
-    public IQueryable<Product> Build()
-    {
         return query;
     }
 }
