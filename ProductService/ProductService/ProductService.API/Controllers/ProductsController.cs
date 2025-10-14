@@ -8,9 +8,9 @@ using ProductService.DAL.Filters;
 
 namespace ProductService.API.Controllers;
 
-[Route("api/products")]
+[Route("api/[controller]")]
 [ApiController]
-public class ProductController(IProductService productService) : ControllerBase
+public class ProductsController(IProductService productService) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult> Add(CreateProductDTO dto, CancellationToken token)

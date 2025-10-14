@@ -8,9 +8,9 @@ using ProductService.DAL.Filters;
 
 namespace ProductService.API.Controllers;
 
-[Route("api/providers")]
+[Route("api/[controller]")]
 [ApiController]
-public class ProviderController(IProviderService providerService) : ControllerBase
+public class ProvidersController(IProviderService providerService) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult> Add(ProviderDTO dto, CancellationToken token)
