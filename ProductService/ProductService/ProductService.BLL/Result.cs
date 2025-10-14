@@ -1,41 +1,22 @@
 ﻿namespace ProductService.BLL;
 
-internal class Result<T>
+public record Result
 {
-    private readonly T? _value;
-    public T Value
+    protected Result(bool isSuccess, CustomError? error)
     {
-        get
-        {
-            if (!IsSuccess) throw new InvalidOperationException("there is no value for failure");
-            return _value;
-        }
-    }
-    public bool IsSuccess { get; }
-    public CustomError Error { get; }
-
-    private Result(T value)
-    {
-        _value = value;
-        IsSuccess = true;
-        Error = CustomError.None;
-    }
-
-    private Result(CustomError error)
-    {
-        if (error == CustomError.None) throw new ArgumentException("invalid error");
-
-        IsSuccess = false;
+        IsSuccess = isSuccess;
         Error = error;
     }
+    public bool IsSuccess { get; set; }
+    public CustomError? Error { get; set; }
 
-    public static Result<T> Success(T value)
-    {
-        return new Result<T>(value);
-    }
+    public static Result Success() => new(true, null);
+    public static Result Failure(CustomError error) => new(false, error);
+}
 
-    public static Result<T> Failure(CustomError error)
-    {
-        return new Result<T>(error);
-    }
+public record Result<T> : Result
+{
+    public T? Value { get; }
+    public Result(T value) : base(true, null) => Value = value;
+    public Result(CustomError error) : base(false, error) { }
 }

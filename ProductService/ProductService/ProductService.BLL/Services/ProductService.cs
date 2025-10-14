@@ -1,0 +1,77 @@
+﻿using Mapster;
+using Microsoft.EntityFrameworkCore;
+using ProductService.BLL.Configurations;
+using ProductService.BLL.Interfaces.Services;
+using ProductService.BLL.Models;
+using ProductService.DAL;
+using ProductService.DAL.Entities;
+using ProductService.DAL.Filters;
+using ProductService.DAL.Interfaces.Repositories;
+
+namespace ProductService.BLL.Services;
+
+public class ProductService(IUnitOfWork unitOfWork) : IProductService
+{
+    public async Task<Result> AddProductAsync(ProductModel productModel, CancellationToken token)
+    {
+        var product = productModel.Adapt<Product>();
+
+        await unitOfWork.Products.AddAsync(product, token);
+
+        await unitOfWork.SaveChangesAsync(token);
+
+        return Result.Success();
+    }
+
+    public async Task<Result> DeleteProductAsync(Guid id, CancellationToken token)
+    {
+        var product = await unitOfWork.Products.GetByIdAsync(id, token);
+
+        if (product is not null)
+        {
+            await unitOfWork.Products.Delete(product);
+
+            return Result.Success();
+        }
+        else
+        {
+            return Result
+                .Failure(CustomError.ResourceNotFound("resource to delete is not found"));
+        }
+    }
+
+    public async Task<Result<ProductModel>> GetProductByIdAsync(Guid id, CancellationToken token)
+    {
+        var product = await unitOfWork.Products.GetByIdAsync(id, token);
+
+        return product is null ?
+            new Result<ProductModel>(CustomError.ResourceNotFound("resource with this id does not exist")):
+            new Result<ProductModel>(product.Adapt<ProductModel>());
+    }
+
+    public async Task<Result<List<ProductModel>>> GetProductsAsync(PaginationParams paginationParams, 
+        ProductFilter filter, CancellationToken token)
+    {
+        var query = unitOfWork.Products.GetPaged(paginationParams, filter);
+
+        var result = await query.ToListAsync(token); 
+
+        return result.Count == 0?
+            new Result<List<ProductModel>>(CustomError.ResourceNotFound("resources with these filters do not exist")) :
+            new Result<List<ProductModel>>(result.Adapt<List<ProductModel>>());
+    }
+
+    public async Task<Result> UpdateAsync(Guid id, ProductModel productModel, CancellationToken token)
+    {
+        var product = await unitOfWork.Products.GetByIdAsync(id, token);
+
+        if (product is null) 
+            return Result.Failure(CustomError.ResourceNotFound("resource to update does not exist"));
+
+        product.Update(productModel);
+
+        await unitOfWork.SaveChangesAsync(token);
+
+        return Result.Success();
+    }
+}

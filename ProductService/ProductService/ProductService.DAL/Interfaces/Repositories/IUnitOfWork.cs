@@ -2,7 +2,8 @@
 
 public interface IUnitOfWork
 {
-    Lazy<IProviderRepository> Providers { get; }
-    Lazy<IProductImageRepository> Images { get; }
+    IProviderRepository Providers { get; }
+    IProductImageRepository Images { get; }
+    IProductRepository Products { get; }
     Task SaveChangesAsync(CancellationToken token);
 }

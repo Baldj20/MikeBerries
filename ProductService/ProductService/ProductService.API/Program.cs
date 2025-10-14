@@ -1,3 +1,4 @@
+using ProductService.BLL.Configurations;
 using ProductService.DAL.Configurations;
 
 namespace ProductService.API;
@@ -11,6 +12,8 @@ public class Program
         builder.Configuration.AddUserSecrets<Program>();
 
         builder.Services.ConfigureDataAccessLayerDependencies(builder.Configuration);
+
+        builder.Services.ConfigureBusinessLogicLayerDependencies();
 
         builder.Services.AddControllers();
 
