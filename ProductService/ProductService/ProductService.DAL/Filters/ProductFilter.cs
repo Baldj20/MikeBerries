@@ -1,6 +1,10 @@
-﻿namespace ProductService.DAL.Filters;
+﻿using ProductService.DAL.Builders;
+using ProductService.DAL.Entities;
+using ProductService.DAL.Interfaces.Filters;
 
-public record ProductFilter
+namespace ProductService.DAL.Filters;
+
+public record ProductFilter : IFilter<Product>
 {
     public string? Title { get; set; }
     public string? Provider { get; set; }
@@ -16,11 +20,11 @@ public record ProductFilter
         MaxPrice = maxPrice;
     }
 
-    public void Deconstruct(out string? title, out string? provider, out decimal? minPrice, out decimal? maxPrice)
+    public IQueryable<Product> Apply(IQueryable<Product> query)
     {
-        title = Title;
-        provider = Provider;
-        minPrice = MinPrice;
-        maxPrice = MaxPrice;
+        return query.WithTitle(Title)
+                    .WithProvider(Provider)
+                    .HasMinPrice(MinPrice)
+                    .HasMaxPrice(MaxPrice);
     }
 }

@@ -1,12 +1,17 @@
-﻿namespace ProductService.DAL.Filters;
+﻿using ProductService.DAL.Builders;
+using ProductService.DAL.Entities;
+using ProductService.DAL.Interfaces.Filters;
 
-public class ProviderFilter
+namespace ProductService.DAL.Filters;
+
+public class ProviderFilter : IFilter<Provider>
 {
     public string? Name { get; set; }
     public string? Product { get; set; }
-    public void Deconstruct(out string? name, out string? product)
+
+    public IQueryable<Provider> Apply(IQueryable<Provider> query)
     {
-        name = Name;
-        product = Product;
+        return query.WithName(Name)
+                    .WithProduct(Product);
     }
 }
