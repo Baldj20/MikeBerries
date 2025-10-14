@@ -2,8 +2,8 @@
 
 public interface IRepository<T> : IPagedRepository<T>
 {
-    public Task AddAsync(T entity, CancellationToken token);
-    public Task Delete(T entity);
-    public Task Update(T entity);
-    public Task<T?> GetByIdAsync(Guid id, CancellationToken token);
+    Task AddAsync(T entity, CancellationToken token);
+    Task Delete(T entity);
+    Task Update(T entity);
+    Task<T?> GetByIdAsync(Guid id, CancellationToken token);
 }

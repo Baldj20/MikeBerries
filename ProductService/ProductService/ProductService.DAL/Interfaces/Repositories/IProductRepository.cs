@@ -5,6 +5,6 @@ namespace ProductService.DAL.Interfaces.Repositories;
 
 public interface IProductRepository : IRepository<Product>
 {
-    public IQueryable<Product> GetPaged(PaginationParams paginationParams, 
+    IQueryable<Product> GetPaged(PaginationParams paginationParams, 
         ProductFilter filter);
 }

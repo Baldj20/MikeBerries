@@ -6,10 +6,10 @@ namespace ProductService.BLL.Interfaces.Services;
 
 public interface IProviderService
 {
-    public Task<Result> AddProviderAsync(ProviderModel providerModel, CancellationToken token);
-    public Task<Result> DeleteProviderAsync(Guid id, CancellationToken token);
-    public Task<Result<ProviderModel>> GetProviderByIdAsync(Guid id, CancellationToken token);
-    public Task<Result<List<ProviderModel>>> GetProvidersAsync(PaginationParams paginationParams,
+    Task<Result> AddProviderAsync(ProviderModel providerModel, CancellationToken token);
+    Task<Result> DeleteProviderAsync(Guid id, CancellationToken token);
+    Task<Result<ProviderModel>> GetProviderByIdAsync(Guid id, CancellationToken token);
+    Task<Result<List<ProviderModel>>> GetProvidersAsync(PaginationParams paginationParams,
         ProviderFilter filter, CancellationToken token);
-    public Task<Result> UpdateAsync(Guid id, ProviderModel providerModel, CancellationToken token);
+    Task<Result> UpdateAsync(Guid id, ProviderModel providerModel, CancellationToken token);
 }

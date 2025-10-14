@@ -4,5 +4,5 @@ namespace ProductService.DAL.Interfaces.Repositories;
 
 public interface IProviderRepository : IRepository<Provider>
 {
-    public Task<Provider?> GetByEmailAsync(string email, CancellationToken token);
+    Task<Provider?> GetByEmailAsync(string email, CancellationToken token);
 }
