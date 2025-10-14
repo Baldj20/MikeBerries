@@ -1,8 +1,7 @@
 ﻿using Mapster;
 using Microsoft.Extensions.DependencyInjection;
 using ProductService.BLL.Interfaces.Services;
-using ProductService.BLL.Models;
-using ProductService.DAL.Entities;
+using ProductService.BLL.Services;
 
 namespace ProductService.BLL.Configurations;
 
@@ -11,14 +10,11 @@ public static class BusinessLogicLayerExtension
     public static void ConfigureBusinessLogicLayerDependencies(this IServiceCollection services)
     {
         services.AddScoped<IProductService, Services.ProductService>();
+        services.AddScoped<IProviderService, ProviderService>();
     }
 
-    public static void Update(this Product product, ProductModel model)
+    public static void ConfigureMapping()
     {
-        product.Title = model.Title;
-        product.Description = model.Description;
-        product.Provider = model.Adapt<Provider>();
-        product.Images = model.Adapt<List<ProductImage>>();
-        product.Price = model.Price;
+        TypeAdapterConfig.GlobalSettings.Default.IgnoreNullValues(true);
     }
 }
