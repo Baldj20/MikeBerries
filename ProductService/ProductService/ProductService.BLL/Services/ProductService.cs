@@ -68,7 +68,7 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
         if (product is null) 
             return Result.Failure(CustomError.ResourceNotFound("resource to update does not exist"));
 
-        product.Update(productModel);
+        productModel.Adapt(product);
 
         await unitOfWork.SaveChangesAsync(token);
 

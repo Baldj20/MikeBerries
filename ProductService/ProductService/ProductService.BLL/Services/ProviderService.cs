@@ -67,7 +67,7 @@ public class ProviderService(IUnitOfWork unitOfWork) : IProviderService
         if (provider is null)
             return Result.Failure(CustomError.ResourceNotFound("resource to update does not exist"));
 
-        provider.Update(providerModel);
+        providerModel.Adapt(provider);
 
         await unitOfWork.SaveChangesAsync(token);
 

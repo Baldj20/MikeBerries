@@ -15,6 +15,8 @@ public class Program
 
         builder.Services.ConfigureBusinessLogicLayerDependencies();
 
+        BusinessLogicLayerExtension.ConfigureMapping();
+
         builder.Services.AddControllers();
 
         builder.Services.AddEndpointsApiExplorer();
