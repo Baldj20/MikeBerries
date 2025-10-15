@@ -8,7 +8,7 @@ public static class ProductQueryBuilder
     {
         if (title is not null)
         {
-            query.Where(p => p.Title.Contains(title));
+            query = query.Where(p => p.Title.Contains(title));
         }
 
         return query;
@@ -17,7 +17,7 @@ public static class ProductQueryBuilder
     {
         if (provider is not null)
         {
-            query.Where(p => p.Provider.Name.Contains(provider));
+            query = query.Where(p => p.Provider.Name.Contains(provider));
         }
 
         return query;
@@ -26,7 +26,7 @@ public static class ProductQueryBuilder
     {
         if (maxPrice is not null)
         {
-            query.Where(p => p.Price <= maxPrice);
+            query = query.Where(p => p.Price <= maxPrice);
         }
 
         return query;
@@ -35,7 +35,7 @@ public static class ProductQueryBuilder
     {
         if (minPrice is not null)
         {
-            query.Where(p => p.Price >= minPrice);
+            query = query.Where(p => p.Price >= minPrice);
         }
 
         return query;
