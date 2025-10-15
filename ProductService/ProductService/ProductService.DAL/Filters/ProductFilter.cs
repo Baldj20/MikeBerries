@@ -11,15 +11,6 @@ public record ProductFilter : IFilter<Product>
     public decimal? MinPrice { get; set; }
     public decimal? MaxPrice { get; set; }
 
-    public ProductFilter(string? title, string? provider, 
-        decimal? minPrice, decimal? maxPrice)
-    {
-        Title = title;
-        Provider = provider;
-        MinPrice = minPrice;
-        MaxPrice = maxPrice;
-    }
-
     public IQueryable<Product> Apply(IQueryable<Product> query)
     {
         return query.WithTitle(Title)
