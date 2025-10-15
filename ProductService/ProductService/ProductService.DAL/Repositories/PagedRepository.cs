@@ -12,8 +12,8 @@ public class PagedRepository<T>(MikeBerriesDBContext Context) : IPagedRepository
 
         var query = filter.Apply(initialQuery);
 
-        query.Skip((paginationParams.Page - 1) * paginationParams.PageSize)
-             .Take(paginationParams.PageSize);
+        query = query.Skip((paginationParams.Page - 1) * paginationParams.PageSize)
+                     .Take(paginationParams.PageSize);
 
         return query;
     }
