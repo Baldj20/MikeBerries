@@ -14,7 +14,7 @@ namespace ProductService.API.Controllers;
 public class ProductsController(IProductService productService) : ControllerBase
 {
     [HttpPost]
-    public async Task<Result> Add(CreateProductDTO dto, CancellationToken token)
+    public async Task<Result> Add([FromForm]CreateProductDTO dto, CancellationToken token)
     {
         var response = await productService.AddProductAsync(dto.Adapt<ProductModel>(), token);
 
@@ -53,7 +53,7 @@ public class ProductsController(IProductService productService) : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<Result> Update(Guid id, UpdateProductDTO dto, CancellationToken token)
+    public async Task<Result> Update(Guid id, [FromForm]UpdateProductDTO dto, CancellationToken token)
     {
         var response = await productService.UpdateAsync(id, dto.Adapt<ProductModel>(), token);
 

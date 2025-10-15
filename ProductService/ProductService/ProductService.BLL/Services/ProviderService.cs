@@ -31,6 +31,8 @@ public class ProviderService(IUnitOfWork unitOfWork) : IProviderService
         {
             await unitOfWork.Providers.Delete(provider);
 
+            await unitOfWork.SaveChangesAsync(token);
+
             return Result.Success();
         }
         else

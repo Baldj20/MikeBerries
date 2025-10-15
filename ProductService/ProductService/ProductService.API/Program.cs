@@ -1,3 +1,4 @@
+using ProductService.API.Configurations;
 using ProductService.BLL.Configurations;
 using ProductService.DAL.Configurations;
 
@@ -15,7 +16,7 @@ public class Program
 
         builder.Services.ConfigureBusinessLogicLayerDependencies();
 
-        BusinessLogicLayerExtension.ConfigureMapping();
+        APILayerExtention.ConfigureMapping();
 
         builder.Services.AddControllers();
 
