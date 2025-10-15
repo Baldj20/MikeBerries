@@ -40,17 +40,4 @@ public static class ProductQueryBuilder
 
         return query;
     }
-    public static IQueryable<Product> TakePage(this IQueryable<Product> query, PaginationParams? paginationParams)
-    {
-        if (paginationParams is not null)
-        {
-            var (page, pageSize) = paginationParams;
-
-            query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize);
-        }
-
-        return query;
-    }
 }
