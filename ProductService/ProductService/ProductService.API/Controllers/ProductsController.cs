@@ -48,7 +48,7 @@ public class ProductsController(IProductService productService) : ControllerBase
         var products = await productService.GetProductsAsync(paginationParams, filter, token);
 
         return products.IsSuccess ?
-            new Result<List<GetProductDTO>>(products.Adapt<List<GetProductDTO>>()) :
+            new Result<List<GetProductDTO>>(products.Value.Adapt<List<GetProductDTO>>()) :
             new Result<List<GetProductDTO>>(products.Error!);
     }
 
