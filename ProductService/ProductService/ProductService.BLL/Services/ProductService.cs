@@ -1,6 +1,5 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
-using ProductService.BLL.Configurations;
 using ProductService.BLL.Interfaces.Services;
 using ProductService.BLL.Models;
 using ProductService.DAL;
@@ -30,6 +29,8 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
         if (product is not null)
         {
             await unitOfWork.Products.Delete(product);
+
+            await unitOfWork.SaveChangesAsync(token);
 
             return Result.Success();
         }

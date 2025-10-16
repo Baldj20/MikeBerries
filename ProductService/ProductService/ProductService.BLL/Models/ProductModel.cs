@@ -1,13 +1,10 @@
-﻿using ProductService.DAL.Entities;
-
-namespace ProductService.BLL.Models;
+﻿namespace ProductService.BLL.Models;
 
 public class ProductModel
 {
-    public Guid Id { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
     public decimal Price { get; set; }
-    public ICollection<ProductImage> Images { get; set; }
-    public Provider Provider { get; set; }
+    public ICollection<ProductImageModel> Images { get; set; }
+    public ProviderModel Provider { get; set; }
 }

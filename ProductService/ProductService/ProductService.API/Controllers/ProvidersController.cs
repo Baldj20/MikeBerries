@@ -1,0 +1,62 @@
+﻿using Mapster;
+using Microsoft.AspNetCore.Mvc;
+using ProductService.BLL;
+using ProductService.BLL.DTO;
+using ProductService.BLL.Interfaces.Services;
+using ProductService.BLL.Models;
+using ProductService.DAL;
+using ProductService.DAL.Filters;
+
+namespace ProductService.API.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class ProvidersController(IProviderService providerService) : ControllerBase
+{
+    [HttpPost]
+    public async Task<Result> Add(ProviderDTO dto, CancellationToken token)
+    {
+        var response = await providerService.AddProviderAsync(dto.Adapt<ProviderModel>(), token);
+
+        return response;
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<Result> Delete(Guid id, CancellationToken token)
+    {
+        var response = await providerService.DeleteProviderAsync(id, token);
+
+        return response;
+    }
+
+    [HttpGet("{id}")]
+    public async Task<Result<ProviderDTO>> GetById(Guid id, CancellationToken token)
+    {
+        var provider = await providerService.GetProviderByIdAsync(id, token);
+
+        return provider.IsSuccess ? 
+            new Result<ProviderDTO>(provider.Value.Adapt<ProviderDTO>()) :
+            new Result<ProviderDTO>(provider.Error!);
+    }
+
+    [HttpGet]
+    public async Task<Result<List<ProviderDTO>>> GetAllPaged(
+        [FromQuery] PaginationParams paginationParams,
+        [FromQuery] ProviderFilter filter,
+        CancellationToken token)
+    {
+        var providers = await providerService.GetProvidersAsync(paginationParams, filter, token);
+
+        return providers.IsSuccess ? 
+            new Result<List<ProviderDTO>>(providers.Value.Adapt<List<ProviderDTO>>()) : 
+            new Result<List<ProviderDTO>>(providers.Error!);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<Result> Update(Guid id, ProviderDTO dto, CancellationToken token)
+    {
+        var response = await providerService.UpdateAsync(id, dto.Adapt<ProviderModel>(), token);
+
+        return response;
+    }
+}
