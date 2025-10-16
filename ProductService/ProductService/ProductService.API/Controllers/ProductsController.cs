@@ -14,6 +14,7 @@ namespace ProductService.API.Controllers;
 public class ProductsController(IProductService productService) : ControllerBase
 {
     [HttpPost]
+    [Consumes("multipart/form-data")]
     public async Task<Result> Add([FromForm]CreateProductDTO dto, CancellationToken token)
     {
         var response = await productService.AddProductAsync(dto.Adapt<ProductModel>(), token);
