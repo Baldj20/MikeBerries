@@ -42,10 +42,10 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger logger) : IProvider
         }
         else
         {
-            logger.Warning(LoggingConstants<Provider>.RESOURCE_NOT_FOUND, ActionConstants.ACTION_DELETE, id);
+            logger.Warning(LoggingConstants<Provider>.RESOURCE_TO_DELETE_NOT_FOUND);
 
             return Result
-                .Failure(CustomError.ResourceNotFound("resource to delete is not found"));
+                .Failure(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_TO_DELETE_NOT_FOUND));
         }
     }
 
@@ -61,10 +61,9 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger logger) : IProvider
         }
         else
         {
-            logger.Warning(LoggingConstants<Provider>.RESOURCE_NOT_FOUND,
-                ActionConstants.ACTION_GET, id);
+            logger.Warning(LoggingConstants<Provider>.RESOURCE_NOT_FOUND);
 
-            return new Result<ProviderModel>(CustomError.ResourceNotFound("resource with this id does not exist"));
+            return new Result<ProviderModel>(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_NOT_FOUND));
         }
     }
 
@@ -89,7 +88,7 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger logger) : IProvider
             logger.Warning(LoggingConstants<Provider>.RESOURCES_FILTERED_NOT_FOUND);
 
             return new Result<List<ProviderModel>>(CustomError
-                .ResourceNotFound("resources with these filters do not exist"));
+                .ResourceNotFound(LoggingConstants<Provider>.RESOURCES_FILTERED_NOT_FOUND));
         }    
     }
 
@@ -99,9 +98,9 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger logger) : IProvider
 
         if (provider is null)
         {
-            logger.Warning(LoggingConstants<Provider>.RESOURCE_NOT_FOUND, ActionConstants.ACTION_UPDATE, id);
+            logger.Warning(LoggingConstants<Provider>.RESOURCE_TO_UPDATE_NOT_FOUND);
 
-            return Result.Failure(CustomError.ResourceNotFound("resource to update does not exist"));
+            return Result.Failure(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_TO_UPDATE_NOT_FOUND));
         }
         else
         {

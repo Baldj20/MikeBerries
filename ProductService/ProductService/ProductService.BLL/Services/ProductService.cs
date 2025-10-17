@@ -42,11 +42,10 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger logger) : IProductSe
         }
         else
         {
-            logger.Warning(LoggingConstants<Product>.RESOURCE_NOT_FOUND, 
-                ActionConstants.ACTION_DELETE, id);
+            logger.Warning(LoggingConstants<Product>.RESOURCE_TO_DELETE_NOT_FOUND);
 
             return Result
-                .Failure(CustomError.ResourceNotFound("resource to delete is not found"));
+                .Failure(CustomError.ResourceNotFound(LoggingConstants<Product>.RESOURCE_TO_DELETE_NOT_FOUND));
         }
     }
 
@@ -62,10 +61,9 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger logger) : IProductSe
         }
         else
         {
-            logger.Warning(LoggingConstants<Product>.RESOURCE_NOT_FOUND, 
-                ActionConstants.ACTION_GET, id);
+            logger.Warning(LoggingConstants<Product>.RESOURCE_NOT_FOUND);
 
-            return new Result<ProductModel>(CustomError.ResourceNotFound("resource with this id does not exist"));
+            return new Result<ProductModel>(CustomError.ResourceNotFound(LoggingConstants<Product>.RESOURCE_NOT_FOUND));
         }
     }
 
@@ -90,7 +88,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger logger) : IProductSe
             logger.Warning(LoggingConstants<Product>.RESOURCES_FILTERED_NOT_FOUND);
 
             return new Result<List<ProductModel>>(CustomError
-                .ResourceNotFound("resources with these filters do not exist"));
+                .ResourceNotFound(LoggingConstants<Product>.RESOURCES_FILTERED_NOT_FOUND));
         }
     }
 
@@ -100,9 +98,9 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger logger) : IProductSe
 
         if (product is null)
         {
-            logger.Warning(LoggingConstants<Product>.RESOURCE_NOT_FOUND, ActionConstants.ACTION_UPDATE, id);
+            logger.Warning(LoggingConstants<Product>.RESOURCE_TO_UPDATE_NOT_FOUND);
 
-            return Result.Failure(CustomError.ResourceNotFound("resource to update does not exist"));
+            return Result.Failure(CustomError.ResourceNotFound(LoggingConstants<Product>.RESOURCE_TO_UPDATE_NOT_FOUND));
         }
         else
         {
