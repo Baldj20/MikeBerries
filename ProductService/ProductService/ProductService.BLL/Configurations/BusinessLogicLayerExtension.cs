@@ -11,7 +11,5 @@ public static class BusinessLogicLayerExtension
     {
         services.AddScoped<IProductService, Services.ProductService>();
         services.AddScoped<IProviderService, ProviderService>();
-
-        services.AddSingleton(Log.Logger);
     }
 }
