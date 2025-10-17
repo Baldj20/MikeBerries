@@ -12,8 +12,10 @@ public class Program
 
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
-            .MinimumLevel.Debug()
+            .MinimumLevel.Information()
             .CreateLogger();
+
+        builder.Host.UseSerilog();
 
         builder.Configuration.AddUserSecrets<Program>();
 
