@@ -1,11 +1,13 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
+using ProductService.BLL.Constants.Logging;
 using ProductService.BLL.Interfaces.Services;
 using ProductService.BLL.Models;
 using ProductService.DAL;
 using ProductService.DAL.Entities;
 using ProductService.DAL.Filters;
 using ProductService.DAL.Interfaces.Repositories;
+using Serilog;
 
 namespace ProductService.BLL.Services;
 
@@ -18,6 +20,8 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
         await unitOfWork.Products.AddAsync(product, token);
 
         await unitOfWork.SaveChangesAsync(token);
+
+        Log.Information(LoggingConstants<Product>.RESOURCE_ADDED, product.Id);
 
         return Result.Success();
     }
@@ -32,10 +36,15 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
 
             await unitOfWork.SaveChangesAsync(token);
 
+            Log.Information(LoggingConstants<Product>.RESOURCE_DELETED, id);
+
             return Result.Success();
         }
         else
         {
+            Log.Warning(LoggingConstants<Product>.RESOURCE_NOT_FOUND, 
+                ActionConstants.ACTION_DELETE, id);
+
             return Result
                 .Failure(CustomError.ResourceNotFound("resource to delete is not found"));
         }
@@ -45,9 +54,19 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
     {
         var product = await unitOfWork.Products.GetByIdAsync(id, token);
 
-        return product is null ?
-            new Result<ProductModel>(CustomError.ResourceNotFound("resource with this id does not exist")):
-            new Result<ProductModel>(product.Adapt<ProductModel>());
+        if (product is not null)
+        {
+            Log.Information(LoggingConstants<Product>.RESOURCE_RETURNED, id);
+
+            return new Result<ProductModel>(product.Adapt<ProductModel>());
+        }
+        else
+        {
+            Log.Warning(LoggingConstants<Product>.RESOURCE_NOT_FOUND, 
+                ActionConstants.ACTION_GET, id);
+
+            return new Result<ProductModel>(CustomError.ResourceNotFound("resource with this id does not exist"));
+        }
     }
 
     public async Task<Result<List<ProductModel>>> GetProductsAsync(PaginationParams paginationParams, 
@@ -55,24 +74,45 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
     {
         var query = unitOfWork.Products.GetPaged(paginationParams, filter);
 
-        var result = await query.ToListAsync(token); 
+        var result = await query.ToListAsync(token);
 
-        return result.Count == 0?
-            new Result<List<ProductModel>>(CustomError.ResourceNotFound("resources with these filters do not exist")) :
-            new Result<List<ProductModel>>(result.Adapt<List<ProductModel>>());
+        if (result.Count != 0)
+        {
+            foreach (var item in result)
+            {
+                Log.Information(LoggingConstants<Product>.RESOURCE_RETURNED, item.Id);
+            }
+
+            return new Result<List<ProductModel>>(result.Adapt<List<ProductModel>>());
+        }
+        else
+        {
+            Log.Warning(LoggingConstants<Product>.RESOURCES_FILTERED_NOT_FOUND);
+
+            return new Result<List<ProductModel>>(CustomError
+                .ResourceNotFound("resources with these filters do not exist"));
+        }
     }
 
     public async Task<Result> UpdateAsync(Guid id, ProductModel productModel, CancellationToken token)
     {
         var product = await unitOfWork.Products.GetByIdAsync(id, token);
 
-        if (product is null) 
+        if (product is null)
+        {
+            Log.Warning(LoggingConstants<Product>.RESOURCE_NOT_FOUND, ActionConstants.ACTION_UPDATE, id);
+
             return Result.Failure(CustomError.ResourceNotFound("resource to update does not exist"));
+        }
+        else
+        {
+            productModel.Adapt(product);
 
-        productModel.Adapt(product);
+            await unitOfWork.SaveChangesAsync(token);
 
-        await unitOfWork.SaveChangesAsync(token);
+            Log.Information(LoggingConstants<Product>.RESOURCE_UPDATED, id);
 
-        return Result.Success();
+            return Result.Success();
+        }       
     }
 }

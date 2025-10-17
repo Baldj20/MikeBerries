@@ -1,5 +1,6 @@
 using ProductService.BLL.Configurations;
 using ProductService.DAL.Configurations;
+using Serilog;
 
 namespace ProductService.API;
 
@@ -20,6 +21,16 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
 
         builder.Services.AddSwaggerGen();
+
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .MinimumLevel.Debug()
+            .CreateLogger();
+
+        builder.Services.AddLogging(builder =>
+        {
+            builder.AddConsole();
+        });
 
         var app = builder.Build();
 
