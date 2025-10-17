@@ -11,7 +11,7 @@ using Serilog;
 
 namespace ProductService.BLL.Services;
 
-public class ProviderService(IUnitOfWork unitOfWork) : IProviderService
+public class ProviderService(IUnitOfWork unitOfWork, ILogger logger) : IProviderService
 {
     public async Task<Result> AddProviderAsync(ProviderModel providerModel, CancellationToken token)
     {
@@ -21,7 +21,7 @@ public class ProviderService(IUnitOfWork unitOfWork) : IProviderService
 
         await unitOfWork.SaveChangesAsync(token);
 
-        Log.Information(LoggingConstants<Provider>.RESOURCE_ADDED, provider.Id);
+        logger.Information(LoggingConstants<Provider>.RESOURCE_ADDED, provider.Id);
 
         return Result.Success();
     }
@@ -36,13 +36,13 @@ public class ProviderService(IUnitOfWork unitOfWork) : IProviderService
 
             await unitOfWork.SaveChangesAsync(token);
 
-            Log.Information(LoggingConstants<Provider>.RESOURCE_DELETED, id);
+            logger.Information(LoggingConstants<Provider>.RESOURCE_DELETED, id);
 
             return Result.Success();
         }
         else
         {
-            Log.Warning(LoggingConstants<Provider>.RESOURCE_NOT_FOUND, ActionConstants.ACTION_DELETE, id);
+            logger.Warning(LoggingConstants<Provider>.RESOURCE_NOT_FOUND, ActionConstants.ACTION_DELETE, id);
 
             return Result
                 .Failure(CustomError.ResourceNotFound("resource to delete is not found"));
@@ -55,13 +55,13 @@ public class ProviderService(IUnitOfWork unitOfWork) : IProviderService
 
         if (provider is not null)
         {
-            Log.Information(LoggingConstants<Provider>.RESOURCE_RETURNED, id);
+            logger.Information(LoggingConstants<Provider>.RESOURCE_RETURNED, id);
 
             return new Result<ProviderModel>(provider.Adapt<ProviderModel>());
         }
         else
         {
-            Log.Warning(LoggingConstants<Provider>.RESOURCE_NOT_FOUND,
+            logger.Warning(LoggingConstants<Provider>.RESOURCE_NOT_FOUND,
                 ActionConstants.ACTION_GET, id);
 
             return new Result<ProviderModel>(CustomError.ResourceNotFound("resource with this id does not exist"));
@@ -79,14 +79,14 @@ public class ProviderService(IUnitOfWork unitOfWork) : IProviderService
         {
             foreach (var item in result)
             {
-                Log.Information(LoggingConstants<Provider>.RESOURCE_RETURNED, item.Id);
+                logger.Information(LoggingConstants<Provider>.RESOURCE_RETURNED, item.Id);
             }
 
             return new Result<List<ProviderModel>>(result.Adapt<List<ProviderModel>>());
         }
         else
         {
-            Log.Warning(LoggingConstants<Provider>.RESOURCES_FILTERED_NOT_FOUND);
+            logger.Warning(LoggingConstants<Provider>.RESOURCES_FILTERED_NOT_FOUND);
 
             return new Result<List<ProviderModel>>(CustomError
                 .ResourceNotFound("resources with these filters do not exist"));
@@ -99,7 +99,7 @@ public class ProviderService(IUnitOfWork unitOfWork) : IProviderService
 
         if (provider is null)
         {
-            Log.Warning(LoggingConstants<Provider>.RESOURCE_NOT_FOUND, ActionConstants.ACTION_UPDATE, id);
+            logger.Warning(LoggingConstants<Provider>.RESOURCE_NOT_FOUND, ActionConstants.ACTION_UPDATE, id);
 
             return Result.Failure(CustomError.ResourceNotFound("resource to update does not exist"));
         }
@@ -109,7 +109,7 @@ public class ProviderService(IUnitOfWork unitOfWork) : IProviderService
 
             await unitOfWork.SaveChangesAsync(token);
 
-            Log.Information(LoggingConstants<Provider>.RESOURCE_UPDATED, id);
+            logger.Information(LoggingConstants<Provider>.RESOURCE_UPDATED, id);
 
             return Result.Success();
         }

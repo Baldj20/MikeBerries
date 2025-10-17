@@ -11,7 +11,7 @@ using Serilog;
 
 namespace ProductService.BLL.Services;
 
-public class ProductService(IUnitOfWork unitOfWork) : IProductService
+public class ProductService(IUnitOfWork unitOfWork, ILogger logger) : IProductService
 {
     public async Task<Result> AddProductAsync(ProductModel productModel, CancellationToken token)
     {
@@ -21,7 +21,7 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
 
         await unitOfWork.SaveChangesAsync(token);
 
-        Log.Information(LoggingConstants<Product>.RESOURCE_ADDED, product.Id);
+        logger.Information(LoggingConstants<Product>.RESOURCE_ADDED, product.Id);
 
         return Result.Success();
     }
@@ -36,13 +36,13 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
 
             await unitOfWork.SaveChangesAsync(token);
 
-            Log.Information(LoggingConstants<Product>.RESOURCE_DELETED, id);
+            logger.Information(LoggingConstants<Product>.RESOURCE_DELETED, id);
 
             return Result.Success();
         }
         else
         {
-            Log.Warning(LoggingConstants<Product>.RESOURCE_NOT_FOUND, 
+            logger.Warning(LoggingConstants<Product>.RESOURCE_NOT_FOUND, 
                 ActionConstants.ACTION_DELETE, id);
 
             return Result
@@ -56,13 +56,13 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
 
         if (product is not null)
         {
-            Log.Information(LoggingConstants<Product>.RESOURCE_RETURNED, id);
+            logger.Information(LoggingConstants<Product>.RESOURCE_RETURNED, id);
 
             return new Result<ProductModel>(product.Adapt<ProductModel>());
         }
         else
         {
-            Log.Warning(LoggingConstants<Product>.RESOURCE_NOT_FOUND, 
+            logger.Warning(LoggingConstants<Product>.RESOURCE_NOT_FOUND, 
                 ActionConstants.ACTION_GET, id);
 
             return new Result<ProductModel>(CustomError.ResourceNotFound("resource with this id does not exist"));
@@ -80,14 +80,14 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
         {
             foreach (var item in result)
             {
-                Log.Information(LoggingConstants<Product>.RESOURCE_RETURNED, item.Id);
+                logger.Information(LoggingConstants<Product>.RESOURCE_RETURNED, item.Id);
             }
 
             return new Result<List<ProductModel>>(result.Adapt<List<ProductModel>>());
         }
         else
         {
-            Log.Warning(LoggingConstants<Product>.RESOURCES_FILTERED_NOT_FOUND);
+            logger.Warning(LoggingConstants<Product>.RESOURCES_FILTERED_NOT_FOUND);
 
             return new Result<List<ProductModel>>(CustomError
                 .ResourceNotFound("resources with these filters do not exist"));
@@ -100,7 +100,7 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
 
         if (product is null)
         {
-            Log.Warning(LoggingConstants<Product>.RESOURCE_NOT_FOUND, ActionConstants.ACTION_UPDATE, id);
+            logger.Warning(LoggingConstants<Product>.RESOURCE_NOT_FOUND, ActionConstants.ACTION_UPDATE, id);
 
             return Result.Failure(CustomError.ResourceNotFound("resource to update does not exist"));
         }
@@ -110,7 +110,7 @@ public class ProductService(IUnitOfWork unitOfWork) : IProductService
 
             await unitOfWork.SaveChangesAsync(token);
 
-            Log.Information(LoggingConstants<Product>.RESOURCE_UPDATED, id);
+            logger.Information(LoggingConstants<Product>.RESOURCE_UPDATED, id);
 
             return Result.Success();
         }       

@@ -10,6 +10,11 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .MinimumLevel.Debug()
+            .CreateLogger();
+
         builder.Configuration.AddUserSecrets<Program>();
 
         builder.Services.ConfigureDataAccessLayerDependencies(builder.Configuration);
@@ -21,16 +26,6 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
 
         builder.Services.AddSwaggerGen();
-
-        Log.Logger = new LoggerConfiguration()
-            .WriteTo.Console()
-            .MinimumLevel.Debug()
-            .CreateLogger();
-
-        builder.Services.AddLogging(builder =>
-        {
-            builder.AddConsole();
-        });
 
         var app = builder.Build();
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using ProductService.BLL.Interfaces.Services;
 using ProductService.BLL.Services;
+using Serilog;
 
 namespace ProductService.BLL.Configurations;
 
@@ -10,5 +11,7 @@ public static class BusinessLogicLayerExtension
     {
         services.AddScoped<IProductService, Services.ProductService>();
         services.AddScoped<IProviderService, ProviderService>();
+
+        services.AddSingleton(Log.Logger);
     }
 }
