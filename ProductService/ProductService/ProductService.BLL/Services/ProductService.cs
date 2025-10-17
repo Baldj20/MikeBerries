@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ProductService.BLL.Constants.Logging;
 using ProductService.BLL.Interfaces.Services;
 using ProductService.BLL.Models;
@@ -7,11 +8,10 @@ using ProductService.DAL;
 using ProductService.DAL.Entities;
 using ProductService.DAL.Filters;
 using ProductService.DAL.Interfaces.Repositories;
-using Serilog;
 
 namespace ProductService.BLL.Services;
 
-public class ProductService(IUnitOfWork unitOfWork, ILogger logger) : IProductService
+public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logger) : IProductService
 {
     public async Task<Result> AddProductAsync(ProductModel productModel, CancellationToken token)
     {
@@ -21,7 +21,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger logger) : IProductSe
 
         await unitOfWork.SaveChangesAsync(token);
 
-        logger.Information(LoggingConstants<Product>.RESOURCE_ADDED, product.Id);
+        logger.LogInformation(LoggingConstants<Product>.RESOURCE_ADDED, product.Id);
 
         return Result.Success();
     }
@@ -36,13 +36,13 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger logger) : IProductSe
 
             await unitOfWork.SaveChangesAsync(token);
 
-            logger.Information(LoggingConstants<Product>.RESOURCE_DELETED, id);
+            logger.LogInformation(LoggingConstants<Product>.RESOURCE_DELETED, id);
 
             return Result.Success();
         }
         else
         {
-            logger.Warning(LoggingConstants<Product>.RESOURCE_TO_DELETE_NOT_FOUND);
+            logger.LogWarning(LoggingConstants<Product>.RESOURCE_TO_DELETE_NOT_FOUND);
 
             return Result
                 .Failure(CustomError.ResourceNotFound(LoggingConstants<Product>.RESOURCE_TO_DELETE_NOT_FOUND));
@@ -55,13 +55,13 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger logger) : IProductSe
 
         if (product is not null)
         {
-            logger.Information(LoggingConstants<Product>.RESOURCE_RETURNED, id);
+            logger.LogInformation(LoggingConstants<Product>.RESOURCE_RETURNED, id);
 
             return new Result<ProductModel>(product.Adapt<ProductModel>());
         }
         else
         {
-            logger.Warning(LoggingConstants<Product>.RESOURCE_NOT_FOUND);
+            logger.LogWarning(LoggingConstants<Product>.RESOURCE_NOT_FOUND);
 
             return new Result<ProductModel>(CustomError.ResourceNotFound(LoggingConstants<Product>.RESOURCE_NOT_FOUND));
         }
@@ -78,14 +78,14 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger logger) : IProductSe
         {
             foreach (var item in result)
             {
-                logger.Information(LoggingConstants<Product>.RESOURCE_RETURNED, item.Id);
+                logger.LogInformation(LoggingConstants<Product>.RESOURCE_RETURNED, item.Id);
             }
 
             return new Result<List<ProductModel>>(result.Adapt<List<ProductModel>>());
         }
         else
         {
-            logger.Warning(LoggingConstants<Product>.RESOURCES_FILTERED_NOT_FOUND);
+            logger.LogWarning(LoggingConstants<Product>.RESOURCES_FILTERED_NOT_FOUND);
 
             return new Result<List<ProductModel>>(CustomError
                 .ResourceNotFound(LoggingConstants<Product>.RESOURCES_FILTERED_NOT_FOUND));
@@ -98,7 +98,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger logger) : IProductSe
 
         if (product is null)
         {
-            logger.Warning(LoggingConstants<Product>.RESOURCE_TO_UPDATE_NOT_FOUND);
+            logger.LogWarning(LoggingConstants<Product>.RESOURCE_TO_UPDATE_NOT_FOUND);
 
             return Result.Failure(CustomError.ResourceNotFound(LoggingConstants<Product>.RESOURCE_TO_UPDATE_NOT_FOUND));
         }
@@ -108,7 +108,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger logger) : IProductSe
 
             await unitOfWork.SaveChangesAsync(token);
 
-            logger.Information(LoggingConstants<Product>.RESOURCE_UPDATED, id);
+            logger.LogInformation(LoggingConstants<Product>.RESOURCE_UPDATED, id);
 
             return Result.Success();
         }       
