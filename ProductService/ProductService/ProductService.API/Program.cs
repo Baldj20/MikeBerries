@@ -1,5 +1,6 @@
 using ProductService.BLL.Configurations;
 using ProductService.DAL.Configurations;
+using Serilog;
 
 namespace ProductService.API;
 
@@ -8,6 +9,13 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .MinimumLevel.Information()
+            .CreateLogger();
+
+        builder.Host.UseSerilog();
 
         builder.Configuration.AddUserSecrets<Program>();
 
