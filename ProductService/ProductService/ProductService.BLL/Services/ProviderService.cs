@@ -1,6 +1,7 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
-using ProductService.BLL.Configurations;
+using Microsoft.Extensions.Logging;
+using ProductService.BLL.Constants.Logging;
 using ProductService.BLL.Interfaces.Services;
 using ProductService.BLL.Models;
 using ProductService.DAL;
@@ -10,7 +11,7 @@ using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.BLL.Services;
 
-public class ProviderService(IUnitOfWork unitOfWork) : IProviderService
+public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> logger) : IProviderService
 {
     public async Task<Result> AddProviderAsync(ProviderModel providerModel, CancellationToken token)
     {
@@ -19,6 +20,8 @@ public class ProviderService(IUnitOfWork unitOfWork) : IProviderService
         await unitOfWork.Providers.AddAsync(provider, token);
 
         await unitOfWork.SaveChangesAsync(token);
+
+        logger.LogInformation(LoggingConstants<Provider>.RESOURCE_ADDED, provider.Id);
 
         return Result.Success();
     }
@@ -33,12 +36,16 @@ public class ProviderService(IUnitOfWork unitOfWork) : IProviderService
 
             await unitOfWork.SaveChangesAsync(token);
 
+            logger.LogInformation(LoggingConstants<Provider>.RESOURCE_DELETED, id);
+
             return Result.Success();
         }
         else
         {
+            logger.LogWarning(LoggingConstants<Provider>.RESOURCE_TO_DELETE_NOT_FOUND);
+
             return Result
-                .Failure(CustomError.ResourceNotFound("resource to delete is not found"));
+                .Failure(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_TO_DELETE_NOT_FOUND));
         }
     }
 
@@ -46,20 +53,43 @@ public class ProviderService(IUnitOfWork unitOfWork) : IProviderService
     {
         var provider = await unitOfWork.Providers.GetByIdAsync(id, token);
 
-        return provider is null ?
-            new Result<ProviderModel>(CustomError.ResourceNotFound("resource with this id does not exist")) :
-            new Result<ProviderModel>(provider.Adapt<ProviderModel>());
+        if (provider is not null)
+        {
+            logger.LogInformation(LoggingConstants<Provider>.RESOURCE_RETURNED, id);
+
+            return new Result<ProviderModel>(provider.Adapt<ProviderModel>());
+        }
+        else
+        {
+            logger.LogWarning(LoggingConstants<Provider>.RESOURCE_NOT_FOUND);
+
+            return new Result<ProviderModel>(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_NOT_FOUND));
+        }
     }
 
-    public async Task<Result<List<ProviderModel>>> GetProvidersAsync(PaginationParams paginationParams, ProviderFilter filter, CancellationToken token)
+    public async Task<Result<List<ProviderModel>>> GetProvidersAsync(PaginationParams paginationParams, 
+        ProviderFilter filter, CancellationToken token)
     {
         var query = unitOfWork.Providers.GetPaged(paginationParams, filter);
 
         var result = await query.ToListAsync(token);
 
-        return result.Count == 0 ?
-            new Result<List<ProviderModel>>(CustomError.ResourceNotFound("resources with these filters do not exist")) :
-            new Result<List<ProviderModel>>(result.Adapt<List<ProviderModel>>());
+        if (result.Count != 0)
+        {
+            foreach (var item in result)
+            {
+                logger.LogInformation(LoggingConstants<Provider>.RESOURCE_RETURNED, item.Id);
+            }
+
+            return new Result<List<ProviderModel>>(result.Adapt<List<ProviderModel>>());
+        }
+        else
+        {
+            logger.LogWarning(LoggingConstants<Provider>.RESOURCES_FILTERED_NOT_FOUND);
+
+            return new Result<List<ProviderModel>>(CustomError
+                .ResourceNotFound(LoggingConstants<Provider>.RESOURCES_FILTERED_NOT_FOUND));
+        }    
     }
 
     public async Task<Result> UpdateAsync(Guid id, ProviderModel providerModel, CancellationToken token)
@@ -67,12 +97,20 @@ public class ProviderService(IUnitOfWork unitOfWork) : IProviderService
         var provider = await unitOfWork.Providers.GetByIdAsync(id, token);
 
         if (provider is null)
-            return Result.Failure(CustomError.ResourceNotFound("resource to update does not exist"));
+        {
+            logger.LogWarning(LoggingConstants<Provider>.RESOURCE_TO_UPDATE_NOT_FOUND);
 
-        providerModel.Adapt(provider);
+            return Result.Failure(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_TO_UPDATE_NOT_FOUND));
+        }
+        else
+        {
+            providerModel.Adapt(provider);
 
-        await unitOfWork.SaveChangesAsync(token);
+            await unitOfWork.SaveChangesAsync(token);
 
-        return Result.Success();
+            logger.LogInformation(LoggingConstants<Provider>.RESOURCE_UPDATED, id);
+
+            return Result.Success();
+        }
     }
 }
