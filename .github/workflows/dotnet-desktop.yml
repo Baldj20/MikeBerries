@@ -42,6 +42,6 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"Baldj20_MikeBerries" /o:"baldj20" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /s:"MikeBerries\ProductService\ProductService\ProductService.sln"
-          dotnet build ProductService\ProductService\ProductService.API\ProductService.API.csproj
+          ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"Baldj20_MikeBerries" /o:"baldj20" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /s:"ProductService/ProductService/ProductService.sln"
+          dotnet build ProductService/ProductService/ProductService.sln
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
