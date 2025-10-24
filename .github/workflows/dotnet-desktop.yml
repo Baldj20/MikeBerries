@@ -27,7 +27,9 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-
+      - name: Install Coverlet for .NET
+        run: dotnet tool install --global coverlet.console
+    
       - name: Install SonarScanner for .NET
         run: dotnet tool install --global dotnet-sonarscanner
 
@@ -36,10 +38,21 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: pwsh
         run: |
-          cd ProductService/ProductService
+          $projectKey = "Baldj20_MikeBerries"
+          $organization = "baldj20"
+          $solutionPath = "ProductService/ProductService/ProductService.sln"
 
-          dotnet-sonarscanner begin /k:"Baldj20_MikeBerries" /o:"baldj20" /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+          $coverageReportPath = "coverage.opencover.xml"
+          $sonarCoverageParam = "/d:sonar.cs.opencover.reportsPaths=""$coverageReportPath"""
 
-          dotnet build ProductService.sln --no-incremental
+          dotnet-sonarscanner begin /k:"$projectKey" /o:"$organization" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" $sonarCoverageParam
+
+          dotnet build $solutionPath --no-incremental
+
+          dotnet test $solutionPath `
+              --no-build `
+              /p:CollectCoverage=true `
+              /p:CoverletOutputFormat=opencover `
+              /p:CoverletOutput="$coverageReportPath"
 
           dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
