@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.BLL", "Produ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.API", "ProductService.API\ProductService.API.csproj", "{765AFE98-4273-475A-9EDC-4908199202AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "ProductServiceTests\UnitTests.csproj", "{CEC59DB7-F8A8-4299-ABB4-12A054F05979}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.UnitTests", "ProductServiceTests\ProductService.UnitTests.csproj", "{CEC59DB7-F8A8-4299-ABB4-12A054F05979}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

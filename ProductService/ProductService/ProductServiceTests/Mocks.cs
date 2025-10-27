@@ -23,7 +23,7 @@ public class Mocks
         _fixture = new Fixture();
         _productRepository = Substitute.For<IRepository<Product>>();
         _logger = Substitute.For<ILogger<ProductService.BLL.Services.ProductService>>();
-        _dbContext = Substitute.For<MikeBerriesDBContext>();
+        //_dbContext = Substitute.For<MikeBerriesDBContext>();
         _unitOfWork = Substitute.For<IUnitOfWork>();
         _productService = new ProductService.BLL.Services.ProductService(_unitOfWork, _logger);
     }
