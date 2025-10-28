@@ -1,6 +1,4 @@
-﻿using AutoFixture;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
 using NSubstitute;
 using ProductService.BLL.Interfaces.Services;
 using ProductService.DAL;
@@ -11,8 +9,6 @@ namespace UnitTests;
 
 public class Mocks
 {
-    protected readonly IFixture _fixture;
-
     protected readonly ILogger<ProductService.BLL.Services.ProductService> _logger;
     protected readonly IRepository<Product> _productRepository;
     protected readonly IUnitOfWork _unitOfWork;
@@ -20,7 +16,6 @@ public class Mocks
     protected readonly IProductService _productService;
     protected Mocks()
     {
-        _fixture = new Fixture();
         _productRepository = Substitute.For<IRepository<Product>>();
         _logger = Substitute.For<ILogger<ProductService.BLL.Services.ProductService>>();
         //_dbContext = Substitute.For<MikeBerriesDBContext>();

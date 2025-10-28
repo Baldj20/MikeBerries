@@ -11,5 +11,5 @@ public interface IProductService
     Task<Result<ProductModel>> GetProductByIdAsync(Guid id, CancellationToken token);
     Task<Result<List<ProductModel>>> GetProductsAsync(PaginationParams paginationParams,
         ProductFilter filter, CancellationToken token);
-    Task<Result> UpdateAsync(Guid id, ProductModel productModel, CancellationToken token);
+    Task<Result> UpdateProductAsync(Guid id, ProductModel productModel, CancellationToken token);
 }

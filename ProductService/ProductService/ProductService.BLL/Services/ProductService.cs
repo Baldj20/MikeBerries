@@ -92,7 +92,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         }
     }
 
-    public async Task<Result> UpdateAsync(Guid id, ProductModel productModel, CancellationToken token)
+    public async Task<Result> UpdateProductAsync(Guid id, ProductModel productModel, CancellationToken token)
     {
         var product = await unitOfWork.Products.GetByIdAsync(id, token);
 
