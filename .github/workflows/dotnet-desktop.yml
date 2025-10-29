@@ -42,8 +42,8 @@ jobs:
           $organization = "baldj20"
           $solutionPath = "ProductService/ProductService/ProductService.sln"
 
-          $coverageReportPath = "coverage.opencover.xml"
-          $sonarCoverageParam = "/d:sonar.cs.opencover.reportsPaths=""$coverageReportPath"""
+          $coverageReportPath = "$(Get-Location)/coverage.opencover.xml"
+          $sonarCoverageParam = "/d:sonar.cs.opencover.reportsPaths=$coverageReportPath"
 
           dotnet-sonarscanner begin /k:"$projectKey" /o:"$organization" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" $sonarCoverageParam
 
