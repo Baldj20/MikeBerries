@@ -40,12 +40,12 @@ public class ProvidersController(IProviderService providerService) : ControllerB
     }
 
     [HttpGet]
-    public async Task<Result<List<ProviderDTO>>> GetAllPaged(
+    public Result<List<ProviderDTO>> GetAllPaged(
         [FromQuery] PaginationParams paginationParams,
         [FromQuery] ProviderFilter filter,
         CancellationToken token)
     {
-        var providers = await providerService.GetProvidersAsync(paginationParams, filter, token);
+        var providers = providerService.GetProviders(paginationParams, filter, token);
 
         return providers.IsSuccess ? 
             new Result<List<ProviderDTO>>(providers.Value.Adapt<List<ProviderDTO>>()) : 

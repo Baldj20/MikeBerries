@@ -41,12 +41,12 @@ public class ProductsController(IProductService productService) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<Result<List<GetProductDTO>>> GetAllPaged(
+    public Result<List<GetProductDTO>> GetAllPaged(
         [FromQuery] PaginationParams paginationParams,
         [FromQuery] ProductFilter filter, 
         CancellationToken token)
     {
-        var products = await productService.GetProductsAsync(paginationParams, filter, token);
+        var products = productService.GetProducts(paginationParams, filter, token);
 
         return products.IsSuccess ?
             new Result<List<GetProductDTO>>(products.Value.Adapt<List<GetProductDTO>>()) :

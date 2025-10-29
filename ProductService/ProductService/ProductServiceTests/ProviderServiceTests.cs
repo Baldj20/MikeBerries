@@ -147,7 +147,7 @@ public class ProviderServiceTests : Mocks
     }
 
     [Theory, AutoDataCustom]
-    public async Task GetProvidersAsync_WhenDataIsValid_ShouldReturnPageSizedProvidersList(
+    public void GetProviders_WhenDataIsValid_ShouldReturnPageSizedProvidersList(
         PaginationParams paginationParams,
         List<Provider> pagedProviders)
     {
@@ -157,7 +157,7 @@ public class ProviderServiceTests : Mocks
         var pagedProviderModels = pagedProviders.Adapt<List<ProviderModel>>();
 
         //Act
-        var response = await _providerService.GetProvidersAsync(paginationParams, null!, default);
+        var response = _providerService.GetProviders(paginationParams, null!, default);
 
         //Assert
         response.IsSuccess.ShouldBeTrue();
@@ -168,7 +168,7 @@ public class ProviderServiceTests : Mocks
     }
 
     [Theory, AutoDataCustom]
-    public async Task GetProductsAsync_WhenProvidersNotFound_ShouldReturnFailureResult(
+    public void GetProviders_WhenProvidersNotFound_ShouldReturnFailureResult(
         PaginationParams paginationParams,
         ProviderFilter filter)
     {
@@ -177,7 +177,7 @@ public class ProviderServiceTests : Mocks
             .Returns(new List<Provider>());
 
         //Act
-        var response = await _providerService.GetProvidersAsync(paginationParams, filter, default);
+        var response = _providerService.GetProviders(paginationParams, filter, default);
 
         //Assert
         response.IsSuccess.ShouldBeFalse();

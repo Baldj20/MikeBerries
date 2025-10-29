@@ -66,7 +66,7 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
         }
     }
 
-    public async Task<Result<List<ProviderModel>>> GetProvidersAsync(PaginationParams paginationParams, 
+    public Result<List<ProviderModel>> GetProviders(PaginationParams paginationParams, 
         ProviderFilter filter, CancellationToken token)
     {
         var result = unitOfWork.Providers.GetPaged(paginationParams, filter);

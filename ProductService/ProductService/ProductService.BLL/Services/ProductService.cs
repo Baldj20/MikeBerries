@@ -66,7 +66,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         }
     }
 
-    public async Task<Result<List<ProductModel>>> GetProductsAsync(PaginationParams paginationParams, 
+    public Result<List<ProductModel>> GetProducts(PaginationParams paginationParams, 
         ProductFilter filter, CancellationToken token)
     {
         var result = unitOfWork.Products.GetPaged(paginationParams, filter);

@@ -164,7 +164,7 @@ public class ProductServiceTests : Mocks
     }
 
     [Theory, AutoDataCustom]
-    public async Task GetProductsAsync_ShouldReturnPageSizedProductsList(
+    public void GetProducts_ShouldReturnPageSizedProductsList(
         PaginationParams paginationParams,
         ProductFilter filter,
         List<Product> pagedProducts)
@@ -175,7 +175,7 @@ public class ProductServiceTests : Mocks
         var pagedProductModels = pagedProducts.Adapt<List<ProductModel>>();
 
         //Act
-        var response = await _productService.GetProductsAsync(paginationParams, filter, default);
+        var response = _productService.GetProducts(paginationParams, filter, default);
 
         //Assert
         response.IsSuccess.ShouldBeTrue();
@@ -186,7 +186,7 @@ public class ProductServiceTests : Mocks
     }
 
     [Theory, AutoDataCustom]
-    public async Task GetProductsAsync_WhenProductsNotFound_ShouldReturnFailureResult(
+    public void GetProducts_WhenProductsNotFound_ShouldReturnFailureResult(
         PaginationParams paginationParams,
         ProductFilter filter)
     {
@@ -195,7 +195,7 @@ public class ProductServiceTests : Mocks
             .Returns(new List<Product>());
 
         //Act
-        var response = await _productService.GetProductsAsync(paginationParams, filter, default);
+        var response = _productService.GetProducts(paginationParams, filter, default);
 
         //Assert
         response.IsSuccess.ShouldBeFalse();
