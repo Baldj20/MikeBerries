@@ -55,7 +55,7 @@ public class ProvidersController(IProviderService providerService) : ControllerB
     [HttpPut("{id}")]
     public async Task<Result> Update(Guid id, ProviderDTO dto, CancellationToken token)
     {
-        var response = await providerService.UpdateAsync(id, dto.Adapt<ProviderModel>(), token);
+        var response = await providerService.UpdateProviderAsync(id, dto.Adapt<ProviderModel>(), token);
 
         return response;
     }
