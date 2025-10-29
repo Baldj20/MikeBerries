@@ -5,6 +5,7 @@ using ProductService.BLL.Constants.Logging;
 using ProductService.BLL.Models;
 using ProductService.DAL;
 using ProductService.DAL.Entities;
+using ProductService.DAL.Filters;
 using Shouldly;
 using UnitTests;
 using Xunit;
@@ -25,10 +26,12 @@ public class ProviderServiceTests : Mocks
             Arg.Is<Provider>(p => p.Name == providerModel.Name &&
                                  p.Email == providerModel.Email),
             default);
+        await _unitOfWork.Received(1).SaveChangesAsync(
+            Arg.Any<CancellationToken>());
     }
 
     [Theory, AutoDataCustom]
-    public async Task DeleteProviderAsync_WhenProviderExists(ProviderModel providerModel)
+    public async Task DeleteProviderAsync_WhenProviderExists_ShouldReturnSuccessResult(ProviderModel providerModel)
     {
         //Arrange
         var providerEntity = providerModel.Adapt<Provider>();
@@ -49,7 +52,7 @@ public class ProviderServiceTests : Mocks
     }
 
     [Fact]
-    public async Task DeleteProviderAsync_WhenProviderDoesNotExist()
+    public async Task DeleteProviderAsync_WhenProviderDoesNotExist_ShouldReturnFailureResult()
     {
         //Arrange
         var id = Guid.NewGuid();
@@ -60,13 +63,15 @@ public class ProviderServiceTests : Mocks
 
         //Assert
         response.IsSuccess.ShouldBeFalse();
+        response.ShouldBeEquivalentTo(Result
+                .Failure(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_TO_DELETE_NOT_FOUND)));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             Arg.Any<CancellationToken>());
     }
 
     [Theory, AutoDataCustom]
-    public async Task GetProviderByIdAsync_WhenProviderExists(ProviderModel providerModel)
+    public async Task GetProviderByIdAsync_WhenProviderExists_ShouldReturnProvider(ProviderModel providerModel)
     {
         //Arrange
         var providerEntity = providerModel.Adapt<Provider>();
@@ -78,30 +83,33 @@ public class ProviderServiceTests : Mocks
 
         //Assert
         response.IsSuccess.ShouldBeTrue();
+        response.Value.ShouldBeEquivalentTo(providerModel);
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             Arg.Any<CancellationToken>());
     }
 
     [Fact]
-    public async Task GetProviderByIdAsync_WhenProviderDoesNotExist()
+    public async Task GetProviderByIdAsync_WhenProviderDoesNotExist_ShouldReturnFailureResult()
     {
         //Arrange
         var id = Guid.NewGuid();
         _unitOfWork.Providers.GetByIdAsync(id, default).Returns((Provider)null!);
 
         //Act
-        var response = await _providerService.DeleteProviderAsync(id, default);
+        var response = await _providerService.GetProviderByIdAsync(id, default);
 
         //Assert
         response.IsSuccess.ShouldBeFalse();
+        response.ShouldBeEquivalentTo(new Result<ProviderModel>(CustomError
+            .ResourceNotFound(LoggingConstants<Provider>.RESOURCE_NOT_FOUND)));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             Arg.Any<CancellationToken>());
     }
 
     [Theory, AutoDataCustom]
-    public async Task UpdateProviderAsync_WhenProviderExists(Provider provider, ProviderModel providerModel)
+    public async Task UpdateProviderAsync_WhenProviderExists_ShouldReturnSuccessResult(Provider provider, ProviderModel providerModel)
     {
         //Arrange
         var id = provider.Id;
@@ -120,7 +128,7 @@ public class ProviderServiceTests : Mocks
     }
 
     [Theory, AutoDataCustom]
-    public async Task UpdateProviderAsync_WhenProviderDoesNotExist(ProviderModel providerModel)
+    public async Task UpdateProviderAsync_WhenProviderDoesNotExist_ShouldReturnFailureResult(ProviderModel providerModel)
     {
         //Arrange
         var id = Guid.NewGuid();
@@ -131,15 +139,15 @@ public class ProviderServiceTests : Mocks
 
         //Assert
         response.IsSuccess.ShouldBeFalse();
+        response.ShouldBeEquivalentTo(Result
+            .Failure(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_TO_UPDATE_NOT_FOUND)));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             Arg.Any<CancellationToken>());
-        response.ShouldBeEquivalentTo(
-            Result.Failure(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_TO_UPDATE_NOT_FOUND)));
     }
 
     [Theory, AutoDataCustom]
-    public async Task GetProvidersAsync_ShouldReturnPageSizedProvidersList(
+    public async Task GetProvidersAsync_WhenDataIsValid_ShouldReturnPageSizedProvidersList(
         PaginationParams paginationParams,
         List<Provider> pagedProviders)
     {
@@ -156,6 +164,28 @@ public class ProviderServiceTests : Mocks
         response.Value.ShouldBeEquivalentTo(pagedProviderModels);
         _providerRepository.Received(1).GetPaged(
             Arg.Any<PaginationParams>(),
-            null!);
+            Arg.Any<ProviderFilter>());
+    }
+
+    [Theory, AutoDataCustom]
+    public async Task GetProductsAsync_WhenProvidersNotFound_ShouldReturnFailureResult(
+        PaginationParams paginationParams,
+        ProviderFilter filter)
+    {
+        //Arrange
+        _providerRepository.GetPaged(paginationParams, filter)
+            .Returns(new List<Provider>());
+
+        //Act
+        var response = await _providerService.GetProvidersAsync(paginationParams, filter, default);
+
+        //Assert
+        response.IsSuccess.ShouldBeFalse();
+        response.ShouldBeEquivalentTo(
+            new Result<List<ProviderModel>>(CustomError
+                .ResourceNotFound(LoggingConstants<Provider>.RESOURCES_FILTERED_NOT_FOUND)));
+        _providerRepository.Received(1).GetPaged(
+            Arg.Any<PaginationParams>(),
+            Arg.Any<ProviderFilter>());
     }
 }
