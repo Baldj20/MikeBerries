@@ -28,26 +28,50 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Install dependencies 📂
-        run: dotnet restore ProductService/ProductService/ProductService.sln
+      - name: Install Coverlet for .NET
+        run: dotnet tool install --global coverlet.console
 
-      - name: Build 🧱
-        run: dotnet build ProductService/ProductService/ProductService.sln --configuration Release --no-restore
+      - name: Install SonarScanner for .NET
+        run: dotnet tool install --global dotnet-sonarscanner
+      
+      - name: SonarQube Begin Analysis
+        shell: pwsh
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          $coverageReportPath = "coverage.opencover.xml"
+          $sonarCoverageParam = "/d:sonar.cs.opencover.reportsPaths=""$coverageReportPath"""
 
-  analyze:
-    runs-on: ubuntu-latest
+          dotnet-sonarscanner begin `
+              /k:"$env:SONAR_PROJECT_KEY" `
+              /o:"$env:SONAR_ORGANIZATION" `
+              /d:sonar.login="$env:SONAR_TOKEN" `
+              /d:sonar.coverage.exclusions="**/*" `
+              $sonarCoverageParam
+              
+      - name: Build Solution
+        shell: pwsh
+        run: |
+          $solutionPath = "ProductService/ProductService/ProductService.sln"
+          dotnet build $solutionPath --no-incremental
 
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Run Tests and Collect Coverage
+        shell: pwsh
+        run: |
+          $solutionPath = "ProductService/ProductService/ProductService.sln"
+          $coverageReportPath = "coverage.opencover.xml"
 
-      - name: Sonar Scan ProductService
-        uses: highbyte/sonarscan-dotnet@v2.3.0
-        with:
-          sonarProjectKey: ${{ env.SONAR_PROJECT_KEY }}
-          sonarOrganization: ${{ env.SONAR_ORGANIZATION }}
-          sonarProjectName: ${{ env.SONAR_PROJECT_NAME }}
-          dotnetBuildArguments: ./ProductService/ProductService --configuration Release
-          dotnetTestArguments: ./ProductService/ProductService --no-build --configuration Release --verbosity normal --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-          sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="/TestResults/coverage.opencover.xml" /d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx" /d:sonar.coverage.exclusions="$SONAR_EXCLUDE_FROM_COVERAGE"
+          dotnet test $solutionPath `
+              --no-build `
+              /p:CollectCoverage=true `
+              /p:CoverletOutputFormat=opencover `
+              /p:CoverletOutput="$coverageReportPath"
+              
+      - name: SonarQube End Analysis
+        shell: pwsh
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          dotnet-sonarscanner end /d:sonar.login="$env:SONAR_TOKEN"
+
+  
