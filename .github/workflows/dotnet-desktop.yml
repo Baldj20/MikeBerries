@@ -1,58 +1,33 @@
-name: SonarQube
+name: Build & Test 🧪
+
 on:
   push:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches:
+      - main
+
+env:
+  DOTNET_VERSION: '7.0.x'
 
 jobs:
   build:
-    name: Build and analyze
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v3
+
+      - name: Setup .NET 📦
+        uses: actions/setup-dotnet@v3
         with:
-          java-version: 17
-          distribution: 'zulu'
+          dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Install dependencies 📂
+        run: dotnet restore ProductService/ProductService/ProductService.sln
 
-      - name: Set up .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
-      - name: Install Coverlet for .NET
-        run: dotnet tool install --global coverlet.console
-    
-      - name: Install SonarScanner for .NET
-        run: dotnet tool install --global dotnet-sonarscanner
+      - name: Build 🧱
+        run: dotnet build ProductService/ProductService/ProductService.sln --configuration Release --no-restore
 
-      - name: Build and analyze with SonarQube
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        shell: pwsh
-        run: |
-          $projectKey = "Baldj20_MikeBerries"
-          $organization = "baldj20"
-          $solutionPath = "ProductService/ProductService/ProductService.sln"
-
-          $coverageReportPath = "coverage.opencover.xml"
-          $sonarCoverageParam = "/d:sonar.cs.opencover.reportsPaths=$coverageReportPath"
-
-          dotnet-sonarscanner begin /k:"$projectKey" /o:"$organization" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" $sonarCoverageParam /d:sonar.coverage.exclusions="**/*" `
-
-          dotnet build $solutionPath --no-incremental
-
-          dotnet test $solutionPath `
-              --no-build `
-              /p:CollectCoverage=true `
-              /p:CoverletOutputFormat=opencover `
-              /p:CoverletOutput="$coverageReportPath"
-
-          dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+      - name: Test 🧪
+        run: dotnet test ProductService/ProductService/ProductService.sln --configuration Release --no-build
