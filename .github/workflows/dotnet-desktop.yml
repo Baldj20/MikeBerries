@@ -14,7 +14,7 @@ env:
   SONAR_PROJECT_KEY: "Baldj20_MikeBerries"
   SONAR_ORGANIZATION: "baldj20"
   SONAR_PROJECT_NAME: "ProductService"
-  SONAR_EXCLUDE_FROM_COVERAGE: "/Program.cs, /Migrations/, /Controllers/, /Repositories/*"
+  SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs, **/Migrations/**, **/Controllers/**"
 
 jobs:
   build:
@@ -44,7 +44,7 @@ jobs:
             /o:"$org" \
             /d:sonar.token="$token" \
             /d:sonar.cs.opencover.reportsPaths=coverage.xml \
-            /d:sonar.coverage.exclusions="**/Program.cs, **/Migrations/**, **/Controllers/**"
+            /d:sonar.coverage.exclusions=$SONAR_EXCLUDE_FROM_COVERAGE
 
           dotnet build ./ProductService/ProductService/ProductService.sln --no-incremental
 
