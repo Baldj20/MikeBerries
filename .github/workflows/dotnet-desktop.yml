@@ -44,6 +44,7 @@ jobs:
             /o:"$org" \
             /d:sonar.token="$token" \
             /d:sonar.cs.opencover.reportsPaths=coverage.xml
+            /d:sonar.coverage.exclusions="**/Program.cs, **/Migrations/**, **/Controllers/**
 
           dotnet build ./ProductService/ProductService/ProductService.sln --no-incremental
 
