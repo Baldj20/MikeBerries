@@ -45,7 +45,7 @@ jobs:
           $coverageReportPath = "coverage.opencover.xml"
           $sonarCoverageParam = "/d:sonar.cs.opencover.reportsPaths=$coverageReportPath"
 
-          dotnet-sonarscanner begin /k:"$projectKey" /o:"$organization" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" $sonarCoverageParam
+          dotnet-sonarscanner begin /k:"$projectKey" /o:"$organization" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" $sonarCoverageParam /d:sonar.coverage.exclusions="**/*" `
 
           dotnet build $solutionPath --no-incremental
 
