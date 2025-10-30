@@ -41,7 +41,7 @@ jobs:
           token="$SONAR_TOKEN"
 
           dotnet sonarscanner begin /k:"$key" \
-            /o:"$org" \
+            /o:"$SONAR_ORGANIZATION" \
             /d:sonar.token="$token" \
             /d:sonar.cs.opencover.reportsPaths=coverage.xml \
             /d:sonar.coverage.exclusions=$SONAR_EXCLUDE_FROM_COVERAGE
