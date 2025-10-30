@@ -10,11 +10,17 @@ on:
 
 env:
   DOTNET_VERSION: '8.0.x'
+  
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   SONAR_PROJECT_KEY: "Baldj20_MikeBerries"
   SONAR_ORGANIZATION: "baldj20"
   SONAR_PROJECT_NAME: "ProductService"
   SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs,**/Migrations/**,**/Controllers/**"
+
+  BUILDED_TESTS_PATH: "./ProductService/ProductService/ProductServiceTests/bin/Debug/net8.0/ProductService.UnitTests.dll"
+  TEST_PROJECT_PATH: "./ProductService/ProductService/ProductServiceTests/ProductService.UnitTests.csproj"
+
+  SOLUTION_PATH: "./ProductService/ProductService/ProductService.sln"
 
 jobs:
   build:
@@ -36,24 +42,19 @@ jobs:
       
       - name: SonarQube Begin Analysis
         run: |
-          key="Baldj20_MikeBerries"
-          org="baldj20"
-          token="$SONAR_TOKEN"
-
-          dotnet sonarscanner begin /k:"$key" \
+          dotnet sonarscanner begin 
+            /k:"$SONAR_PROJECT_KEY" \
             /o:"$SONAR_ORGANIZATION" \
-            /d:sonar.token="$token" \
+            /d:sonar.token="$SONAR_TOKEN" \
             /d:sonar.cs.opencover.reportsPaths=coverage.xml \
             /d:sonar.coverage.exclusions=$SONAR_EXCLUDE_FROM_COVERAGE
 
-          dotnet build ./ProductService/ProductService/ProductService.sln --no-incremental
+          dotnet build "$SOLUTION_PATH" --no-incremental
 
-          coverlet ./ProductService/ProductService/ProductServiceTests/bin/Debug/net8.0/ProductService.UnitTests.dll \
+          coverlet "$BUILDED_TESTS_PATH" \
             --target "dotnet" \
-            --targetargs "test ./ProductService/ProductService/ProductServiceTests/ProductService.UnitTests.csproj --no-build" \
+            --targetargs "test "$TEST_PROJECT_PATH" --no-build" \
             -f opencover \
             -o "coverage.xml"
 
-          dotnet sonarscanner end /d:sonar.token="$token"
-
-  
+          dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"
