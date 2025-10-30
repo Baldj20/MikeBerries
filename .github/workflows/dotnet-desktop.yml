@@ -47,9 +47,9 @@ jobs:
 
           dotnet build ./ProductService/ProductService/ProductService.sln --no-incremental
 
-          coverlet ./ProductService/ProductService/ProductService.UnitTests/bin/Debug/net8.0/ProductService.UnitTests.dll \
+          coverlet ./ProductService/ProductService/ProductServiceTests/bin/Debug/net8.0/ProductService.UnitTests.dll \
             --target "dotnet" \
-            --targetargs "test ./ProductService/ProductService/ProductService.UnitTests.csproj --no-build" \
+            --targetargs "test ./ProductService/ProductService/ProductServiceTests.csproj --no-build" \
             -f opencover \
             -o "coverage.xml"
 
