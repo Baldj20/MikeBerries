@@ -14,7 +14,7 @@ env:
   SONAR_PROJECT_KEY: "Baldj20_MikeBerries"
   SONAR_ORGANIZATION: "baldj20"
   SONAR_PROJECT_NAME: "ProductService"
-  SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs, **/Migrations/**, **/Controllers/**"
+  SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs,**/Migrations/**,**/Controllers/**"
 
 jobs:
   build:
