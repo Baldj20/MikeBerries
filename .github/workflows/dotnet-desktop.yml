@@ -45,7 +45,7 @@ jobs:
             /d:sonar.token="$token" \
             /d:sonar.cs.opencover.reportsPaths=coverage.xml
 
-          dotnet build --no-incremental
+          dotnet build ./ProductService/ProductService/ProductService.sln --no-incremental
 
           coverlet ./CovExample.Tests/bin/Debug/net6.0/CovExample.Tests.dll \
             --target "dotnet" \
