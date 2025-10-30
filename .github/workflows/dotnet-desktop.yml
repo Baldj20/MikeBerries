@@ -1,4 +1,4 @@
-name: Build & Test 🧪
+name: ProductService CI 🧪
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
       
       - name: SonarQube Begin Analysis
         run: |
-          dotnet sonarscanner begin 
+          dotnet sonarscanner begin \
             /k:"$SONAR_PROJECT_KEY" \
             /o:"$SONAR_ORGANIZATION" \
             /d:sonar.token="$SONAR_TOKEN" \
@@ -53,8 +53,9 @@ jobs:
 
           coverlet "$BUILDED_TESTS_PATH" \
             --target "dotnet" \
-            --targetargs "test "$TEST_PROJECT_PATH" --no-build" \
+            --targetargs "test '$TEST_PROJECT_PATH' --no-build" \
             -f opencover \
             -o "coverage.xml"
 
-          dotnet sonarscanner end /d:sonar.token="$SONAR_TOKEN"
+          dotnet sonarscanner end \
+            /d:sonar.token="$SONAR_TOKEN"
