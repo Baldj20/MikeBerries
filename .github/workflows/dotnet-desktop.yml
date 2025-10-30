@@ -36,9 +36,13 @@ jobs:
       
       - name: SonarQube Begin Analysis
         run: |
-          dotnet sonarscanner begin /k:"$env:SONAR_PROJECT_KEY" `
-            /o:"$env:SONAR_ORGANIZATION" `
-            /d:sonar.token="$env:SONAR_TOKEN" `
+          $key = "Baldj20_MikeBerries"
+          $org = "baldj20"
+          $token = ${{ secrets.SONAR_TOKEN }}
+          
+          dotnet sonarscanner begin /k:"$key" `
+            /o:"$org" `
+            /d:sonar.token="$token" `
             /d:sonar.cs.opencover.reportsPaths=coverage.xml
 
           dotnet build --no-incremental
@@ -49,6 +53,6 @@ jobs:
             -f opencover \
             -o "coverage.xml"
 
-          dotnet sonarscanner end /d:sonar.token="$env:SONAR_TOKEN"
+          dotnet sonarscanner end /d:sonar.token="$token"
 
   
