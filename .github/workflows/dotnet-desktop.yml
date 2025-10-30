@@ -13,6 +13,7 @@ env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   SONAR_PROJECT_KEY: "Baldj20_MikeBerries"
   SONAR_ORGANIZATION: "baldj20"
+  SONAR_PROJECT_NAME: "ProductService"
   SONAR_EXCLUDE_FROM_COVERAGE: "/Program.cs, /Migrations/, /Controllers/, /Repositories/*"
 
 jobs:
@@ -46,6 +47,7 @@ jobs:
         with:
           sonarProjectKey: ${{ env.SONAR_PROJECT_KEY }}
           sonarOrganization: ${{ env.SONAR_ORGANIZATION }}
+          sonarProjectName: ${{ env.SONAR_PROJECT_NAME }}
           dotnetBuildArguments: ./ProductService/ProductService --configuration Release
           dotnetTestArguments: ./ProductService/ProductService --no-build --configuration Release --verbosity normal --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
           sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="/TestResults/coverage.opencover.xml" /d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx" /d:sonar.coverage.exclusions="$SONAR_EXCLUDE_FROM_COVERAGE"
