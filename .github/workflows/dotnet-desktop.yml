@@ -9,7 +9,11 @@ on:
       - main
 
 env:
-  DOTNET_VERSION: '7.0.x'
+  DOTNET_VERSION: '8.0.x'
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  SONAR_PROJECT_KEY: "Baldj20_MikeBerries"
+  SONAR_ORGANIZATION: "baldj20"
+  SONAR_EXCLUDE_FROM_COVERAGE: "/Program.cs, /Migrations/, /Controllers/, /Repositories/*"
 
 jobs:
   build:
@@ -29,5 +33,19 @@ jobs:
       - name: Build 🧱
         run: dotnet build ProductService/ProductService/ProductService.sln --configuration Release --no-restore
 
-      - name: Test 🧪
-        run: dotnet test ProductService/ProductService/ProductService.sln --configuration Release --no-build
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sonar Scan ProductService
+        uses: highbyte/sonarscan-dotnet@v2.3.0
+        with:
+          sonarProjectKey: ${{ env.SONAR_PROJECT_KEY }}
+          sonarOrganization: ${{ env.SONAR_ORGANIZATION }}
+          dotnetBuildArguments: ./ProductService/ProductService --configuration Release
+          dotnetTestArguments: ./ProductService/ProductService --no-build --configuration Release --verbosity normal --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+          sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="/TestResults/coverage.opencover.xml" /d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx" /d:sonar.coverage.exclusions="$SONAR_EXCLUDE_FROM_COVERAGE"
