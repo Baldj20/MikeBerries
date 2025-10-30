@@ -36,13 +36,13 @@ jobs:
       
       - name: SonarQube Begin Analysis
         run: |
-          $key = "Baldj20_MikeBerries"
-          $org = "baldj20"
-          $token = ${{ secrets.SONAR_TOKEN }}
-          
-          dotnet sonarscanner begin /k:"$key" `
-            /o:"$org" `
-            /d:sonar.token="$token" `
+          key="Baldj20_MikeBerries"
+          org="baldj20"
+          token="$SONAR_TOKEN"
+
+          dotnet sonarscanner begin /k:"$key" \
+            /o:"$org" \
+            /d:sonar.token="$token" \
             /d:sonar.cs.opencover.reportsPaths=coverage.xml
 
           dotnet build --no-incremental
