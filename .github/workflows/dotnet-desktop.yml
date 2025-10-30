@@ -53,7 +53,7 @@ jobs:
 
           coverlet "$BUILDED_TESTS_PATH" \
             --target "dotnet" \
-            --targetargs "test '$TEST_PROJECT_PATH' --no-build" \
+            --targetargs "test \"$TEST_PROJECT_PATH\" --no-build" \
             -f opencover \
             -o "coverage.xml"
 
