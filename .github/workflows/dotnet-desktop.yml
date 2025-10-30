@@ -35,43 +35,19 @@ jobs:
         run: dotnet tool install --global dotnet-sonarscanner
       
       - name: SonarQube Begin Analysis
-        shell: pwsh
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          $coverageReportPath = "coverage.opencover.xml"
-          $sonarCoverageParam = "/d:sonar.cs.opencover.reportsPaths=""$coverageReportPath"""
+          dotnet sonarscanner begin /k:"env:$SONAR_PROJECT_KEY" `
+            /d:sonar.token="env:$SONAR_TOKEN" `
+            /d:sonar.cs.opencover.reportsPaths=coverage.xml
 
-          dotnet-sonarscanner begin `
-              /k:"$env:SONAR_PROJECT_KEY" `
-              /o:"$env:SONAR_ORGANIZATION" `
-              /d:sonar.login="$env:SONAR_TOKEN" `
-              /d:sonar.coverage.exclusions="**/*" `
-              $sonarCoverageParam
-              
-      - name: Build Solution
-        shell: pwsh
-        run: |
-          $solutionPath = "ProductService/ProductService/ProductService.sln"
-          dotnet build $solutionPath --no-incremental
+          dotnet build --no-incremental
 
-      - name: Run Tests and Collect Coverage
-        shell: pwsh
-        run: |
-          $solutionPath = "ProductService/ProductService/ProductService.sln"
-          $coverageReportPath = "coverage.opencover.xml"
+          coverlet ./CovExample.Tests/bin/Debug/net6.0/CovExample.Tests.dll \
+            --target "dotnet" \
+            --targetargs "test --no-build" \
+            -f opencover \
+            -o "coverage.xml"
 
-          dotnet test $solutionPath `
-              --no-build `
-              /p:CollectCoverage=true `
-              /p:CoverletOutputFormat=opencover `
-              /p:CoverletOutput="$coverageReportPath"
-              
-      - name: SonarQube End Analysis
-        shell: pwsh
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          dotnet-sonarscanner end /d:sonar.login="$env:SONAR_TOKEN"
+          dotnet sonarscanner end /d:sonar.token="env:$SONAR_TOKEN"
 
   
