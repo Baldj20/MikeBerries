@@ -1,4 +1,4 @@
-name: ProductService CI 🧪
+name: ProductService CI
 
 on:
   push:
@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup .NET 📦
+      - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
