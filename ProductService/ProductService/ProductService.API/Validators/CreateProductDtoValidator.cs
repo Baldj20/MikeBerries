@@ -4,7 +4,7 @@ using ProductService.BLL.DTO;
 
 namespace ProductService.API.Validators;
 
-public class CreateProductDtoValidator : AbstractValidator<CreateProductDTO>
+public class CreateProductDtoValidator : AbstractValidator<CreateProductDto>
 {
     public CreateProductDtoValidator()
     {

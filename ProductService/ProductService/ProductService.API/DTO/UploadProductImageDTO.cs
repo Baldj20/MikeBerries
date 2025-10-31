@@ -2,7 +2,7 @@
 
 namespace ProductService.BLL.DTO;
 
-public class UploadProductImageDTO
+public class UploadProductImageDto
 {
-    public IFormFile Image { get; }
+    public required IFormFile Image { get; set; }
 }

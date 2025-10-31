@@ -4,7 +4,7 @@ using ProductService.BLL.DTO;
 
 namespace ProductService.API.Validators;
 
-public class ProviderDtoValidator : AbstractValidator<ProviderDTO>
+public class ProviderDtoValidator : AbstractValidator<ProviderDto>
 {
     public ProviderDtoValidator()
     {

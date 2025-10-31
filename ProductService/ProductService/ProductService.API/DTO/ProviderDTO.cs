@@ -1,7 +1,7 @@
 ﻿namespace ProductService.BLL.DTO;
 
-public class ProviderDTO
+public class ProviderDto
 {
-    public string Email { get; set; }
-    public string Name { get; set; }
+    public required string Email { get; set; }
+    public required string Name { get; set; }
 }

@@ -14,7 +14,7 @@ namespace ProductService.API.Controllers;
 public class ProvidersController(IProviderService providerService) : ControllerBase
 {
     [HttpPost]
-    public async Task<Result> Add(ProviderDTO dto, CancellationToken token)
+    public async Task<Result> Add(ProviderDto dto, CancellationToken token)
     {
         var response = await providerService.AddProviderAsync(dto.Adapt<ProviderModel>(), token);
 
@@ -30,17 +30,17 @@ public class ProvidersController(IProviderService providerService) : ControllerB
     }
 
     [HttpGet("{id}")]
-    public async Task<Result<ProviderDTO>> GetById(Guid id, CancellationToken token)
+    public async Task<Result<ProviderDto>> GetById(Guid id, CancellationToken token)
     {
         var provider = await providerService.GetProviderByIdAsync(id, token);
 
         return provider.IsSuccess ? 
-            new Result<ProviderDTO>(provider.Value.Adapt<ProviderDTO>()) :
-            new Result<ProviderDTO>(provider.Error!);
+            new Result<ProviderDto>(provider.Value.Adapt<ProviderDto>()) :
+            new Result<ProviderDto>(provider.Error!);
     }
 
     [HttpGet]
-    public Result<List<ProviderDTO>> GetAllPaged(
+    public Result<List<ProviderDto>> GetAllPaged(
         [FromQuery] PaginationParams paginationParams,
         [FromQuery] ProviderFilter filter,
         CancellationToken token)
@@ -48,12 +48,12 @@ public class ProvidersController(IProviderService providerService) : ControllerB
         var providers = providerService.GetProviders(paginationParams, filter, token);
 
         return providers.IsSuccess ? 
-            new Result<List<ProviderDTO>>(providers.Value.Adapt<List<ProviderDTO>>()) : 
-            new Result<List<ProviderDTO>>(providers.Error!);
+            new Result<List<ProviderDto>>(providers.Value.Adapt<List<ProviderDto>>()) : 
+            new Result<List<ProviderDto>>(providers.Error!);
     }
 
     [HttpPut("{id}")]
-    public async Task<Result> Update(Guid id, ProviderDTO dto, CancellationToken token)
+    public async Task<Result> Update(Guid id, ProviderDto dto, CancellationToken token)
     {
         var response = await providerService.UpdateProviderAsync(id, dto.Adapt<ProviderModel>(), token);
 
