@@ -28,7 +28,7 @@ public class ProductServiceTests : Mocks
                                  p.Price == productModel.Price),
             default);
         await _unitOfWork.Received(1).SaveChangesAsync(
-            Arg.Any<CancellationToken>());
+            default);
     }
 
     [Theory, AutoDataCustom]
@@ -48,9 +48,9 @@ public class ProductServiceTests : Mocks
         response.IsSuccess.ShouldBeTrue();
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
-            Arg.Any<CancellationToken>());
+            default);
         await _unitOfWork.Received(1).SaveChangesAsync(
-            Arg.Any<CancellationToken>());
+            default);
         await _productRepository.Received(1).Delete(
             Arg.Is<Product>(p => p.Id == id));
     }
@@ -71,7 +71,7 @@ public class ProductServiceTests : Mocks
                 .Failure(CustomError.ResourceNotFound(LoggingConstants<Product>.RESOURCE_TO_DELETE_NOT_FOUND)));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
-            Arg.Any<CancellationToken>());
+            default);
     }
 
     [Theory, AutoDataCustom]
@@ -90,7 +90,7 @@ public class ProductServiceTests : Mocks
         response.Value.ShouldBeEquivalentTo(productModel);
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
-            Arg.Any<CancellationToken>());
+            default);
     }
 
     [Fact]
@@ -109,7 +109,7 @@ public class ProductServiceTests : Mocks
             .ResourceNotFound(LoggingConstants<Product>.RESOURCE_NOT_FOUND)));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
-            Arg.Any<CancellationToken>());
+            default);
     }
 
     [Theory, AutoDataCustom]
@@ -127,9 +127,9 @@ public class ProductServiceTests : Mocks
         response.IsSuccess.ShouldBeTrue();
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
-            Arg.Any<CancellationToken>());
+            default);
         await _unitOfWork.Received(1).SaveChangesAsync(
-            Arg.Any<CancellationToken>());
+            default);
 
         product.Title.ShouldBeEquivalentTo(productModel.Title);
         product.Description.ShouldBeEquivalentTo(productModel.Description);
@@ -160,7 +160,7 @@ public class ProductServiceTests : Mocks
             .Failure(CustomError.ResourceNotFound(LoggingConstants<Product>.RESOURCE_TO_UPDATE_NOT_FOUND)));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
-            Arg.Any<CancellationToken>());      
+            default);      
     }
 
     [Theory, AutoDataCustom]

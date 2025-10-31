@@ -27,7 +27,7 @@ public class ProviderServiceTests : Mocks
                                  p.Email == providerModel.Email),
             default);
         await _unitOfWork.Received(1).SaveChangesAsync(
-            Arg.Any<CancellationToken>());
+            default);
     }
 
     [Theory, AutoDataCustom]
@@ -46,7 +46,7 @@ public class ProviderServiceTests : Mocks
         response.IsSuccess.ShouldBeTrue();
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
-            Arg.Any<CancellationToken>());
+            default);
         await _providerRepository.Received(1).Delete(
             Arg.Is<Provider>(p => p.Id == id));
     }
@@ -67,7 +67,7 @@ public class ProviderServiceTests : Mocks
                 .Failure(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_TO_DELETE_NOT_FOUND)));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
-            Arg.Any<CancellationToken>());
+            default);
     }
 
     [Theory, AutoDataCustom]
@@ -86,7 +86,7 @@ public class ProviderServiceTests : Mocks
         response.Value.ShouldBeEquivalentTo(providerModel);
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
-            Arg.Any<CancellationToken>());
+            default);
     }
 
     [Fact]
@@ -105,7 +105,7 @@ public class ProviderServiceTests : Mocks
             .ResourceNotFound(LoggingConstants<Provider>.RESOURCE_NOT_FOUND)));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
-            Arg.Any<CancellationToken>());
+            default);
     }
 
     [Theory, AutoDataCustom]
@@ -122,9 +122,9 @@ public class ProviderServiceTests : Mocks
         response.IsSuccess.ShouldBeTrue();
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
-            Arg.Any<CancellationToken>());
+            default);
         await _unitOfWork.Received(1).SaveChangesAsync(
-            Arg.Any<CancellationToken>());
+            default);
     }
 
     [Theory, AutoDataCustom]
@@ -143,7 +143,7 @@ public class ProviderServiceTests : Mocks
             .Failure(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_TO_UPDATE_NOT_FOUND)));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
-            Arg.Any<CancellationToken>());
+            default);
     }
 
     [Theory, AutoDataCustom]
