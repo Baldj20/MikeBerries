@@ -1,5 +1,4 @@
 ﻿using Mapster;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ProductService.BLL.Constants.Logging;
 using ProductService.BLL.Interfaces.Services;
@@ -67,12 +66,10 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         }
     }
 
-    public async Task<Result<List<ProductModel>>> GetProductsAsync(PaginationParams paginationParams, 
+    public Result<List<ProductModel>> GetProducts(PaginationParams paginationParams, 
         ProductFilter filter, CancellationToken token)
     {
-        var query = unitOfWork.Products.GetPaged(paginationParams, filter);
-
-        var result = await query.ToListAsync(token);
+        var result = unitOfWork.Products.GetPaged(paginationParams, filter);
 
         if (result.Count != 0)
         {
@@ -92,7 +89,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         }
     }
 
-    public async Task<Result> UpdateAsync(Guid id, ProductModel productModel, CancellationToken token)
+    public async Task<Result> UpdateProductAsync(Guid id, ProductModel productModel, CancellationToken token)
     {
         var product = await unitOfWork.Products.GetByIdAsync(id, token);
 

@@ -1,5 +1,4 @@
 ﻿using Mapster;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ProductService.BLL.Constants.Logging;
 using ProductService.BLL.Interfaces.Services;
@@ -67,12 +66,10 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
         }
     }
 
-    public async Task<Result<List<ProviderModel>>> GetProvidersAsync(PaginationParams paginationParams, 
+    public Result<List<ProviderModel>> GetProviders(PaginationParams paginationParams, 
         ProviderFilter filter, CancellationToken token)
     {
-        var query = unitOfWork.Providers.GetPaged(paginationParams, filter);
-
-        var result = await query.ToListAsync(token);
+        var result = unitOfWork.Providers.GetPaged(paginationParams, filter);
 
         if (result.Count != 0)
         {
@@ -92,7 +89,7 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
         }    
     }
 
-    public async Task<Result> UpdateAsync(Guid id, ProviderModel providerModel, CancellationToken token)
+    public async Task<Result> UpdateProviderAsync(Guid id, ProviderModel providerModel, CancellationToken token)
     {
         var provider = await unitOfWork.Providers.GetByIdAsync(id, token);
 

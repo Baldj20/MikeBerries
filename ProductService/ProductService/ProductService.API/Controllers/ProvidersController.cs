@@ -40,12 +40,12 @@ public class ProvidersController(IProviderService providerService) : ControllerB
     }
 
     [HttpGet]
-    public async Task<Result<List<ProviderDTO>>> GetAllPaged(
+    public Result<List<ProviderDTO>> GetAllPaged(
         [FromQuery] PaginationParams paginationParams,
         [FromQuery] ProviderFilter filter,
         CancellationToken token)
     {
-        var providers = await providerService.GetProvidersAsync(paginationParams, filter, token);
+        var providers = providerService.GetProviders(paginationParams, filter, token);
 
         return providers.IsSuccess ? 
             new Result<List<ProviderDTO>>(providers.Value.Adapt<List<ProviderDTO>>()) : 
@@ -55,7 +55,7 @@ public class ProvidersController(IProviderService providerService) : ControllerB
     [HttpPut("{id}")]
     public async Task<Result> Update(Guid id, ProviderDTO dto, CancellationToken token)
     {
-        var response = await providerService.UpdateAsync(id, dto.Adapt<ProviderModel>(), token);
+        var response = await providerService.UpdateProviderAsync(id, dto.Adapt<ProviderModel>(), token);
 
         return response;
     }

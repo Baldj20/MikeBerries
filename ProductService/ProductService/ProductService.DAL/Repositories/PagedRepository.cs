@@ -5,7 +5,7 @@ namespace ProductService.DAL.Repositories;
 
 public class PagedRepository<T>(MikeBerriesDBContext Context) : IPagedRepository<T> where T : class
 {
-    public IQueryable<T> GetPaged(PaginationParams paginationParams,
+    public List<T> GetPaged(PaginationParams paginationParams,
         IFilter<T> filter)
     {
         var initialQuery = Context.Set<T>().AsQueryable();
@@ -15,6 +15,6 @@ public class PagedRepository<T>(MikeBerriesDBContext Context) : IPagedRepository
         query = query.Skip((paginationParams.Page - 1) * paginationParams.PageSize)
                      .Take(paginationParams.PageSize);
 
-        return query;
+        return query.ToList();
     }
 }

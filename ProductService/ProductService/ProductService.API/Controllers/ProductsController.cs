@@ -41,12 +41,12 @@ public class ProductsController(IProductService productService) : ControllerBase
     }
 
     [HttpGet]
-    public async Task<Result<List<GetProductDTO>>> GetAllPaged(
+    public Result<List<GetProductDTO>> GetAllPaged(
         [FromQuery] PaginationParams paginationParams,
         [FromQuery] ProductFilter filter, 
         CancellationToken token)
     {
-        var products = await productService.GetProductsAsync(paginationParams, filter, token);
+        var products = productService.GetProducts(paginationParams, filter, token);
 
         return products.IsSuccess ?
             new Result<List<GetProductDTO>>(products.Value.Adapt<List<GetProductDTO>>()) :
@@ -56,7 +56,7 @@ public class ProductsController(IProductService productService) : ControllerBase
     [HttpPut("{id}")]
     public async Task<Result> Update(Guid id, [FromForm]UpdateProductDTO dto, CancellationToken token)
     {
-        var response = await productService.UpdateAsync(id, dto.Adapt<ProductModel>(), token);
+        var response = await productService.UpdateProductAsync(id, dto.Adapt<ProductModel>(), token);
 
         return response;
     }

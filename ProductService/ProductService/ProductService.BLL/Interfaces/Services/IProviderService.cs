@@ -9,7 +9,7 @@ public interface IProviderService
     Task<Result> AddProviderAsync(ProviderModel providerModel, CancellationToken token);
     Task<Result> DeleteProviderAsync(Guid id, CancellationToken token);
     Task<Result<ProviderModel>> GetProviderByIdAsync(Guid id, CancellationToken token);
-    Task<Result<List<ProviderModel>>> GetProvidersAsync(PaginationParams paginationParams,
+    Result<List<ProviderModel>> GetProviders(PaginationParams paginationParams,
         ProviderFilter filter, CancellationToken token);
-    Task<Result> UpdateAsync(Guid id, ProviderModel providerModel, CancellationToken token);
+    Task<Result> UpdateProviderAsync(Guid id, ProviderModel providerModel, CancellationToken token);
 }

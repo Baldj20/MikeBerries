@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36518.9 d17.14
+VisualStudioVersion = 17.14.36518.9
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.DAL", "ProductService.DAL\ProductService.DAL.csproj", "{C911AC42-7295-4325-AF18-38730F7BAE9E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.BLL", "ProductService.BLL\ProductService.BLL.csproj", "{A3CE65AE-DCB6-412D-B459-43CA25B10740}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.API", "ProductService.API\ProductService.API.csproj", "{765AFE98-4273-475A-9EDC-4908199202AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService.UnitTests", "ProductServiceTests\ProductService.UnitTests.csproj", "{CEC59DB7-F8A8-4299-ABB4-12A054F05979}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{765AFE98-4273-475A-9EDC-4908199202AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{765AFE98-4273-475A-9EDC-4908199202AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{765AFE98-4273-475A-9EDC-4908199202AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEC59DB7-F8A8-4299-ABB4-12A054F05979}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEC59DB7-F8A8-4299-ABB4-12A054F05979}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEC59DB7-F8A8-4299-ABB4-12A054F05979}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEC59DB7-F8A8-4299-ABB4-12A054F05979}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
