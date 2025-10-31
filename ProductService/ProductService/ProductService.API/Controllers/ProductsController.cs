@@ -15,7 +15,7 @@ public class ProductsController(IProductService productService) : ControllerBase
 {
     [HttpPost]
     [Consumes("multipart/form-data")]
-    public async Task<Result> Add([FromForm]CreateProductDTO dto, CancellationToken token)
+    public async Task<Result> Add([FromForm]CreateProductDto dto, CancellationToken token)
     {
         var response = await productService.AddProductAsync(dto.Adapt<ProductModel>(), token);
 
@@ -31,17 +31,17 @@ public class ProductsController(IProductService productService) : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<Result<GetProductDTO>> GetById(Guid id, CancellationToken token)
+    public async Task<Result<GetProductDto>> GetById(Guid id, CancellationToken token)
     {
         var product = await productService.GetProductByIdAsync(id, token);
 
         return product.IsSuccess ? 
-            new Result<GetProductDTO>(product.Value.Adapt<GetProductDTO>()) : 
-            new Result<GetProductDTO>(product.Error!);
+            new Result<GetProductDto>(product.Value.Adapt<GetProductDto>()) : 
+            new Result<GetProductDto>(product.Error!);
     }
 
     [HttpGet]
-    public Result<List<GetProductDTO>> GetAllPaged(
+    public Result<List<GetProductDto>> GetAllPaged(
         [FromQuery] PaginationParams paginationParams,
         [FromQuery] ProductFilter filter, 
         CancellationToken token)
@@ -49,12 +49,12 @@ public class ProductsController(IProductService productService) : ControllerBase
         var products = productService.GetProducts(paginationParams, filter, token);
 
         return products.IsSuccess ?
-            new Result<List<GetProductDTO>>(products.Value.Adapt<List<GetProductDTO>>()) :
-            new Result<List<GetProductDTO>>(products.Error!);
+            new Result<List<GetProductDto>>(products.Value.Adapt<List<GetProductDto>>()) :
+            new Result<List<GetProductDto>>(products.Error!);
     }
 
     [HttpPut("{id}")]
-    public async Task<Result> Update(Guid id, [FromForm]UpdateProductDTO dto, CancellationToken token)
+    public async Task<Result> Update(Guid id, [FromForm]UpdateProductDto dto, CancellationToken token)
     {
         var response = await productService.UpdateProductAsync(id, dto.Adapt<ProductModel>(), token);
 
