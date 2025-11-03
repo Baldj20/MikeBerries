@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace ProductService.BLL.DTO;
+﻿namespace ProductService.BLL.DTO;
 
 public class UploadProductImageDto
 {
