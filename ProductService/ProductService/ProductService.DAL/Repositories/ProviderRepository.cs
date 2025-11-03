@@ -8,7 +8,7 @@ public class ProviderRepository(MikeBerriesDBContext context) : Repository<Provi
 {
     public async Task<Provider?> GetByEmailAsync(string email, CancellationToken token)
     {
-        var provider = await context.Providers.Where(p => p.Email == email)
+        var provider = await Context.Providers.Where(p => p.Email == email)
             .FirstOrDefaultAsync();
 
         return provider;

@@ -8,7 +8,7 @@ public class ProductImageRepository(MikeBerriesDBContext context) : Repository<P
 {
     public async Task<ICollection<ProductImage>> GetAllImagesByProductIdAsync(Guid id, CancellationToken token)
     {
-        var images = await context.ProductImages
+        var images = await Context.ProductImages
             .Where(i => i.Id == id)
             .AsNoTracking()
             .ToListAsync(token);

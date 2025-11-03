@@ -6,9 +6,9 @@ namespace ProductService.DAL.Repositories;
 public class UnitOfWork : IUnitOfWork
 {
     private readonly MikeBerriesDBContext _context;
-    private Lazy<IProviderRepository> _providers;
-    private Lazy<IProductImageRepository> _images;
-    private Lazy<IRepository<Product>> _products;
+    private readonly Lazy<IProviderRepository> _providers;
+    private readonly Lazy<IProductImageRepository> _images;
+    private readonly Lazy<IRepository<Product>> _products;
     public UnitOfWork(MikeBerriesDBContext context)
     {
         _context = context;
