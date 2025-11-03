@@ -1,10 +1,10 @@
 ﻿namespace ProductService.BLL.DTO;
 
-public class CreateProductDTO
+public class CreateProductDto
 {
-    public string Title { get; set; }
-    public string Description { get; set; }
-    public decimal Price { get; set; }
-    public ICollection<UploadProductImageDTO> Images { get; set; } = [];
-    public ProviderDTO Provider { get; set; }
+    public required string Title { get; set; }
+    public string? Description { get; set; }
+    public required decimal Price { get; set; }
+    public List<UploadProductImageDto> Images { get; set; } = new();
+    public required ProviderDto Provider { get; set; }
 }

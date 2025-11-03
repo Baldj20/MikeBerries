@@ -2,6 +2,6 @@
 
 public class ProductImageModel
 {
-    public string Url { get; set; }
-    public ProductModel Product { get; set; }
+    public required string Url { get; set; }
+    public required ProductModel Product { get; set; }
 }

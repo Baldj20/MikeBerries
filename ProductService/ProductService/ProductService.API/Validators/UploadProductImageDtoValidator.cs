@@ -4,7 +4,7 @@ using ProductService.BLL.DTO;
 
 namespace ProductService.API.Validators;
 
-public class UploadProductImageDtoValidator : AbstractValidator<UploadProductImageDTO>
+public class UploadProductImageDtoValidator : AbstractValidator<UploadProductImageDto>
 {
     public UploadProductImageDtoValidator()
     {

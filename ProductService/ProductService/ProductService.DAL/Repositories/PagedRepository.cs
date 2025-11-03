@@ -3,8 +3,9 @@ using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.DAL.Repositories;
 
-public class PagedRepository<T>(MikeBerriesDBContext Context) : IPagedRepository<T> where T : class
+public class PagedRepository<T>(MikeBerriesDBContext сontext) : IPagedRepository<T> where T : class
 {
+    protected MikeBerriesDBContext Context { get; } = сontext;
     public List<T> GetPaged(PaginationParams paginationParams,
         IFilter<T> filter)
     {

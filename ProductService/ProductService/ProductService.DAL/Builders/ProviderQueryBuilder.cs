@@ -8,7 +8,7 @@ public static class ProviderQueryBuilder
     {
         if (name is not null)
         {
-            query.Where(p => p.Name.Contains(name));
+            query = query.Where(p => p.Name.Contains(name));
         }
 
         return query;
@@ -17,8 +17,8 @@ public static class ProviderQueryBuilder
     {
         if (product is not null)
         {
-            query.Where(p => p.Products
-            .Any(prod => prod.Title.Contains(product)));
+            query = query.Where(p => p.Products
+                         .Any(prod => prod.Title.Contains(product)));
         }
 
         return query;
@@ -29,9 +29,9 @@ public static class ProviderQueryBuilder
         {
             var (page, pageSize) = paginationParams;
 
-            query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize);
+            query = query
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize);
         }
 
         return query;
