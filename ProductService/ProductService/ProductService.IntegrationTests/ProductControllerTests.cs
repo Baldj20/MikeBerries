@@ -1,12 +1,7 @@
 ﻿using Mapster;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
-using ProductService.BLL;
 using ProductService.BLL.DTO;
-using ProductService.DAL.Entities;
 using Shouldly;
 using System.Net;
-using System.Text;
 
 namespace ProductService.IntegrationTests;
 

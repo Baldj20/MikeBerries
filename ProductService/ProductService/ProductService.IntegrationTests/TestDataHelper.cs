@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using ProductService.BLL.DTO;
 using ProductService.DAL.Entities;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace ProductService.IntegrationTests;
 
@@ -149,5 +151,19 @@ public static class TestDataHelper
             Email = providerEmail,
             Name = providerName
         };
+    }
+
+    public static StringContent CreateProviderStringContent(
+        string providerName = "TestProviderName",
+        string providerEmail = "TestProviderEmail@mail.ru"
+        )
+    {
+        var provider = ProviderDto(
+            providerEmail: providerEmail,
+            providerName: providerName);
+
+        var json = JsonConvert.SerializeObject(provider);
+
+        return new StringContent(json, Encoding.UTF8, "application/json");
     }
 }

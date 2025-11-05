@@ -1,9 +1,7 @@
 ﻿using Mapster;
-using Newtonsoft.Json;
 using ProductService.BLL.DTO;
 using Shouldly;
 using System.Net;
-using System.Text;
 
 namespace ProductService.IntegrationTests;
 
@@ -16,9 +14,7 @@ public class ProviderControllerTests(ProductServiceWebApplicationFactory factory
     public async Task PostProvider_WhenDataIsValid_ShouldReturnSuccess()
     {
         //Arrange
-        var provider = TestDataHelper.ProviderDto();
-        var json = JsonConvert.SerializeObject(provider);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var content = TestDataHelper.CreateProviderStringContent();
 
         // Act
         var response = await _httpClient.PostAsync("api/providers", content);
@@ -31,9 +27,7 @@ public class ProviderControllerTests(ProductServiceWebApplicationFactory factory
     public async Task PostProvider_WhenEmailIsNotValid_ShouldReturnFailure()
     {
         //Arrange
-        var provider = TestDataHelper.ProviderDto(providerEmail: "sometext");
-        var json = JsonConvert.SerializeObject(provider);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var content = TestDataHelper.CreateProviderStringContent(providerEmail: "sometext");
 
         // Act
         var response = await _httpClient.PostAsync("api/providers", content);
@@ -219,9 +213,7 @@ public class ProviderControllerTests(ProductServiceWebApplicationFactory factory
     {
         //Arrange
         var provider = await Add(TestDataHelper.CreateProviderEntity());
-        var updatedProvider = TestDataHelper.ProviderDto();
-        var json = JsonConvert.SerializeObject(updatedProvider);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var content = TestDataHelper.CreateProviderStringContent();
 
         //Act
         var response = await _httpClient.PutAsync($"api/providers/{provider.Id}", content);
@@ -239,9 +231,7 @@ public class ProviderControllerTests(ProductServiceWebApplicationFactory factory
     {
         //Arrange
         var id = Guid.NewGuid();
-        var updatedProvider = TestDataHelper.ProviderDto();
-        var json = JsonConvert.SerializeObject(updatedProvider);
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var content = TestDataHelper.CreateProviderStringContent();
 
         //Act
         var response = await _httpClient.PutAsync($"api/providers/{id}", content);
