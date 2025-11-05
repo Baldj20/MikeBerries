@@ -92,8 +92,8 @@ public static class TestDataHelper
     }
 
     public static IFormFile CreateTestImageFile(
-        string fileName, 
-        string content, 
+        string fileName,
+        string content,
         string contentType)
     {
         var stream = new MemoryStream();
@@ -135,6 +135,19 @@ public static class TestDataHelper
                 Name = providerName
             },
             Images = new()
+        };
+    }
+
+    public static Provider CreateProviderEntity(
+        string providerEmail = "TestProviderEmail@mail.ru",
+        string providerName = "TestProviderName"
+        )
+    {
+        return new Provider
+        {
+            Id = Guid.NewGuid(),
+            Email = providerEmail,
+            Name = providerName
         };
     }
 }
