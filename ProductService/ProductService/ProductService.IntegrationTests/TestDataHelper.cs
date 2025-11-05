@@ -7,7 +7,7 @@ namespace ProductService.IntegrationTests;
 
 public static class TestDataHelper
 {
-    public static MultipartFormDataContent CreateProductDto(
+    public static MultipartFormDataContent CreateProductDtoFormData(
         string title = "TestProduct",
         string description = "TestDescription",
         decimal price = 100,
@@ -16,22 +16,31 @@ public static class TestDataHelper
         string providerName = "TestProviderName"
         )
     {
-        var createProductDto = new CreateProductDto
-        {
-            Title = title,
-            Description = description,
-            Price = price,
-            Images = new(),
-            Provider = ProviderDto(providerEmail, providerName)
-        };
+        var formData = UpdateProductDtoFormData(
+            title: title,
+            description: description,
+            price: price,
+            images: images
+            );
 
+        formData.Add(new StringContent(providerEmail), "Provider.Email");
+        formData.Add(new StringContent(providerName), "Provider.Name");
+
+        return formData;
+    }
+
+    public static MultipartFormDataContent UpdateProductDtoFormData(
+        string title = "UpdatedProduct",
+        string description = "UpdatedDescription",
+        decimal price = 200,
+        List<IFormFile>? images = null
+        )
+    {
         var formData = new MultipartFormDataContent();
 
-        formData.Add(new StringContent(createProductDto.Title), "Title");
-        formData.Add(new StringContent(createProductDto.Description!), "Description");
-        formData.Add(new StringContent(createProductDto.Price.ToString()), "Price");
-        formData.Add(new StringContent(createProductDto.Provider.Name), "Provider.Name");
-        formData.Add(new StringContent(createProductDto.Provider.Email), "Provider.Email");
+        formData.Add(new StringContent(title), "Title");
+        formData.Add(new StringContent(description!), "Description");
+        formData.Add(new StringContent(price.ToString()), "Price");
 
         if (images is null)
         {
@@ -55,7 +64,7 @@ public static class TestDataHelper
                 formData.Add(fileContent, $"Images[{i}].Image", images[i].FileName);
             }
         }
-       
+
         return formData;
     }
 
@@ -102,21 +111,28 @@ public static class TestDataHelper
         return formFile;
     }
 
-    public static Product CreateProductEntity()
+    public static Product CreateProductEntity(
+        string title = "TestProduct",
+        string description = "TestDescription",
+        decimal price = 100,
+        List<IFormFile>? images = null,
+        string providerEmail = "TestProviderEmail@mail.ru",
+        string providerName = "TestProviderName"
+        )
     {
         var providerId = Guid.NewGuid();
         return new Product
         {
             Id = Guid.NewGuid(),
-            Title = "TestTitle",
-            Description = "TestDescription",
-            Price = 100,
+            Title = title,
+            Description = description,
+            Price = price,
             ProviderId = providerId,
             Provider = new Provider
             {
                 Id = providerId,
-                Email = "TestProviderEmail@mail.ru",
-                Name = "TestProviderName"
+                Email = providerEmail,
+                Name = providerName
             },
             Images = new()
         };

@@ -11,7 +11,7 @@ public class ProductRepository(MikeBerriesDBContext context) : Repository<Produc
         var product = await Context.Products.Where(p => p.Id == id)
             .Include(p => p.Provider)
             .Include(p => p.Images)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(token);
 
         return product;
     }

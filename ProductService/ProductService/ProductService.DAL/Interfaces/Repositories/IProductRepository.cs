@@ -5,5 +5,5 @@ namespace ProductService.DAL.Interfaces.Repositories;
 
 public interface IProductRepository : IRepository<Product>
 {
-    Task<Product?> GetByIdAsync(Guid id, CancellationToken token);
+    new Task<Product?> GetByIdAsync(Guid id, CancellationToken token);
 }
