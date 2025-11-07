@@ -115,7 +115,6 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         int pageSize)
     {
         //Arrange
-        await InitializeAsync();
         var products = new[]
         {
             TestDataHelper.CreateProductEntity(),
@@ -151,7 +150,6 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         string title)
     {
         //Arrange
-        await InitializeAsync();
         var products = new[]
         {
             TestDataHelper.CreateProductEntity(title: "flugegeheimen"),
@@ -190,7 +188,6 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         int pageSize)
     {
         //Arrange
-        await InitializeAsync();
         var products = new[]
         {
             TestDataHelper.CreateProductEntity(),

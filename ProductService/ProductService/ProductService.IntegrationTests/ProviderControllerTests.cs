@@ -113,7 +113,6 @@ public class ProviderControllerTests(ProductServiceWebApplicationFactory factory
         int pageSize)
     {
         //Arrange
-        await InitializeAsync();
         var providers = new[]
         {
             TestDataHelper.CreateProviderEntity(),
@@ -149,7 +148,6 @@ public class ProviderControllerTests(ProductServiceWebApplicationFactory factory
         string name)
     {
         //Arrange
-        await InitializeAsync();
         var products = new[]
         {
             TestDataHelper.CreateProviderEntity(providerName: "chel"),
@@ -188,7 +186,6 @@ public class ProviderControllerTests(ProductServiceWebApplicationFactory factory
         int pageSize)
     {
         //Arrange
-        await InitializeAsync();
         var products = new[]
         {
             TestDataHelper.CreateProviderEntity(),
