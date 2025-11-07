@@ -5,6 +5,5 @@ namespace ProductService.DAL.Interfaces.Repositories;
 
 public interface IProductRepository : IRepository<Product>
 {
-    IQueryable<Product> GetPaged(PaginationParams paginationParams, 
-        ProductFilter filter);
+    new Task<Product?> GetByIdAsync(Guid id, CancellationToken token);
 }

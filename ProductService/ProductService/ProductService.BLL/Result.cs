@@ -1,7 +1,10 @@
-﻿namespace ProductService.BLL;
+﻿using System.Text.Json.Serialization;
+
+namespace ProductService.BLL;
 
 public record Result
 {
+    public Result() { }
     protected Result(bool isSuccess, CustomError? error)
     {
         IsSuccess = isSuccess;
@@ -16,7 +19,8 @@ public record Result
 
 public record Result<T> : Result
 {
-    public T? Value { get; }
+    public T? Value { get; init; }
     public Result(T value) : base(true, null) => Value = value;
     public Result(CustomError error) : base(false, error) { }
+    public Result() { }
 }

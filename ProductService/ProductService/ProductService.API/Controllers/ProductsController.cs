@@ -54,6 +54,7 @@ public class ProductsController(IProductService productService) : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Consumes("multipart/form-data")]
     public async Task<Result> Update(Guid id, [FromForm]UpdateProductDto dto, CancellationToken token)
     {
         var response = await productService.UpdateProductAsync(id, dto.Adapt<ProductModel>(), token);

@@ -2,8 +2,8 @@
 using NSubstitute;
 using ProductService.BLL.Interfaces.Services;
 using ProductService.BLL.Services;
-using ProductService.DAL.Entities;
 using ProductService.DAL.Interfaces.Repositories;
+using ProductService.DAL.Repositories;
 
 namespace UnitTests;
 
@@ -11,7 +11,7 @@ public class Mocks
 {
     protected readonly ILogger<ProductService.BLL.Services.ProductService> _productServiceLogger;
     protected readonly ILogger<ProviderService> _providerServiceLogger;
-    protected readonly IRepository<Product> _productRepository;
+    protected readonly IProductRepository _productRepository;
     protected readonly IProviderRepository _providerRepository;
     protected readonly IUnitOfWork _unitOfWork;
     protected readonly IProductService _productService;
@@ -19,7 +19,7 @@ public class Mocks
     
     protected Mocks()
     {
-        _productRepository = Substitute.For<IRepository<Product>>();
+        _productRepository = Substitute.For<IProductRepository>();
         _providerRepository = Substitute.For<IProviderRepository>();
         _unitOfWork = Substitute.For<IUnitOfWork>();
         _unitOfWork.Products.Returns(_productRepository);
