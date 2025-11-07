@@ -5,34 +5,28 @@ using ProductService.DAL;
 
 namespace ProductService.IntegrationTests;
 
-public class BaseTest(ProductServiceWebApplicationFactory factory)
-    : IClassFixture<ProductServiceWebApplicationFactory>
+public class BaseTest
+    : IClassFixture<ProductServiceWebApplicationFactory>, IAsyncLifetime
 {
-    protected readonly ProductServiceWebApplicationFactory Factory = factory;
+    protected readonly ProductServiceWebApplicationFactory Factory;
+    private readonly IServiceScope Scope;
+    private readonly MikeBerriesDBContext DbContext;
+    public BaseTest(ProductServiceWebApplicationFactory factory)
+    {
+        Factory = factory;
+        Scope = Factory.Services.CreateScope();
+        DbContext = Scope.ServiceProvider.GetRequiredService<MikeBerriesDBContext>();
+    }
     protected async Task<TEntity> Add<TEntity>(TEntity entity) where TEntity : class
     {
-        using var scope = Factory.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<MikeBerriesDBContext>();
-        dbContext.Add(entity);
-        await dbContext.SaveChangesAsync();
+        DbContext.Add(entity);
+        await DbContext.SaveChangesAsync();
         return entity;
-    }
-    public Task InitializeAsync()
-    {
-        using var scope = Factory.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<MikeBerriesDBContext>();
-
-        dbContext.Database.EnsureDeleted();
-        dbContext.Database.EnsureCreated();
-
-        return Task.CompletedTask;
     }
     protected async Task AddRange<TEntity>(IEnumerable<TEntity> range) where TEntity : class
     {
-        using var scope = Factory.Services.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<MikeBerriesDBContext>();
-        dbContext.AddRange(range);
-        await dbContext.SaveChangesAsync();
+        DbContext.AddRange(range);
+        await DbContext.SaveChangesAsync();
     }
     protected static async Task<Result?> DeserializeResponse(HttpResponseMessage response)
     {
@@ -45,5 +39,19 @@ public class BaseTest(ProductServiceWebApplicationFactory factory)
         var serializedContent = await response.Content.ReadAsStringAsync();
         var deserializedResult = JsonConvert.DeserializeObject<Result<T>>(serializedContent);
         return deserializedResult;
+    }
+    public Task InitializeAsync()
+    {
+        DbContext.Database.EnsureCreated();
+
+        return Task.CompletedTask;
+    }
+
+    public Task DisposeAsync()
+    {
+        DbContext.Database.EnsureDeleted();
+        Scope.Dispose();
+
+        return Task.CompletedTask;
     }
 }
