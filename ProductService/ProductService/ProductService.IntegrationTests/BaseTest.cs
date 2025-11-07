@@ -34,13 +34,13 @@ public class BaseTest(ProductServiceWebApplicationFactory factory)
         dbContext.AddRange(range);
         await dbContext.SaveChangesAsync();
     }
-    protected async Task<Result?> DeserializeResponse(HttpResponseMessage response)
+    protected static async Task<Result?> DeserializeResponse(HttpResponseMessage response)
     {
         var serializedContent = await response.Content.ReadAsStringAsync();
         var deserializedResult = JsonConvert.DeserializeObject<Result>(serializedContent);
         return deserializedResult;
     }
-    protected async Task<Result<T>?> DeserializeResponseTo<T>(HttpResponseMessage response)
+    protected static async Task<Result<T>?> DeserializeResponseTo<T>(HttpResponseMessage response)
     {
         var serializedContent = await response.Content.ReadAsStringAsync();
         var deserializedResult = JsonConvert.DeserializeObject<Result<T>>(serializedContent);

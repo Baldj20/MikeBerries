@@ -21,13 +21,13 @@ public class ProductServiceWebApplicationFactory : WebApplicationFactory<Program
                 d => d.ServiceType ==
                     typeof(IDbContextOptionsConfiguration<MikeBerriesDBContext>));
 
-            services.Remove(dbContextDescriptor);
+            if (dbContextDescriptor is not null) services.Remove(dbContextDescriptor);
 
             var dbConnectionDescriptor = services.FirstOrDefault(
                 d => d.ServiceType ==
                     typeof(DbConnection));
 
-            services.Remove(dbConnectionDescriptor);
+            if (dbConnectionDescriptor is not null) services.Remove(dbConnectionDescriptor);
 
             services.AddDbContext<MikeBerriesDBContext>(options =>
             {
