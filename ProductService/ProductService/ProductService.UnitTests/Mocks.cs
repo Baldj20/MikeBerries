@@ -3,7 +3,6 @@ using NSubstitute;
 using ProductService.BLL.Interfaces.Services;
 using ProductService.BLL.Services;
 using ProductService.DAL.Interfaces.Repositories;
-using ProductService.DAL.Repositories;
 
 namespace UnitTests;
 

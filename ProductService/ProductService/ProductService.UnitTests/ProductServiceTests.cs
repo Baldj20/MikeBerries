@@ -8,7 +8,6 @@ using ProductService.DAL.Entities;
 using ProductService.DAL.Filters;
 using ProductService.UnitTests;
 using Shouldly;
-using Xunit;
 
 namespace UnitTests;
 
