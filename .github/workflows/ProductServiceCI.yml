@@ -15,7 +15,7 @@ env:
   SONAR_PROJECT_KEY: "Baldj20_MikeBerries"
   SONAR_ORGANIZATION: "baldj20"
   SONAR_PROJECT_NAME: "ProductService"
-  SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs,**/Dockerfile,**/Migrations/**,**/Controllers/**,**/Repositories/**,**/ProductService.BLL/Configurations/**,**/Result.cs"
+  SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs,**/Dockerfile,**/Migrations/**,**/ApiExtensions.cs,**/MikeBerriesDBContext.cs,**/Controllers/**,**/Repositories/**,**/Configurations/**,**/Result.cs"
 
   BUILDED_TESTS_PATH: "./ProductService/ProductService/ProductService.UnitTests/bin/Debug/net8.0/ProductService.UnitTests.dll"
   TEST_PROJECT_PATH: "./ProductService/ProductService/ProductService.UnitTests/ProductService.UnitTests.csproj"
