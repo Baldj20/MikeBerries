@@ -12,8 +12,8 @@ using ProductService.DAL;
 namespace ProductService.DAL.Migrations
 {
     [DbContext(typeof(MikeBerriesDBContext))]
-    [Migration("20251008093719_TestMigration")]
-    partial class TestMigration
+    [Migration("20251111134524_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,7 +32,6 @@ namespace ProductService.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal>("Price")

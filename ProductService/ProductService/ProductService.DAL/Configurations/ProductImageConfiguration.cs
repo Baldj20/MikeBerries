@@ -12,6 +12,7 @@ internal class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage
                .WithMany(p => p.Images)
                .HasForeignKey(i => i.ProductId);
 
-        builder.Property(i => i.Url);
+        builder.Property(i => i.Url)
+               .IsRequired();
     }
 }

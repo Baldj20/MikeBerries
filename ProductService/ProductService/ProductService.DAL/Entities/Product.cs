@@ -6,6 +6,6 @@ public class Product : BaseEntity
     public string? Description { get; set; }
     public required decimal Price { get; set; }
     public Guid ProviderId { get; set; }
-    public required List<ProductImage> Images { get; set; }
+    public required List<ProductImage> Images { get; set; } = new();
     public required Provider Provider { get; set; }
 }

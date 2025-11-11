@@ -12,9 +12,10 @@ internal class ProviderConfiguration : IEntityTypeConfiguration<Provider>
                .WithOne(prod => prod.Provider)
                .HasForeignKey(prod => prod.ProviderId);
 
-        builder.Property(p => p.Name);
+        builder.Property(p => p.Name)
+               .IsRequired();
 
-        builder.HasIndex(p => p.Email)
-               .IsUnique();
+        builder.Property(p => p.Email)
+               .IsRequired();
     }
 }

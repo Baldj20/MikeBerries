@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ProductService.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -29,7 +29,8 @@ namespace ProductService.DAL.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     ProviderId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
@@ -72,12 +73,6 @@ namespace ProductService.DAL.Migrations
                 name: "IX_Products_ProviderId",
                 table: "Products",
                 column: "ProviderId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Providers_Email",
-                table: "Providers",
-                column: "Email",
-                unique: true);
         }
 
         /// <inheritdoc />

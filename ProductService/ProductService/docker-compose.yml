@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - ConnectionStrings__DefaultConnection=Host=localhost;Port=5432;Database=MikeBerriesDB;Username=mike;Password=mikemikemike
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=MikeBerriesDB;Username=mike;Password=mikemikemike
     depends_on:
       - db
   db:
@@ -15,8 +15,8 @@ services:
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: admin
+      POSTGRES_USER: mike
+      POSTGRES_PASSWORD: mikemikemike
       POSTGRES_DB: MikeBerriesDB
     volumes:
       - pgdata:/var/lib/postgresql/data
