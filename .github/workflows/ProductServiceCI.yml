@@ -18,7 +18,7 @@ env:
   SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs,**/Dockerfile,**/Migrations/**,**/Controllers/**,**/Repositories/**,**/ProductService.BLL/Configurations/**,**/Result.cs"
 
   BUILDED_TESTS_PATH: "./ProductService/ProductService/ProductServiceTests/bin/Debug/net8.0/ProductService.UnitTests.dll"
-  TEST_PROJECT_PATH: "./ProductService/ProductService/ProductServiceTests/ProductService.UnitTests.csproj"
+  TEST_PROJECT_PATH: "./ProductService/ProductService/ProductService.UnitTests/ProductService.UnitTests.csproj"
 
   SOLUTION_PATH: "./ProductService/ProductService/ProductService.sln"
 
