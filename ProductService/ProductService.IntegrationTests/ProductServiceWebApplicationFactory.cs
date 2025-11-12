@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using ProductService.API;
 using ProductService.DAL;
-using System.Data.Common;
 
 namespace ProductService.IntegrationTests;
 
@@ -15,24 +14,24 @@ public class ProductServiceWebApplicationFactory : WebApplicationFactory<Program
     private readonly InMemoryDatabaseRoot _root = new();
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseEnvironment("IntegrationTesting");
+
         builder.ConfigureServices(services =>
         {
-            var dbContextDescriptor = services.FirstOrDefault(
-                d => d.ServiceType ==
-                    typeof(IDbContextOptionsConfiguration<MikeBerriesDBContext>));
+            var descriptorsToRemove = services.Where(d =>
+                d.ServiceType.Name.Contains("DbContextOptions")           
+            ).ToList();
 
-            if (dbContextDescriptor is not null) services.Remove(dbContextDescriptor);
-
-            var dbConnectionDescriptor = services.FirstOrDefault(
-                d => d.ServiceType ==
-                    typeof(DbConnection));
-
-            if (dbConnectionDescriptor is not null) services.Remove(dbConnectionDescriptor);
+            foreach (var descriptor in descriptorsToRemove)
+            {
+                services.Remove(descriptor);
+            }
 
             services.AddDbContext<MikeBerriesDBContext>(options =>
             {
                 options.UseInMemoryDatabase("TestDatabase", _root);
-            });
+            });          
         });
     }
 }
+
