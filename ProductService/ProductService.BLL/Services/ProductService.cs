@@ -48,11 +48,11 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
             logger.LogWarning(LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND, 
                 typeof(Product).Name);
 
+            var errorMessage = LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND
+                .Replace("{ResourceName}", typeof(Product).Name);
+
             return Result
-                .Failure(CustomError.ResourceNotFound(
-                    string.Format(
-                        LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND, 
-                        typeof(Product).Name)));
+                .Failure(CustomError.ResourceNotFound(errorMessage));
         }
     }
 
@@ -72,10 +72,13 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         {
             logger.LogWarning(LoggingConstants.RESOURCE_NOT_FOUND, typeof(Product).Name, id);
 
-            return new Result<ProductModel>(CustomError.ResourceNotFound(
-                string.Format(LoggingConstants.RESOURCE_NOT_FOUND,
-                    typeof(Product).Name, 
-                    id)));
+            var errorMessage = LoggingConstants.RESOURCE_NOT_FOUND
+                .Replace("{ResourceName}", typeof(Product).Name);
+
+            errorMessage = errorMessage
+                .Replace("{ResourceId}", id.ToString());
+
+            return new Result<ProductModel>(CustomError.ResourceNotFound(errorMessage));
         }
     }
 
@@ -100,10 +103,11 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
             logger.LogWarning(LoggingConstants.RESOURCES_FILTERED_NOT_FOUND,
                 typeof(Product).Name);
 
+            var errorMessage = LoggingConstants.RESOURCES_FILTERED_NOT_FOUND
+                .Replace("{ResourceName}", typeof(Product).Name);
+
             return new Result<List<ProductModel>>(CustomError
-                .ResourceNotFound(string.Format(
-                    LoggingConstants.RESOURCES_FILTERED_NOT_FOUND, 
-                    typeof(Product).Name)));
+                .ResourceNotFound(errorMessage));
         }
     }
 
@@ -116,10 +120,10 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
             logger.LogWarning(LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND, 
                 typeof(Product).Name);
 
-            return Result.Failure(CustomError.ResourceNotFound(
-                string.Format(
-                    LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND, 
-                    typeof(Product).Name)));
+            var errorMessage = LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND
+                .Replace("{ResourceName}", typeof(Product).Name);
+
+            return Result.Failure(CustomError.ResourceNotFound(errorMessage));
         }
         else
         {

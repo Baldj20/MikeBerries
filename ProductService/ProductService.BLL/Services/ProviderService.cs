@@ -48,10 +48,11 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
             logger.LogWarning(LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND, 
                 typeof(Provider).Name);
 
+            var errorMessage = LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND
+                .Replace("{ResourceName}", typeof(Provider).Name);
+
             return Result
-                .Failure(CustomError.ResourceNotFound(string.Format(
-                    LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND, 
-                    typeof(Provider).Name)));
+                .Failure(CustomError.ResourceNotFound(errorMessage));
         }
     }
 
@@ -73,11 +74,13 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
                 typeof(Provider).Name,
                 id);
 
-            return new Result<ProviderModel>(CustomError.ResourceNotFound(
-                string.Format(
-                    LoggingConstants.RESOURCE_NOT_FOUND,
-                    typeof(Provider).Name,
-                    id)));
+            var errorMessage = LoggingConstants.RESOURCE_NOT_FOUND
+                .Replace("{ResourceName}", typeof(Provider).Name);
+
+            errorMessage = errorMessage
+                .Replace("{ResourceId}", id.ToString());
+
+            return new Result<ProviderModel>(CustomError.ResourceNotFound(errorMessage));
         }
     }
 
@@ -102,10 +105,11 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
             logger.LogWarning(LoggingConstants.RESOURCES_FILTERED_NOT_FOUND,
                 typeof(Provider).Name);
 
+            var errorMessage = LoggingConstants.RESOURCES_FILTERED_NOT_FOUND
+                .Replace("{ResourceName}", typeof(Provider).Name);
+
             return new Result<List<ProviderModel>>(CustomError
-                .ResourceNotFound(string.Format(
-                    LoggingConstants.RESOURCES_FILTERED_NOT_FOUND,
-                    typeof(Provider).Name)));
+                .ResourceNotFound(errorMessage));
         }    
     }
 
@@ -118,9 +122,10 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
             logger.LogWarning(LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND, 
                 typeof(Provider).Name);
 
-            return Result.Failure(CustomError.ResourceNotFound(string.Format(
-                LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND,
-                typeof(Provider).Name)));
+            var errorMessage = LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND
+                .Replace("{ResourceName}", typeof(Provider).Name);
+
+            return Result.Failure(CustomError.ResourceNotFound(errorMessage));
         }
         else
         {
