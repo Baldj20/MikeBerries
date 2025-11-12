@@ -63,7 +63,9 @@ public class ProviderServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(Result
-                .Failure(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_TO_DELETE_NOT_FOUND)));
+                .Failure(CustomError.ResourceNotFound(string.Format(
+                    LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND, 
+                    typeof(Provider).Name))));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -101,7 +103,10 @@ public class ProviderServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(new Result<ProviderModel>(CustomError
-            .ResourceNotFound(LoggingConstants<Provider>.RESOURCE_NOT_FOUND)));
+            .ResourceNotFound(string.Format(
+                LoggingConstants.RESOURCE_NOT_FOUND, 
+                typeof(Provider).Name,
+                id))));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -139,7 +144,9 @@ public class ProviderServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(Result
-            .Failure(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_TO_UPDATE_NOT_FOUND)));
+            .Failure(CustomError.ResourceNotFound(string.Format(
+                LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND, 
+                typeof(Provider).Name))));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -182,7 +189,9 @@ public class ProviderServiceTests : Mocks
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(
             new Result<List<ProviderModel>>(CustomError
-                .ResourceNotFound(LoggingConstants<Provider>.RESOURCES_FILTERED_NOT_FOUND)));
+                .ResourceNotFound(string.Format(
+                    LoggingConstants.RESOURCES_FILTERED_NOT_FOUND, 
+                    typeof(Provider).Name))));
         _providerRepository.Received(1).GetPaged(
             Arg.Any<PaginationParams>(),
             Arg.Any<ProviderFilter>());

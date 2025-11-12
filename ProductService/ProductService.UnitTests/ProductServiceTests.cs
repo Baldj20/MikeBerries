@@ -67,7 +67,10 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(Result
-                .Failure(CustomError.ResourceNotFound(LoggingConstants<Product>.RESOURCE_TO_DELETE_NOT_FOUND)));
+                .Failure(CustomError.ResourceNotFound(string.Format(
+                    LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND, 
+                    typeof(Product).Name,
+                    id))));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -105,7 +108,10 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(new Result<ProductModel>(CustomError
-            .ResourceNotFound(LoggingConstants<Product>.RESOURCE_NOT_FOUND)));
+            .ResourceNotFound(string.Format(
+            LoggingConstants.RESOURCE_NOT_FOUND,
+            typeof(Product).Name,
+            id))));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -156,7 +162,9 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(Result
-            .Failure(CustomError.ResourceNotFound(LoggingConstants<Product>.RESOURCE_TO_UPDATE_NOT_FOUND)));
+            .Failure(CustomError.ResourceNotFound(string.Format(
+                LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND,
+                typeof(Product).Name))));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);      
@@ -199,7 +207,9 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(new Result<List<ProductModel>>(CustomError
-                .ResourceNotFound(LoggingConstants<Product>.RESOURCES_FILTERED_NOT_FOUND)));
+                .ResourceNotFound(string.Format(
+                    LoggingConstants.RESOURCES_FILTERED_NOT_FOUND, 
+                    typeof(Product).Name))));
         _productRepository.Received(1).GetPaged(
             Arg.Any<PaginationParams>(),
             Arg.Any<ProductFilter>());

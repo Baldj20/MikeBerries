@@ -21,7 +21,7 @@ public class Repository<T>(MikeBerriesDBContext context) : PagedRepository<T>(co
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken token)
     {
         var entity = await Context.Set<T>().Where(e => e.Id == id)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(token);
 
         return entity;
     }

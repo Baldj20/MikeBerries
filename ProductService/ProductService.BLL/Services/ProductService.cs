@@ -20,7 +20,9 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
         await unitOfWork.SaveChangesAsync(token);
 
-        logger.LogInformation(LoggingConstants<Product>.RESOURCE_ADDED, product.Id);
+        logger.LogInformation(LoggingConstants.RESOURCE_ADDED, 
+            typeof(Product).Name, 
+            product.Id);
 
         return Result.Success();
     }
@@ -35,16 +37,22 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
             await unitOfWork.SaveChangesAsync(token);
 
-            logger.LogInformation(LoggingConstants<Product>.RESOURCE_DELETED, id);
+            logger.LogInformation(LoggingConstants.RESOURCE_DELETED, 
+                typeof(Product).Name, 
+                id);
 
             return Result.Success();
         }
         else
         {
-            logger.LogWarning(LoggingConstants<Product>.RESOURCE_TO_DELETE_NOT_FOUND);
+            logger.LogWarning(LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND, 
+                typeof(Product).Name);
 
             return Result
-                .Failure(CustomError.ResourceNotFound(LoggingConstants<Product>.RESOURCE_TO_DELETE_NOT_FOUND));
+                .Failure(CustomError.ResourceNotFound(
+                    string.Format(
+                        LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND, 
+                        typeof(Product).Name)));
         }
     }
 
@@ -54,15 +62,20 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
         if (product is not null)
         {
-            logger.LogInformation(LoggingConstants<Product>.RESOURCE_RETURNED, id);
+            logger.LogInformation(LoggingConstants.RESOURCE_RETURNED, 
+                typeof(Product).Name, 
+                id);
 
             return new Result<ProductModel>(product.Adapt<ProductModel>());
         }
         else
         {
-            logger.LogWarning(LoggingConstants<Product>.RESOURCE_NOT_FOUND);
+            logger.LogWarning(LoggingConstants.RESOURCE_NOT_FOUND, typeof(Product).Name, id);
 
-            return new Result<ProductModel>(CustomError.ResourceNotFound(LoggingConstants<Product>.RESOURCE_NOT_FOUND));
+            return new Result<ProductModel>(CustomError.ResourceNotFound(
+                string.Format(LoggingConstants.RESOURCE_NOT_FOUND,
+                    typeof(Product).Name, 
+                    id)));
         }
     }
 
@@ -75,17 +88,22 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         {
             foreach (var item in result)
             {
-                logger.LogInformation(LoggingConstants<Product>.RESOURCE_RETURNED, item.Id);
+                logger.LogInformation(LoggingConstants.RESOURCE_RETURNED, 
+                    typeof(Product).Name, 
+                    item.Id);
             }
 
             return new Result<List<ProductModel>>(result.Adapt<List<ProductModel>>());
         }
         else
         {
-            logger.LogWarning(LoggingConstants<Product>.RESOURCES_FILTERED_NOT_FOUND);
+            logger.LogWarning(LoggingConstants.RESOURCES_FILTERED_NOT_FOUND,
+                typeof(Product).Name);
 
             return new Result<List<ProductModel>>(CustomError
-                .ResourceNotFound(LoggingConstants<Product>.RESOURCES_FILTERED_NOT_FOUND));
+                .ResourceNotFound(string.Format(
+                    LoggingConstants.RESOURCES_FILTERED_NOT_FOUND, 
+                    typeof(Product).Name)));
         }
     }
 
@@ -95,9 +113,13 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
         if (product is null)
         {
-            logger.LogWarning(LoggingConstants<Product>.RESOURCE_TO_UPDATE_NOT_FOUND);
+            logger.LogWarning(LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND, 
+                typeof(Product).Name);
 
-            return Result.Failure(CustomError.ResourceNotFound(LoggingConstants<Product>.RESOURCE_TO_UPDATE_NOT_FOUND));
+            return Result.Failure(CustomError.ResourceNotFound(
+                string.Format(
+                    LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND, 
+                    typeof(Product).Name)));
         }
         else
         {
@@ -105,7 +127,9 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
             await unitOfWork.SaveChangesAsync(token);
 
-            logger.LogInformation(LoggingConstants<Product>.RESOURCE_UPDATED, id);
+            logger.LogInformation(LoggingConstants.RESOURCE_UPDATED, 
+                typeof(Product).Name, 
+                id);
 
             return Result.Success();
         }       

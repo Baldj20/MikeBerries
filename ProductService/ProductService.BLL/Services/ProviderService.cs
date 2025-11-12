@@ -20,7 +20,9 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
 
         await unitOfWork.SaveChangesAsync(token);
 
-        logger.LogInformation(LoggingConstants<Provider>.RESOURCE_ADDED, provider.Id);
+        logger.LogInformation(LoggingConstants.RESOURCE_ADDED, 
+            typeof(Provider).Name, 
+            provider.Id);
 
         return Result.Success();
     }
@@ -35,16 +37,21 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
 
             await unitOfWork.SaveChangesAsync(token);
 
-            logger.LogInformation(LoggingConstants<Provider>.RESOURCE_DELETED, id);
+            logger.LogInformation(LoggingConstants.RESOURCE_DELETED, 
+                typeof(Provider).Name, 
+                id);
 
             return Result.Success();
         }
         else
         {
-            logger.LogWarning(LoggingConstants<Provider>.RESOURCE_TO_DELETE_NOT_FOUND);
+            logger.LogWarning(LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND, 
+                typeof(Provider).Name);
 
             return Result
-                .Failure(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_TO_DELETE_NOT_FOUND));
+                .Failure(CustomError.ResourceNotFound(string.Format(
+                    LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND, 
+                    typeof(Provider).Name)));
         }
     }
 
@@ -54,15 +61,23 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
 
         if (provider is not null)
         {
-            logger.LogInformation(LoggingConstants<Provider>.RESOURCE_RETURNED, id);
+            logger.LogInformation(LoggingConstants.RESOURCE_RETURNED, 
+                typeof(Provider).Name,
+                id);
 
             return new Result<ProviderModel>(provider.Adapt<ProviderModel>());
         }
         else
         {
-            logger.LogWarning(LoggingConstants<Provider>.RESOURCE_NOT_FOUND);
+            logger.LogWarning(LoggingConstants.RESOURCE_NOT_FOUND, 
+                typeof(Provider).Name,
+                id);
 
-            return new Result<ProviderModel>(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_NOT_FOUND));
+            return new Result<ProviderModel>(CustomError.ResourceNotFound(
+                string.Format(
+                    LoggingConstants.RESOURCE_NOT_FOUND,
+                    typeof(Provider).Name,
+                    id)));
         }
     }
 
@@ -75,17 +90,22 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
         {
             foreach (var item in result)
             {
-                logger.LogInformation(LoggingConstants<Provider>.RESOURCE_RETURNED, item.Id);
+                logger.LogInformation(LoggingConstants.RESOURCE_RETURNED, 
+                    typeof(Provider).Name,
+                    item.Id);
             }
 
             return new Result<List<ProviderModel>>(result.Adapt<List<ProviderModel>>());
         }
         else
         {
-            logger.LogWarning(LoggingConstants<Provider>.RESOURCES_FILTERED_NOT_FOUND);
+            logger.LogWarning(LoggingConstants.RESOURCES_FILTERED_NOT_FOUND,
+                typeof(Provider).Name);
 
             return new Result<List<ProviderModel>>(CustomError
-                .ResourceNotFound(LoggingConstants<Provider>.RESOURCES_FILTERED_NOT_FOUND));
+                .ResourceNotFound(string.Format(
+                    LoggingConstants.RESOURCES_FILTERED_NOT_FOUND,
+                    typeof(Provider).Name)));
         }    
     }
 
@@ -95,9 +115,12 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
 
         if (provider is null)
         {
-            logger.LogWarning(LoggingConstants<Provider>.RESOURCE_TO_UPDATE_NOT_FOUND);
+            logger.LogWarning(LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND, 
+                typeof(Provider).Name);
 
-            return Result.Failure(CustomError.ResourceNotFound(LoggingConstants<Provider>.RESOURCE_TO_UPDATE_NOT_FOUND));
+            return Result.Failure(CustomError.ResourceNotFound(string.Format(
+                LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND,
+                typeof(Provider).Name)));
         }
         else
         {
@@ -105,7 +128,9 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
 
             await unitOfWork.SaveChangesAsync(token);
 
-            logger.LogInformation(LoggingConstants<Provider>.RESOURCE_UPDATED, id);
+            logger.LogInformation(LoggingConstants.RESOURCE_UPDATED,
+                typeof(Provider).Name,
+                id);
 
             return Result.Success();
         }
