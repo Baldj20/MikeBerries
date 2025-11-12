@@ -17,8 +17,11 @@ env:
   SONAR_PROJECT_NAME: "ProductService"
   SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs,**/Dockerfile,**/Migrations/**,**/ApiExtensions.cs,**/MikeBerriesDBContext.cs,**/Controllers/**,**/Repositories/**,**/Configurations/**,**/Result.cs"
 
-  BUILT_TESTS_PATH: "./ProductService/ProductService.UnitTests/bin/Debug/net8.0/ProductService.UnitTests.dll"
-  TEST_PROJECT_PATH: "./ProductService/ProductService.UnitTests/ProductService.UnitTests.csproj"
+  BUILT_UNIT_TESTS_PATH: "./ProductService/ProductService.UnitTests/bin/Debug/net8.0/ProductService.UnitTests.dll"
+  UNIT_TESTS_PROJECT_PATH: "./ProductService/ProductService.UnitTests/ProductService.UnitTests.csproj"
+
+  BUILT_INTEGRATION_TESTS_PATH: "./ProductService/ProductService.IntegrationTests/bin/Debug/net8.0/ProductService.IntegrationTests.dll"
+  INTEGRATION_TEST_PROJECT_PATH: "./ProductService/ProductService.IntegrationTests/ProductService.IntegrationTests.csproj"
 
   SOLUTION_PATH: "./ProductService/ProductService.sln"
 
@@ -46,16 +49,22 @@ jobs:
             /k:"$SONAR_PROJECT_KEY" \
             /o:"$SONAR_ORGANIZATION" \
             /d:sonar.token="$SONAR_TOKEN" \
-            /d:sonar.cs.opencover.reportsPaths=coverage.xml \
+            /d:sonar.cs.opencover.reportsPaths=coverage_unit_tests.xml,coverage_integration_tests.xml \
             /d:sonar.coverage.exclusions=$SONAR_EXCLUDE_FROM_COVERAGE
 
           dotnet build "$SOLUTION_PATH" --no-incremental
 
-          coverlet "$BUILT_TESTS_PATH" \
+          coverlet "$BUILT_UNIT_TESTS_PATH" \
             --target "dotnet" \
-            --targetargs "test \"$TEST_PROJECT_PATH\" --no-build" \
+            --targetargs "test \"$UNIT_TESTS_PROJECT_PATH\" --no-build" \
             -f opencover \
-            -o "coverage.xml"
+            -o "coverage_unit_tests.xml"
+
+          coverlet "$BUILT_INTEGRATION_TESTS_PATH" \
+            --target "dotnet" \
+            --targetargs "test \"$INTEGRATION_TEST_PROJECT_PATH\" --no-build" \
+            -f opencover \
+            -o "coverage_integration_tests.xml"
 
           dotnet sonarscanner end \
             /d:sonar.token="$SONAR_TOKEN"
