@@ -17,10 +17,10 @@ env:
   SONAR_PROJECT_NAME: "ProductService"
   SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs,**/Dockerfile,**/Migrations/**,**/ApiExtensions.cs,**/MikeBerriesDBContext.cs,**/Controllers/**,**/Repositories/**,**/Configurations/**,**/Result.cs"
 
-  BUILDED_TESTS_PATH: "./ProductService/ProductService/ProductService.UnitTests/bin/Debug/net8.0/ProductService.UnitTests.dll"
-  TEST_PROJECT_PATH: "./ProductService/ProductService/ProductService.UnitTests/ProductService.UnitTests.csproj"
+  BUILT_TESTS_PATH: "./ProductService/ProductService.UnitTests/bin/Debug/net8.0/ProductService.UnitTests.dll"
+  TEST_PROJECT_PATH: "./ProductService/ProductService.UnitTests/ProductService.UnitTests.csproj"
 
-  SOLUTION_PATH: "./ProductService/ProductService/ProductService.sln"
+  SOLUTION_PATH: "./ProductService/ProductService.sln"
 
 jobs:
   build:
@@ -51,7 +51,7 @@ jobs:
 
           dotnet build "$SOLUTION_PATH" --no-incremental
 
-          coverlet "$BUILDED_TESTS_PATH" \
+          coverlet "$BUILT_TESTS_PATH" \
             --target "dotnet" \
             --targetargs "test \"$TEST_PROJECT_PATH\" --no-build" \
             -f opencover \
