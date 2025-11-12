@@ -1,9 +1,10 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 COPY . .
+WORKDIR /src/ProductService
 RUN dotnet restore ProductService.sln
 COPY . .
-WORKDIR /src/ProductService.API
+WORKDIR /src/ProductService/ProductService.API
 RUN dotnet build "ProductService.API.csproj" -c Release -o /build
 RUN dotnet publish "ProductService.API.csproj" -c Release -o /app
 
