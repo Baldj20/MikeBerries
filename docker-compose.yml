@@ -1,8 +1,8 @@
 services:
   product_api:
     build:
-      context: .
-      dockerfile: ProductService/Dockerfile
+      context: ./ProductService
+      dockerfile: Dockerfile
     container_name: product_service_api
     ports:
       - "8080:8080"
