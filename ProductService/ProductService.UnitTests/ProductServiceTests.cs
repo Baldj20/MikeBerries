@@ -60,6 +60,8 @@ public class ProductServiceTests : Mocks
         //Arrange
         var id = Guid.NewGuid();
         _unitOfWork.Products.GetByIdAsync(id, default).Returns((Product)null!);
+        var errorMessage = LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND
+                .Replace("{ResourceName}", typeof(Product).Name);
 
         //Act
         var response = await _productService.DeleteProductAsync(id, default);
@@ -67,10 +69,7 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(Result
-                .Failure(CustomError.ResourceNotFound(string.Format(
-                    LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND, 
-                    typeof(Product).Name,
-                    id))));
+                .Failure(CustomError.ResourceNotFound(errorMessage)));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -101,6 +100,9 @@ public class ProductServiceTests : Mocks
         //Arrange
         var id = Guid.NewGuid();
         _unitOfWork.Products.GetByIdAsync(id, default).Returns((Product)null!);
+        var errorMessage = LoggingConstants.RESOURCE_NOT_FOUND
+                .Replace("{ResourceName}", typeof(Product).Name);
+        errorMessage = errorMessage.Replace("{ResourceId}", id.ToString());
 
         //Act
         var response = await _productService.GetProductByIdAsync(id, default);
@@ -108,10 +110,7 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(new Result<ProductModel>(CustomError
-            .ResourceNotFound(string.Format(
-            LoggingConstants.RESOURCE_NOT_FOUND,
-            typeof(Product).Name,
-            id))));
+            .ResourceNotFound(errorMessage)));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -155,6 +154,8 @@ public class ProductServiceTests : Mocks
         //Arrange
         var id = Guid.NewGuid();
         _productRepository.GetByIdAsync(id, default).Returns((Product)null!);
+        var errorMessage = LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND
+                .Replace("{ResourceName}", typeof(Product).Name);
 
         //Act
         var response = await _productService.UpdateProductAsync(id, productModel, default);
@@ -162,9 +163,7 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(Result
-            .Failure(CustomError.ResourceNotFound(string.Format(
-                LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND,
-                typeof(Product).Name))));
+            .Failure(CustomError.ResourceNotFound(errorMessage)));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);      
@@ -200,6 +199,8 @@ public class ProductServiceTests : Mocks
         //Arrange
         _productRepository.GetPaged(paginationParams, filter)
             .Returns(new List<Product>());
+        var errorMessage = LoggingConstants.RESOURCES_FILTERED_NOT_FOUND
+                .Replace("{ResourceName}", typeof(Product).Name);
 
         //Act
         var response = _productService.GetProducts(paginationParams, filter, default);
@@ -207,9 +208,7 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(new Result<List<ProductModel>>(CustomError
-                .ResourceNotFound(string.Format(
-                    LoggingConstants.RESOURCES_FILTERED_NOT_FOUND, 
-                    typeof(Product).Name))));
+                .ResourceNotFound(errorMessage)));
         _productRepository.Received(1).GetPaged(
             Arg.Any<PaginationParams>(),
             Arg.Any<ProductFilter>());
