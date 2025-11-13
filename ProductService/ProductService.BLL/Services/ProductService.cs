@@ -1,7 +1,7 @@
 ﻿using Mapster;
 using Microsoft.Extensions.Logging;
-using ProductService.BLL.Constants.Logging;
 using ProductService.BLL.Interfaces.Services;
+using ProductService.BLL.Logging;
 using ProductService.BLL.Models;
 using ProductService.DAL;
 using ProductService.DAL.Entities;
@@ -20,9 +20,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
         await unitOfWork.SaveChangesAsync(token);
 
-        logger.LogInformation(LoggingConstants.RESOURCE_ADDED, 
-            typeof(Product).Name, 
-            product.Id);
+        logger.ResourceAdded(typeof(Product).Name, product.Id);
 
         return Result.Success();
     }
@@ -37,16 +35,13 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
             await unitOfWork.SaveChangesAsync(token);
 
-            logger.LogInformation(LoggingConstants.RESOURCE_DELETED, 
-                typeof(Product).Name, 
-                id);
+            logger.ResourceDeleted(typeof(Product).Name, product.Id);
 
             return Result.Success();
         }
         else
         {
-            logger.LogWarning(LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND, 
-                typeof(Product).Name);
+            logger.ResourceToDeleteNotFound(typeof(Product).Name);
 
             return Result
                 .Failure(CustomError.ResourceNotFound<Product>());
@@ -59,15 +54,13 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
         if (product is not null)
         {
-            logger.LogInformation(LoggingConstants.RESOURCE_RETURNED, 
-                typeof(Product).Name, 
-                id);
+            logger.ResourceReturned(typeof(Product).Name, product.Id);
 
             return new Result<ProductModel>(product.Adapt<ProductModel>());
         }
         else
         {
-            logger.LogWarning(LoggingConstants.RESOURCE_NOT_FOUND, typeof(Product).Name, id);
+            logger.ResourceNotFound(typeof(Product).Name, id);
 
             return new Result<ProductModel>(CustomError.ResourceNotFound<Product>());
         }
@@ -82,17 +75,14 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         {
             foreach (var item in result)
             {
-                logger.LogInformation(LoggingConstants.RESOURCE_RETURNED, 
-                    typeof(Product).Name, 
-                    item.Id);
+                logger.ResourceReturned(typeof(Product).Name, item.Id);
             }
 
             return new Result<List<ProductModel>>(result.Adapt<List<ProductModel>>());
         }
         else
         {
-            logger.LogWarning(LoggingConstants.RESOURCES_FILTERED_NOT_FOUND,
-                typeof(Product).Name);
+            logger.FilteredResourcesNotFound(typeof(Product).Name);
 
             return new Result<List<ProductModel>>(CustomError
                 .ResourceNotFound<Product>());
@@ -105,8 +95,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
         if (product is null)
         {
-            logger.LogWarning(LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND, 
-                typeof(Product).Name);
+            logger.ResourceToUpdateNotFound(typeof(Product).Name);
 
             return Result.Failure(CustomError.ResourceNotFound<Product>());
         }
@@ -116,9 +105,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
             await unitOfWork.SaveChangesAsync(token);
 
-            logger.LogInformation(LoggingConstants.RESOURCE_UPDATED, 
-                typeof(Product).Name, 
-                id);
+            logger.ResourceUpdated(typeof(Product).Name, product.Id);
 
             return Result.Success();
         }       
