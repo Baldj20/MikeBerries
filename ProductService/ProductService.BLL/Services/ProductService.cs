@@ -48,11 +48,8 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
             logger.LogWarning(LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND, 
                 typeof(Product).Name);
 
-            var errorMessage = LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND
-                .Replace("{ResourceName}", typeof(Product).Name);
-
             return Result
-                .Failure(CustomError.ResourceNotFound(errorMessage));
+                .Failure(CustomError.ResourceNotFound<Product>());
         }
     }
 
@@ -72,13 +69,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         {
             logger.LogWarning(LoggingConstants.RESOURCE_NOT_FOUND, typeof(Product).Name, id);
 
-            var errorMessage = LoggingConstants.RESOURCE_NOT_FOUND
-                .Replace("{ResourceName}", typeof(Product).Name);
-
-            errorMessage = errorMessage
-                .Replace("{ResourceId}", id.ToString());
-
-            return new Result<ProductModel>(CustomError.ResourceNotFound(errorMessage));
+            return new Result<ProductModel>(CustomError.ResourceNotFound<Product>());
         }
     }
 
@@ -103,11 +94,8 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
             logger.LogWarning(LoggingConstants.RESOURCES_FILTERED_NOT_FOUND,
                 typeof(Product).Name);
 
-            var errorMessage = LoggingConstants.RESOURCES_FILTERED_NOT_FOUND
-                .Replace("{ResourceName}", typeof(Product).Name);
-
             return new Result<List<ProductModel>>(CustomError
-                .ResourceNotFound(errorMessage));
+                .ResourceNotFound<Product>());
         }
     }
 
@@ -120,10 +108,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
             logger.LogWarning(LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND, 
                 typeof(Product).Name);
 
-            var errorMessage = LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND
-                .Replace("{ResourceName}", typeof(Product).Name);
-
-            return Result.Failure(CustomError.ResourceNotFound(errorMessage));
+            return Result.Failure(CustomError.ResourceNotFound<Product>());
         }
         else
         {

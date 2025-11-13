@@ -48,11 +48,8 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
             logger.LogWarning(LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND, 
                 typeof(Provider).Name);
 
-            var errorMessage = LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND
-                .Replace("{ResourceName}", typeof(Provider).Name);
-
             return Result
-                .Failure(CustomError.ResourceNotFound(errorMessage));
+                .Failure(CustomError.ResourceNotFound<Provider>());
         }
     }
 
@@ -74,13 +71,7 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
                 typeof(Provider).Name,
                 id);
 
-            var errorMessage = LoggingConstants.RESOURCE_NOT_FOUND
-                .Replace("{ResourceName}", typeof(Provider).Name);
-
-            errorMessage = errorMessage
-                .Replace("{ResourceId}", id.ToString());
-
-            return new Result<ProviderModel>(CustomError.ResourceNotFound(errorMessage));
+            return new Result<ProviderModel>(CustomError.ResourceNotFound<Provider>());
         }
     }
 
@@ -105,11 +96,8 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
             logger.LogWarning(LoggingConstants.RESOURCES_FILTERED_NOT_FOUND,
                 typeof(Provider).Name);
 
-            var errorMessage = LoggingConstants.RESOURCES_FILTERED_NOT_FOUND
-                .Replace("{ResourceName}", typeof(Provider).Name);
-
             return new Result<List<ProviderModel>>(CustomError
-                .ResourceNotFound(errorMessage));
+                .ResourceNotFound<Provider>());
         }    
     }
 
@@ -125,7 +113,7 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
             var errorMessage = LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND
                 .Replace("{ResourceName}", typeof(Provider).Name);
 
-            return Result.Failure(CustomError.ResourceNotFound(errorMessage));
+            return Result.Failure(CustomError.ResourceNotFound<Provider>());
         }
         else
         {

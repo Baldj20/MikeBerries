@@ -1,7 +1,6 @@
 ﻿using Mapster;
 using NSubstitute;
 using ProductService.BLL;
-using ProductService.BLL.Constants.Logging;
 using ProductService.BLL.Models;
 using ProductService.DAL;
 using ProductService.DAL.Entities;
@@ -56,8 +55,6 @@ public class ProviderServiceTests : Mocks
         //Arrange
         var id = Guid.NewGuid();
         _unitOfWork.Providers.GetByIdAsync(id, default).Returns((Provider)null!);
-        var errorMessage = LoggingConstants.RESOURCE_TO_DELETE_NOT_FOUND
-                .Replace("{ResourceName}", typeof(Provider).Name);
 
         //Act
         var response = await _providerService.DeleteProviderAsync(id, default);
@@ -65,7 +62,7 @@ public class ProviderServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(Result
-                .Failure(CustomError.ResourceNotFound(errorMessage)));
+                .Failure(CustomError.ResourceNotFound<Provider>()));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -96,9 +93,6 @@ public class ProviderServiceTests : Mocks
         //Arrange
         var id = Guid.NewGuid();
         _unitOfWork.Providers.GetByIdAsync(id, default).Returns((Provider)null!);
-        var errorMessage = LoggingConstants.RESOURCE_NOT_FOUND
-                .Replace("{ResourceName}", typeof(Provider).Name);
-        errorMessage = errorMessage.Replace("{ResourceId}", id.ToString());
 
         //Act
         var response = await _providerService.GetProviderByIdAsync(id, default);
@@ -106,7 +100,7 @@ public class ProviderServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(new Result<ProviderModel>(CustomError
-            .ResourceNotFound(errorMessage)));
+            .ResourceNotFound<Provider>()));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -137,8 +131,6 @@ public class ProviderServiceTests : Mocks
         //Arrange
         var id = Guid.NewGuid();
         _providerRepository.GetByIdAsync(id, default).Returns((Provider)null!);
-        var errorMessage = LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND
-                .Replace("{ResourceName}", typeof(Provider).Name);
 
         //Act
         var response = await _providerService.UpdateProviderAsync(id, providerModel, default);
@@ -146,7 +138,7 @@ public class ProviderServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(Result
-            .Failure(CustomError.ResourceNotFound(errorMessage)));
+            .Failure(CustomError.ResourceNotFound<Provider>()));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -181,8 +173,6 @@ public class ProviderServiceTests : Mocks
         //Arrange
         _providerRepository.GetPaged(paginationParams, filter)
             .Returns(new List<Provider>());
-        var errorMessage = LoggingConstants.RESOURCES_FILTERED_NOT_FOUND
-                .Replace("{ResourceName}", typeof(Provider).Name);
 
         //Act
         var response = _providerService.GetProviders(paginationParams, filter, default);
@@ -191,7 +181,7 @@ public class ProviderServiceTests : Mocks
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(
             new Result<List<ProviderModel>>(CustomError
-                .ResourceNotFound(errorMessage)));
+                .ResourceNotFound<Provider>()));
         _providerRepository.Received(1).GetPaged(
             Arg.Any<PaginationParams>(),
             Arg.Any<ProviderFilter>());
