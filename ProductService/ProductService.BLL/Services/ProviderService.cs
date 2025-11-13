@@ -110,9 +110,6 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
             logger.LogWarning(LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND, 
                 typeof(Provider).Name);
 
-            var errorMessage = LoggingConstants.RESOURCE_TO_UPDATE_NOT_FOUND
-                .Replace("{ResourceName}", typeof(Provider).Name);
-
             return Result.Failure(CustomError.ResourceNotFound<Provider>());
         }
         else
