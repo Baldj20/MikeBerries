@@ -1,0 +1,25 @@
+services:
+  product_api:
+    build:
+      context: ./ProductService
+      dockerfile: Dockerfile
+    container_name: product_service_api
+    ports:
+      - "8080:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=${connection_string}
+    depends_on:
+      - db
+  db:
+    image: postgres:16-alpine 
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${postgres_user}
+      POSTGRES_PASSWORD: ${postgres_password}
+      POSTGRES_DB: MikeBerriesDB
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
+    
