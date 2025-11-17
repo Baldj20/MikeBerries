@@ -1,6 +1,9 @@
 using ProductService.API.Configurations;
 using ProductService.BLL.Configurations;
+using ProductService.DAL;
 using ProductService.DAL.Configurations;
+using ProductService.DAL.Interfaces.Repositories;
+using ProductService.DAL.Repositories;
 using Serilog;
 
 namespace ProductService.API;
@@ -20,9 +23,17 @@ public class Program
 
         builder.Configuration.AddUserSecrets<Program>();
 
+        var minioSettings = builder.Configuration.GetSection("Minio").Get<MinioSettings>();
+        if (minioSettings == null)
+            throw new InvalidOperationException("Настройки Minio не найдены. Проверьте User Secrets.");
+        builder.Services.AddSingleton(provider => new MinioStorage(minioSettings));
+        builder.Services.AddScoped<IFileRepository, MinioFileRepository>();
+
         builder.Services.ConfigureDataAccessLayerDependencies(builder.Configuration);
 
         builder.Services.ConfigureBusinessLogicLayerDependencies();
+
+        ApiExtensions.ConfigureMapping();
 
         builder.Services.ConfigureValidators();
 

@@ -1,5 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Mapster;
+using Microsoft.EntityFrameworkCore;
+using ProductService.BLL.DTO;
+using ProductService.BLL.Models;
 using ProductService.DAL;
+using ProductService.DAL.Entities;
 
 namespace ProductService.API;
 
@@ -15,5 +19,44 @@ public static class ApiExtensions
 
             strategy.Execute(context.Database.Migrate);
         }
+    }
+
+    public static void ConfigureMapping()
+    {
+        TypeAdapterConfig<CreateProductDto, ProductModel>.NewConfig()
+            .Ignore(dest => dest.Images)
+            .AfterMapping((dto, model) =>
+            {
+                foreach (var image in dto.Images)
+                {
+                    var imageModel = new ProductImageModel
+                    {
+                        Image = image,
+                        Product = null!
+                    };
+
+                    model.Images.Add(imageModel);
+                }
+            });
+        TypeAdapterConfig<Product, ProductModel>.NewConfig()
+            .Ignore(d => d.Provider.Products)
+            .AfterMapping((entity, model) =>
+            {
+                foreach (var image in entity.Images)
+                {
+                    var imageModel = new ProductImageModel
+                    {
+                        Product = null!,
+                        Url = image.Url,
+                    };
+
+                    model.Images.Add(imageModel);
+                }
+            });
+        TypeAdapterConfig<ProductImage, ProductImageModel>.NewConfig()
+            .Ignore(d => d.Product.Images)
+            .Ignore(d => d.Product.Provider.Products);
+        TypeAdapterConfig<ProductImageModel, ProductImage>.NewConfig()
+            .Ignore(dest => dest.Product);
     }
 }

@@ -14,11 +14,5 @@ public static class BusinessLogicLayerExtension
     {
         services.AddScoped<IProductService, Services.ProductService>();
         services.AddScoped<IProviderService, ProviderService>();
-
-        TypeAdapterConfig<Product, ProductModel>.NewConfig()
-            .Ignore(d => d.Provider.Products);
-        TypeAdapterConfig<ProductImage, ProductImageModel>.NewConfig()
-            .Ignore(d => d.Product.Images)
-            .Ignore(d => d.Product.Provider.Products);
     }
 }

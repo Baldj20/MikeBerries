@@ -15,6 +15,15 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
     public async Task<Result> AddProductAsync(ProductModel productModel, CancellationToken token)
     {
         var product = productModel.Adapt<Product>();
+        var imageModels = productModel.Images;
+
+        for (int i = 0; i < imageModels.Count; i++)
+        {
+            var key = $"products/{product.Id}/{product.Images[i].Id}";
+            using var fileStream = imageModels[i].Image.OpenReadStream();
+            var url = await unitOfWork.Files.UploadFileAsync(key, fileStream);
+            product.Images[i].Url = url;
+        }
 
         await unitOfWork.Products.AddAsync(product, token);
 
