@@ -1,9 +1,11 @@
-﻿namespace ProductService.BLL.DTO;
+﻿using ProductService.API.DTO;
+
+namespace ProductService.BLL.DTO;
 
 public class UpdateProductDto
 {
     public string? Title { get; set; }
     public string? Description { get; set; }
     public required decimal Price { get; set; }
-    public List<UploadProductImageDto> Images { get; set; } = new();
+    public List<UpdateImageDto> Images { get; set; } = new();
 }

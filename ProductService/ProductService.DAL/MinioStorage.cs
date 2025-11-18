@@ -74,5 +74,16 @@ public class MinioStorage
         var response = await _client.GetObjectAsync(_bucketName, key);
         return response.ResponseStream;
     }
+
+    public async Task DeleteFileAsync(string key)
+    {
+        var request = new DeleteObjectRequest
+        {
+            BucketName = _bucketName,
+            Key = key
+        };
+
+        await _client.DeleteObjectAsync(request);
+    }
 }
 

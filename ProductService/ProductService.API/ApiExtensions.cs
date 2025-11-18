@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
+using ProductService.API.DTO;
 using ProductService.BLL.DTO;
 using ProductService.BLL.Models;
 using ProductService.DAL;
@@ -23,6 +24,7 @@ public static class ApiExtensions
 
     public static void ConfigureMapping()
     {
+        TypeAdapterConfig<IFormFile, IFormFile>.NewConfig().MapWith(src => src);
         TypeAdapterConfig<CreateProductDto, ProductModel>.NewConfig()
             .Ignore(dest => dest.Images)
             .AfterMapping((dto, model) =>
@@ -42,17 +44,24 @@ public static class ApiExtensions
             .Ignore(d => d.Provider.Products)
             .AfterMapping((entity, model) =>
             {
-                foreach (var image in entity.Images)
-                {
-                    var imageModel = new ProductImageModel
-                    {
-                        Product = null!,
-                        Url = image.Url,
-                    };
+                //foreach (var image in entity.Images)
+                //{
+                //    var imageModel = new ProductImageModel
+                //    {
+                //        Product = null!,
+                //        Url = image.Url,
+                //    };
 
-                    model.Images.Add(imageModel);
-                }
+                //    model.Images.Add(imageModel);
+                //}
             });
+        //TypeAdapterConfig.GlobalSettings.ForType(typeof(IHeaderDictionary), typeof(IHeaderDictionary));
+        TypeAdapterConfig<UpdateImageDto, UpdateImageModel>.NewConfig();
+        TypeAdapterConfig<UpdateProductDto, UpdateProductModel>.NewConfig();
+        TypeAdapterConfig<UpdateProductModel, Product>.NewConfig()
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.Images);
+
         TypeAdapterConfig<ProductImage, ProductImageModel>.NewConfig()
             .Ignore(d => d.Product.Images)
             .Ignore(d => d.Product.Provider.Products);

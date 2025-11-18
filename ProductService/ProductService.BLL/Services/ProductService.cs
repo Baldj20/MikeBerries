@@ -20,7 +20,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         for (int i = 0; i < imageModels.Count; i++)
         {
             var key = $"products/{product.Id}/{product.Images[i].Id}";
-            using var fileStream = imageModels[i].Image.OpenReadStream();
+            using var fileStream = imageModels[i].Image!.OpenReadStream();
             var url = await unitOfWork.Files.UploadFileAsync(key, fileStream);
             product.Images[i].Url = url;
         }
@@ -78,7 +78,11 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
     public Result<List<ProductModel>> GetProducts(PaginationParams paginationParams, 
         ProductFilter filter, CancellationToken token)
     {
-        var result = unitOfWork.Products.GetPaged(paginationParams, filter);
+        var includes = new List<string>()
+        {
+            "Images"
+        };
+        var result = unitOfWork.Products.GetPaged(paginationParams, filter, includes);
 
         if (result.Count != 0)
         {
@@ -98,7 +102,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         }
     }
 
-    public async Task<Result> UpdateProductAsync(Guid id, ProductModel productModel, CancellationToken token)
+    public async Task<Result> UpdateProductAsync(Guid id, UpdateProductModel productModel, CancellationToken token)
     {
         var product = await unitOfWork.Products.GetByIdAsync(id, token);
 
@@ -111,6 +115,32 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         else
         {
             productModel.Adapt(product);
+
+            foreach (var item in productModel.Images)
+            {
+                if (item.Action is UpdateImageAction.Delete)
+                {
+                    await unitOfWork.Files.DeleteFileAsync(item.Url!);
+
+                    var imageEntity = product.Images.FirstOrDefault(img => img.Url == item.Url);
+                    if (imageEntity != null)
+                        await unitOfWork.Images.Delete(imageEntity);
+                }
+                else if (item.Action is UpdateImageAction.Add)
+                {
+                    var key = $"products/{product.Id}/{Guid.NewGuid()}";//id todo
+                    using var fileStream = item.Image!.OpenReadStream();
+                    var url = await unitOfWork.Files.UploadFileAsync(key, fileStream);
+
+                    var image = new ProductImage
+                    {
+                        Url = url,
+                        Product = product,
+                        ProductId = product.Id
+                    };
+                    await unitOfWork.Images.AddAsync(image, token);
+                }
+            }
 
             await unitOfWork.SaveChangesAsync(token);
 

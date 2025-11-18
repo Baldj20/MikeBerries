@@ -1,4 +1,5 @@
-﻿using ProductService.DAL.Interfaces.Filters;
+﻿using Microsoft.EntityFrameworkCore;
+using ProductService.DAL.Interfaces.Filters;
 using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.DAL.Repositories;
@@ -7,11 +8,16 @@ public class PagedRepository<T>(MikeBerriesDBContext сontext) : IPagedRepositor
 {
     protected MikeBerriesDBContext Context { get; } = сontext;
     public List<T> GetPaged(PaginationParams paginationParams,
-        IFilter<T> filter)
+        IFilter<T> filter, List<string> includes = default!)
     {
         var initialQuery = Context.Set<T>().AsQueryable();
 
         var query = filter.Apply(initialQuery);
+
+        foreach (var include in includes)
+        {
+            query = query.Include(include);
+        }
 
         query = query.Skip((paginationParams.Page - 1) * paginationParams.PageSize)
                      .Take(paginationParams.PageSize);
