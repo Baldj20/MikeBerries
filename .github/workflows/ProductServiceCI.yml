@@ -25,6 +25,11 @@ env:
 
   SOLUTION_PATH: "./ProductService/ProductService.sln"
 
+  Minio__Endpoint: "http://localhost:9000"
+  Minio__AccessKey: "minioadmin"
+  Minio__SecretKey: "minioadmin"
+  Minio__BucketName: "test-bucket"
+
 jobs:
   build:
     runs-on: ubuntu-latest
