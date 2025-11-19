@@ -17,10 +17,12 @@ public class ProductServiceWebApplicationFactory : WebApplicationFactory<Program
     {
         builder.ConfigureAppConfiguration((context, config) =>
         {
+            var testPath = AppContext.BaseDirectory;
+            var configPath = Path.Combine(testPath, "appsettings.IntegrationTests.json");
             config.Sources.Clear();
-            config.AddJsonFile("appsettings.IntegrationTests.json", 
-                optional: false, reloadOnChange: false);
+            config.AddJsonFile(configPath, optional: false, reloadOnChange: false);
         });
+
         builder.UseEnvironment("IntegrationTesting");
 
         builder.ConfigureServices(services =>
