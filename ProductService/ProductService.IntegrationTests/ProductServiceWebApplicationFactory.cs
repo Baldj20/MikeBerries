@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProductService.API;
@@ -14,6 +15,17 @@ public class ProductServiceWebApplicationFactory : WebApplicationFactory<Program
     private readonly InMemoryDatabaseRoot _root = new();
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.ConfigureAppConfiguration((context, config) =>
+        {
+            config.AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                {"Minio:Endpoint", "http://localhost:9000"},
+                {"Minio:AccessKey", "minioadmin"},
+                {"Minio:SecretKey", "minioadmin"},
+                {"Minio:BucketName", "test-bucket"}
+            });
+        });
+
         builder.UseEnvironment("IntegrationTesting");
 
         builder.ConfigureServices(services =>
