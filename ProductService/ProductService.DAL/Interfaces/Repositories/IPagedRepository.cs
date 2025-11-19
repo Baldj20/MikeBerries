@@ -5,5 +5,5 @@ namespace ProductService.DAL.Interfaces.Repositories;
 public interface IPagedRepository<T>
 {
     List<T> GetPaged(PaginationParams paginationParams, 
-        IFilter<T> filter, List<string> includes = default!);
+        IFilter<T> filter);
 }

@@ -78,11 +78,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
     public Result<List<ProductModel>> GetProducts(PaginationParams paginationParams, 
         ProductFilter filter, CancellationToken token)
     {
-        var includes = new List<string>()
-        {
-            "Images"
-        };
-        var result = unitOfWork.Products.GetPaged(paginationParams, filter, includes);
+        var result = unitOfWork.Products.GetPaged(paginationParams, filter);
 
         if (result.Count != 0)
         {
@@ -120,7 +116,11 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
             {
                 if (item.Action is UpdateImageAction.Delete)
                 {
-                    await unitOfWork.Files.DeleteFileAsync(item.Url!);
+                    var uri = new Uri(item.Url!);
+                    var cleanPath = uri.AbsolutePath.TrimStart('/');
+                    var key = cleanPath.Substring(cleanPath.IndexOf('/') + 1);
+
+                    await unitOfWork.Files.DeleteFileAsync(key);
 
                     var imageEntity = product.Images.FirstOrDefault(img => img.Url == item.Url);
                     if (imageEntity != null)
@@ -128,16 +128,18 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
                 }
                 else if (item.Action is UpdateImageAction.Add)
                 {
-                    var key = $"products/{product.Id}/{Guid.NewGuid()}";//id todo
-                    using var fileStream = item.Image!.OpenReadStream();
-                    var url = await unitOfWork.Files.UploadFileAsync(key, fileStream);
-
                     var image = new ProductImage
                     {
-                        Url = url,
+                        Url = "",
                         Product = product,
                         ProductId = product.Id
                     };
+
+                    var key = $"products/{product.Id}/{image.Id}";
+                    using var fileStream = item.Image!.OpenReadStream();
+                    var url = await unitOfWork.Files.UploadFileAsync(key, fileStream);
+                    image.Url = url;
+                    
                     await unitOfWork.Images.AddAsync(image, token);
                 }
             }

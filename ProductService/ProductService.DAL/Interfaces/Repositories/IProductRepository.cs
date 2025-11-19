@@ -3,7 +3,7 @@ using ProductService.DAL.Filters;
 
 namespace ProductService.DAL.Interfaces.Repositories;
 
-public interface IProductRepository : IRepository<Product>
+public interface IProductRepository : IRepository<Product>, IPagedRepository<Product>
 {
     new Task<Product?> GetByIdAsync(Guid id, CancellationToken token);
 }

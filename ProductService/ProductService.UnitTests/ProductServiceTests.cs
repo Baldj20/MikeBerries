@@ -111,9 +111,11 @@ public class ProductServiceTests : Mocks
     }
 
     [Theory, AutoDataCustom]
-    public async Task UpdateProductAsync_WhenProductExists_ShouldReturnSuccessResult(Product product, ProductModel productModel)
+    public async Task UpdateProductAsync_WhenProductExists_ShouldReturnSuccessResult(Product product, UpdateProductModel productModel)
     {
         //Arrange
+        foreach (var img in productModel.Images)
+            img.Url = $"http://localhost:9000/bucket/products/{Guid.NewGuid()}.jpg";
         var id = product.Id;
         _unitOfWork.Products.GetByIdAsync(id, default).Returns(product);
         var imageUrls = productModel.Images.Select(i => i.Url).ToList();
@@ -132,8 +134,6 @@ public class ProductServiceTests : Mocks
         product.Title.ShouldBeEquivalentTo(productModel.Title);
         product.Description.ShouldBeEquivalentTo(productModel.Description);
         product.Price.ShouldBeEquivalentTo(productModel.Price);
-        product.Provider.Name.ShouldBeEquivalentTo(productModel.Provider.Name);
-        product.Provider.Email.ShouldBeEquivalentTo(productModel.Provider.Email);
         product.Images.Count.ShouldBeEquivalentTo(productModel.Images.Count);
 
         for (int i = 0; i < imageUrls.Count; i++)
@@ -143,7 +143,7 @@ public class ProductServiceTests : Mocks
     }
 
     [Theory, AutoDataCustom]
-    public async Task UpdateProductAsync_WhenProductDoesNotExist_ShouldReturnFailureResult(ProductModel productModel)
+    public async Task UpdateProductAsync_WhenProductDoesNotExist_ShouldReturnFailureResult(UpdateProductModel productModel)
     {
         //Arrange
         var id = Guid.NewGuid();
