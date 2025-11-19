@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using ProductService.API;
@@ -14,6 +15,12 @@ public class ProductServiceWebApplicationFactory : WebApplicationFactory<Program
     private readonly InMemoryDatabaseRoot _root = new();
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.ConfigureAppConfiguration((context, config) =>
+        {
+            config.Sources.Clear();
+            config.AddJsonFile("appsettings.IntegrationTests.json", 
+                optional: false, reloadOnChange: false);
+        });
         builder.UseEnvironment("IntegrationTesting");
 
         builder.ConfigureServices(services =>
