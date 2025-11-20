@@ -1,5 +1,8 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Http;
+using ProductService.API.DTO;
 using ProductService.BLL.DTO;
+using ProductService.BLL.Models;
 using Shouldly;
 using System.Net;
 
@@ -212,7 +215,25 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
     {
         //Arrange
         var product = await Add(TestDataHelper.CreateProductEntity());
-        var updateFormData = TestDataHelper.UpdateProductDtoFormData();
+        var images = new List<UpdateImageDto>()
+        {
+            new UpdateImageDto()
+            {
+                Image = TestDataHelper.CreateTestImageFile("image1", "fake image 1", "image/jpeg"),
+                Action = UpdateImageAction.Add
+            },
+            new UpdateImageDto()
+            {
+                Image = TestDataHelper.CreateTestImageFile("image2", "fake image 2", "image/jpeg"),
+                Action = UpdateImageAction.Add
+            },
+            new UpdateImageDto()
+            {
+                Image = TestDataHelper.CreateTestImageFile("image3", "fake image 3", "image/jpeg"),
+                Action = UpdateImageAction.Add
+            }          
+        };
+        var updateFormData = TestDataHelper.UpdateProductDtoFormData(images: images);
 
         //Act
         var response = await _httpClient.PutAsync($"api/products/{product.Id}", updateFormData);
