@@ -20,21 +20,32 @@ public class ProductServiceWebApplicationFactory : WebApplicationFactory<Program
 
         builder.ConfigureServices(services =>
         {
-            services.RemoveAll<DbContextOptions<MikeBerriesDBContext>>();
-            services.RemoveAll<MikeBerriesDBContext>();
+            var descriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(DbContextOptions<MikeBerriesDBContext>));
+
+            if (descriptor is not null)
+                services.Remove(descriptor);
+
+            var genericDescriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(DbContextOptions));
+
+            if (genericDescriptor is not null)
+                services.Remove(genericDescriptor);
+
+            var contextDescriptor = services.SingleOrDefault(
+                d => d.ServiceType == typeof(MikeBerriesDBContext));
+
+            if (contextDescriptor is not null)
+                services.Remove(contextDescriptor);
 
             services.RemoveAll<IFileRepository>();
-            services.RemoveAll<MinioStorage>();
 
             services.AddDbContext<MikeBerriesDBContext>(options =>
             {
                 options.UseInMemoryDatabase("TestDatabase", _root);
             });
 
-            services.AddScoped<IFileRepository>(provider =>
-            {
-                return new FakeFileRepository();
-            });
+            services.AddScoped<IFileRepository, FakeFileRepository>();
         });
     }
 }
