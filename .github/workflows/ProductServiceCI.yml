@@ -24,6 +24,11 @@ env:
   INTEGRATION_TEST_PROJECT_PATH: "./ProductService/ProductService.IntegrationTests/ProductService.IntegrationTests.csproj"
 
   SOLUTION_PATH: "./ProductService/ProductService.sln"
+
+  Minio__ServiceURL: "http://localhost:9000"
+  Minio__AccessKey: "user"
+  Minio__SecretKey: "password"
+  Minio__BucketName: "sampad"
   
 jobs:
   build:
@@ -32,17 +37,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       
-      - name: Start MinIO
+      - name: Start Infrastructure
         run: |
-          docker run -d \
-            -p 9000:9000 \
-            -p 9001:9001 \
-            --name minio \
-            -e MINIO_ROOT_USER=minioadmin \
-            -e MINIO_ROOT_PASSWORD=minioadmin \
-            minio/minio server /data --console-address ":9001"
-            
-          sleep 5
+          docker compose up -d --wait postgreDB minio
+          docker compose ps
             
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
