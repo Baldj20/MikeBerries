@@ -3,11 +3,9 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using ProductService.API;
 using ProductService.DAL;
-using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.IntegrationTests;
 
@@ -20,32 +18,19 @@ public class ProductServiceWebApplicationFactory : WebApplicationFactory<Program
 
         builder.ConfigureServices(services =>
         {
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<MikeBerriesDBContext>));
+            var descriptorsToRemove = services.Where(d =>
+                d.ServiceType.Name.Contains("DbContextOptions")
+            ).ToList();
 
-            if (descriptor is not null)
+            foreach (var descriptor in descriptorsToRemove)
+            {
                 services.Remove(descriptor);
-
-            var genericDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions));
-
-            if (genericDescriptor is not null)
-                services.Remove(genericDescriptor);
-
-            var contextDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(MikeBerriesDBContext));
-
-            if (contextDescriptor is not null)
-                services.Remove(contextDescriptor);
-
-            services.RemoveAll<IFileRepository>();
+            }
 
             services.AddDbContext<MikeBerriesDBContext>(options =>
             {
                 options.UseInMemoryDatabase("TestDatabase", _root);
             });
-
-            services.AddScoped<IFileRepository, FakeFileRepository>();
         });
     }
 }
