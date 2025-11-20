@@ -29,6 +29,10 @@ env:
   Minio__AccessKey: "user"
   Minio__SecretKey: "password"
   Minio__BucketName: "sampad"
+
+  postgres_user: postgres
+  postgres_password: password
+  connection_string: "Host=postgreDB;Port=5432;Database=MikeBerriesDB;Username=postgres;Password=password"
   
 jobs:
   build:
