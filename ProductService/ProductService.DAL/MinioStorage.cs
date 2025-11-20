@@ -14,8 +14,8 @@ public class MinioStorage
     {
         var config = new AmazonS3Config
         {
-            ServiceURL = settings.ServiceURL, // e.g. http://localhost:9000
-            ForcePathStyle = true // Required for MinIO
+            ServiceURL = settings.ServiceURL,
+            ForcePathStyle = true
         };
 
         var credentials = new BasicAWSCredentials(settings.AccessKey, settings.SecretKey);
