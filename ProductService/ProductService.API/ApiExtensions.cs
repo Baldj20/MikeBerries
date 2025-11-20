@@ -41,24 +41,11 @@ public static class ApiExtensions
                 }
             });
         TypeAdapterConfig<Product, ProductModel>.NewConfig()
-            .Ignore(d => d.Provider.Products)
-            .AfterMapping((entity, model) =>
-            {
-                //foreach (var image in entity.Images)
-                //{
-                //    var imageModel = new ProductImageModel
-                //    {
-                //        Product = null!,
-                //        Url = image.Url,
-                //    };
-
-                //    model.Images.Add(imageModel);
-                //}
-            });
-        //TypeAdapterConfig.GlobalSettings.ForType(typeof(IHeaderDictionary), typeof(IHeaderDictionary));
+            .Ignore(d => d.Provider.Products);
         TypeAdapterConfig<UpdateImageDto, UpdateImageModel>.NewConfig();
         TypeAdapterConfig<UpdateProductDto, UpdateProductModel>.NewConfig();
         TypeAdapterConfig<UpdateProductModel, Product>.NewConfig()
+            .IgnoreNullValues(true)
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.Images);
 
