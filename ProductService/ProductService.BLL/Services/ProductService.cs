@@ -31,7 +31,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
         logger.ResourceAdded(typeof(Product).Name, product.Id);
 
-        return Result.Success();
+        return Result.Success(201);
     }
 
     public async Task<Result> DeleteProductAsync(Guid id, CancellationToken token)
@@ -46,14 +46,14 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
             logger.ResourceDeleted(typeof(Product).Name, product.Id);
 
-            return Result.Success();
+            return Result.Success(204);
         }
         else
         {
             logger.ResourceToDeleteNotFound(typeof(Product).Name);
 
             return Result
-                .Failure(CustomError.ResourceNotFound<Product>());
+                .Failure(CustomError.ResourceNotFound<Product>(), 204);
         }
     }
 
@@ -65,13 +65,13 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         {
             logger.ResourceReturned(typeof(Product).Name, product.Id);
 
-            return new Result<ProductModel>(product.Adapt<ProductModel>());
+            return new Result<ProductModel>(product.Adapt<ProductModel>(), 200);
         }
         else
         {
             logger.ResourceNotFound(typeof(Product).Name, id);
 
-            return new Result<ProductModel>(CustomError.ResourceNotFound<Product>());
+            return new Result<ProductModel>(CustomError.ResourceNotFound<Product>(), 404);
         }
     }
 
@@ -87,14 +87,14 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
                 logger.ResourceReturned(typeof(Product).Name, item.Id);
             }
 
-            return new Result<List<ProductModel>>(result.Adapt<List<ProductModel>>());
+            return new Result<List<ProductModel>>(result.Adapt<List<ProductModel>>(), 200);
         }
         else
         {
             logger.FilteredResourcesNotFound(typeof(Product).Name);
 
             return new Result<List<ProductModel>>(CustomError
-                .ResourceNotFound<Product>());
+                .ResourceNotFound<Product>(), 404);
         }
     }
 
@@ -106,7 +106,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         {
             logger.ResourceToUpdateNotFound(typeof(Product).Name);
 
-            return Result.Failure(CustomError.ResourceNotFound<Product>());
+            return Result.Failure(CustomError.ResourceNotFound<Product>(), 404);
         }
         else
         {
@@ -148,7 +148,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
             logger.ResourceUpdated(typeof(Product).Name, product.Id);
 
-            return Result.Success();
+            return Result.Success(204);
         }       
     }
 }

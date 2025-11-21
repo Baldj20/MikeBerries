@@ -66,7 +66,7 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(Result
-                .Failure(CustomError.ResourceNotFound<Product>()));
+                .Failure(CustomError.ResourceNotFound<Product>(), 204));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -104,7 +104,7 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(new Result<ProductModel>(CustomError
-            .ResourceNotFound<Product>()));
+            .ResourceNotFound<Product>(), 404));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -155,7 +155,7 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(Result
-            .Failure(CustomError.ResourceNotFound<Product>()));
+            .Failure(CustomError.ResourceNotFound<Product>(), 404));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);      
@@ -198,7 +198,7 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(new Result<List<ProductModel>>(CustomError
-                .ResourceNotFound<Product>()));
+                .ResourceNotFound<Product>(), 404));
         _productRepository.Received(1).GetPaged(
             Arg.Any<PaginationParams>(),
             Arg.Any<ProductFilter>());

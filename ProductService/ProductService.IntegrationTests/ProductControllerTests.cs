@@ -1,5 +1,4 @@
 ﻿using Mapster;
-using Microsoft.AspNetCore.Http;
 using ProductService.API.DTO;
 using ProductService.BLL.DTO;
 using ProductService.BLL.Models;
@@ -23,7 +22,7 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         var response = await _httpClient.PostAsync("api/products", formData);
 
         // Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.Created);
     }
 
     [Theory]
@@ -51,7 +50,7 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         var response = await _httpClient.DeleteAsync($"api/products/{product.Id}");
 
         // Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NoContent);
     }
 
     [Fact]
@@ -64,7 +63,7 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         var response = await _httpClient.DeleteAsync($"api/products/{id}");
 
         // Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NoContent);
 
         var result = await DeserializeResponse(response);
 
@@ -101,7 +100,7 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         var response = await _httpClient.GetAsync($"api/products/{id}");
 
         // Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NotFound);
 
         var result = await DeserializeResponse(response);
 
@@ -203,7 +202,7 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         var response = await _httpClient.GetAsync($"api/products?page={page}&pagesize={pageSize}");
 
         //Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NotFound);
 
         var result = await DeserializeResponse(response);
         result.ShouldNotBeNull();
@@ -239,7 +238,7 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         var response = await _httpClient.PutAsync($"api/products/{product.Id}", updateFormData);
 
         //Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NoContent);
 
         var result = await DeserializeResponse(response);
         result.ShouldNotBeNull();
@@ -257,7 +256,7 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         var response = await _httpClient.PutAsync($"api/products/{id}", updateFormData);
 
         //Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NotFound);
 
         var result = await DeserializeResponse(response);
         result.ShouldNotBeNull();

@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using ProductService.API.Filters.Attributes;
 using ProductService.BLL;
 using ProductService.BLL.DTO;
 using ProductService.BLL.Interfaces.Services;
@@ -11,6 +12,7 @@ namespace ProductService.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[AddStatusCode]
 public class ProductsController(IProductService productService) : ControllerBase
 {
     [HttpPost]
@@ -36,8 +38,8 @@ public class ProductsController(IProductService productService) : ControllerBase
         var product = await productService.GetProductByIdAsync(id, token);
 
         return product.IsSuccess ? 
-            new Result<GetProductDto>(product.Value.Adapt<GetProductDto>()) : 
-            new Result<GetProductDto>(product.Error!);
+            new Result<GetProductDto>(product.Value.Adapt<GetProductDto>(), product.StatusCode) : 
+            new Result<GetProductDto>(product.Error!, product.StatusCode);
     }
 
     [HttpGet]
@@ -49,8 +51,8 @@ public class ProductsController(IProductService productService) : ControllerBase
         var products = productService.GetProducts(paginationParams, filter, token);
 
         return products.IsSuccess ?
-            new Result<List<GetProductDto>>(products.Value.Adapt<List<GetProductDto>>()) :
-            new Result<List<GetProductDto>>(products.Error!);
+            new Result<List<GetProductDto>>(products.Value.Adapt<List<GetProductDto>>(), products.StatusCode) :
+            new Result<List<GetProductDto>>(products.Error!, products.StatusCode);
     }
 
     [HttpPut("{id}")]
