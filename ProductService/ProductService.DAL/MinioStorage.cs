@@ -1,6 +1,7 @@
 ﻿using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
+using System.Net;
 
 namespace ProductService.DAL;
 
@@ -42,7 +43,7 @@ public class MinioStorage
         }
         catch (AmazonS3Exception ex)
         {
-            if (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            if (ex.StatusCode == HttpStatusCode.NotFound)
                 return false;
             throw;
         }
