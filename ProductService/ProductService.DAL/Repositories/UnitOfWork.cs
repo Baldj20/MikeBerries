@@ -9,6 +9,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly Lazy<IProductImageRepository> _images;
     private readonly Lazy<IProductRepository> _products;
     private readonly Lazy<IFileRepository> _files;
+
     public UnitOfWork(MikeBerriesDBContext context, MinioStorage minioStorage)
     {
         _context = context;
