@@ -37,7 +37,7 @@ public class MinioStorage
     {
         try
         {
-            var response = await _client.GetBucketLocationAsync(bucketName);
+            await _client.GetBucketLocationAsync(bucketName);
             return true;
         }
         catch (AmazonS3Exception ex)
