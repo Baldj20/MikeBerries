@@ -42,7 +42,7 @@ public class ProvidersController(IProviderService providerService) : ControllerB
     }
 
     [HttpGet]
-    public Result<List<ProviderDto>> GetAllPaged(
+    public Result<PagedResult<ProviderDto>> GetAllPaged(
         [FromQuery] PaginationParams paginationParams,
         [FromQuery] ProviderFilter filter,
         CancellationToken token)
@@ -50,8 +50,8 @@ public class ProvidersController(IProviderService providerService) : ControllerB
         var providers = providerService.GetProviders(paginationParams, filter, token);
 
         return providers.IsSuccess ? 
-            new Result<List<ProviderDto>>(providers.Value.Adapt<List<ProviderDto>>(), providers.StatusCode) : 
-            new Result<List<ProviderDto>>(providers.Error!, providers.StatusCode);
+            new Result<PagedResult<ProviderDto>>(providers.Value.Adapt<PagedResult<ProviderDto>>(), providers.StatusCode) : 
+            new Result<PagedResult<ProviderDto>>(providers.Error!, providers.StatusCode);
     }
 
     [HttpPut("{id}")]

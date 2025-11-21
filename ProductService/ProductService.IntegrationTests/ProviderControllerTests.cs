@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using ProductService.BLL.DTO;
+using ProductService.DAL;
 using Shouldly;
 using System.Net;
 
@@ -131,11 +132,11 @@ public class ProviderControllerTests(ProductServiceWebApplicationFactory factory
         // Assert
         response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
 
-        var result = await DeserializeResponseTo<List<ProviderDto>>(response);
+        var result = await DeserializeResponseTo<PagedResult<ProviderDto>>(response);
 
         result.ShouldNotBeNull();
         result.Value.ShouldNotBeNull();
-        result.Value.Count.ShouldBeEquivalentTo(pageSize);
+        result.Value.Items.Count.ShouldBeEquivalentTo(pageSize);
     }
 
     [Theory]
@@ -166,14 +167,14 @@ public class ProviderControllerTests(ProductServiceWebApplicationFactory factory
         //Assert
         response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
 
-        var result = await DeserializeResponseTo<List<ProviderDto>>(response);
+        var result = await DeserializeResponseTo<PagedResult<ProviderDto>>(response);
 
         result.ShouldNotBeNull();
         result.Value.ShouldNotBeNull();
-        result.Value.Count.ShouldBeEquivalentTo(pageSize);
+        result.Value.Items.Count.ShouldBeEquivalentTo(pageSize);
         for (int i = 0; i < pageSize; i++)
         { 
-            result.Value[i].Name.ShouldBeEquivalentTo(name);
+            result.Value.Items[i].Name.ShouldBeEquivalentTo(name);
         }
     }
 

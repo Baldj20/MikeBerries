@@ -75,25 +75,25 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         }
     }
 
-    public Result<List<ProductModel>> GetProducts(PaginationParams paginationParams, 
+    public Result<PagedResult<ProductModel>> GetProducts(PaginationParams paginationParams, 
         ProductFilter filter, CancellationToken token)
     {
         var result = unitOfWork.Products.GetPaged(paginationParams, filter);
 
-        if (result.Count != 0)
+        if (result.Items.Count != 0)
         {
-            foreach (var item in result)
+            foreach (var item in result.Items)
             {
                 logger.ResourceReturned(typeof(Product).Name, item.Id);
             }
 
-            return new Result<List<ProductModel>>(result.Adapt<List<ProductModel>>(), 200);
+            return new Result<PagedResult<ProductModel>>(result.Adapt<PagedResult<ProductModel>>(), 200);
         }
         else
         {
             logger.FilteredResourcesNotFound(typeof(Product).Name);
 
-            return new Result<List<ProductModel>>(CustomError
+            return new Result<PagedResult<ProductModel>>(CustomError
                 .ResourceNotFound<Product>(), 404);
         }
     }

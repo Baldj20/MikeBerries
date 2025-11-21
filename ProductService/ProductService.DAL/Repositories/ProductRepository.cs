@@ -17,7 +17,7 @@ public class ProductRepository(MikeBerriesDBContext context) : Repository<Produc
         return product;
     }
 
-    public List<Product> GetPaged(PaginationParams paginationParams, IFilter<Product> filter)
+    public PagedResult<Product> GetPaged(PaginationParams paginationParams, IFilter<Product> filter)
     {
         var initialQuery = Context.Products
             .Include(p => p.Provider)
@@ -29,6 +29,13 @@ public class ProductRepository(MikeBerriesDBContext context) : Repository<Produc
         query = query.Skip((paginationParams.Page - 1) * paginationParams.PageSize)
                      .Take(paginationParams.PageSize);
 
-        return query.ToList();
+        var items = query.ToList();
+
+        return new PagedResult<Product>
+        {
+            Items = items,
+            CurrentPage = paginationParams.Page,
+            TotalPages = query.Count()
+        };
     }
 }

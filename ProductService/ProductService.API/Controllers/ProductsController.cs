@@ -43,7 +43,7 @@ public class ProductsController(IProductService productService) : ControllerBase
     }
 
     [HttpGet]
-    public Result<List<GetProductDto>> GetAllPaged(
+    public Result<PagedResult<GetProductDto>> GetAllPaged(
         [FromQuery] PaginationParams paginationParams,
         [FromQuery] ProductFilter filter, 
         CancellationToken token)
@@ -51,8 +51,8 @@ public class ProductsController(IProductService productService) : ControllerBase
         var products = productService.GetProducts(paginationParams, filter, token);
 
         return products.IsSuccess ?
-            new Result<List<GetProductDto>>(products.Value.Adapt<List<GetProductDto>>(), products.StatusCode) :
-            new Result<List<GetProductDto>>(products.Error!, products.StatusCode);
+            new Result<PagedResult<GetProductDto>>(products.Value.Adapt<PagedResult<GetProductDto>>(), products.StatusCode) :
+            new Result<PagedResult<GetProductDto>>(products.Error!, products.StatusCode);
     }
 
     [HttpPut("{id}")]

@@ -66,25 +66,25 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
         }
     }
 
-    public Result<List<ProviderModel>> GetProviders(PaginationParams paginationParams, 
+    public Result<PagedResult<ProviderModel>> GetProviders(PaginationParams paginationParams, 
         ProviderFilter filter, CancellationToken token)
     {
         var result = unitOfWork.Providers.GetPaged(paginationParams, filter);
 
-        if (result.Count != 0)
+        if (result.Items.Count != 0)
         {
-            foreach (var item in result)
+            foreach (var item in result.Items)
             {
                 logger.ResourceReturned(typeof(Provider).Name, item.Id);
             }
 
-            return new Result<List<ProviderModel>>(result.Adapt<List<ProviderModel>>(), 200);
+            return new Result<PagedResult<ProviderModel>>(result.Adapt<PagedResult<ProviderModel>>(), 200);
         }
         else
         {
             logger.FilteredResourcesNotFound(typeof(Provider).Name);
 
-            return new Result<List<ProviderModel>>(CustomError
+            return new Result<PagedResult<ProviderModel>>(CustomError
                 .ResourceNotFound<Provider>(), 404);
         }    
     }

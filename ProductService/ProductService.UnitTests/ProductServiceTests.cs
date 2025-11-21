@@ -165,12 +165,12 @@ public class ProductServiceTests : Mocks
     public void GetProducts_ShouldReturnPageSizedProductsList(
         PaginationParams paginationParams,
         ProductFilter filter,
-        List<Product> pagedProducts)
+        PagedResult<Product> pagedProducts)
     {
         //Arrange
         _productRepository.GetPaged(paginationParams, filter)
             .Returns(pagedProducts);
-        var pagedProductModels = pagedProducts.Adapt<List<ProductModel>>();
+        var pagedProductModels = pagedProducts.Adapt<PagedResult<ProductModel>>();
 
         //Act
         var response = _productService.GetProducts(paginationParams, filter, default);
@@ -190,14 +190,14 @@ public class ProductServiceTests : Mocks
     {
         //Arrange
         _productRepository.GetPaged(paginationParams, filter)
-            .Returns(new List<Product>());
+            .Returns(new PagedResult<Product>());
 
         //Act
         var response = _productService.GetProducts(paginationParams, filter, default);
 
         //Assert
         response.IsSuccess.ShouldBeFalse();
-        response.ShouldBeEquivalentTo(new Result<List<ProductModel>>(CustomError
+        response.ShouldBeEquivalentTo(new Result<PagedResult<ProductModel>>(CustomError
                 .ResourceNotFound<Product>(), 404));
         _productRepository.Received(1).GetPaged(
             Arg.Any<PaginationParams>(),

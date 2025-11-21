@@ -2,6 +2,7 @@
 using ProductService.API.DTO;
 using ProductService.BLL.DTO;
 using ProductService.BLL.Models;
+using ProductService.DAL;
 using Shouldly;
 using System.Net;
 
@@ -135,11 +136,11 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         // Assert
         response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
 
-        var result = await DeserializeResponseTo<List<GetProductDto>>(response);
+        var result = await DeserializeResponseTo<PagedResult<GetProductDto>>(response);
 
         result.ShouldNotBeNull();
         result.Value.ShouldNotBeNull();
-        result.Value.Count.ShouldBeEquivalentTo(pageSize);
+        result.Value.Items.Count.ShouldBeEquivalentTo(pageSize);
     }
 
     [Theory]
@@ -170,14 +171,14 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         //Assert
         response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
 
-        var result = await DeserializeResponseTo<List<GetProductDto>>(response);
+        var result = await DeserializeResponseTo<PagedResult<GetProductDto>>(response);
 
         result.ShouldNotBeNull();
         result.Value.ShouldNotBeNull();
-        result.Value.Count.ShouldBeEquivalentTo(pageSize);
+        result.Value.Items.Count.ShouldBeEquivalentTo(pageSize);
         for (int i = 0; i < pageSize; i++)
         {
-            result.Value[i].Title.ShouldBeEquivalentTo(title);
+            result.Value.Items[i].Title.ShouldBeEquivalentTo(title);
         }
     }
 

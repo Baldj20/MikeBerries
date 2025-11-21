@@ -15,7 +15,7 @@ public class ProviderRepository(MikeBerriesDBContext context) : Repository<Provi
         return provider;
     }
 
-    public List<Provider> GetPaged(PaginationParams paginationParams, IFilter<Provider> filter)
+    public PagedResult<Provider> GetPaged(PaginationParams paginationParams, IFilter<Provider> filter)
     {
         var initialQuery = Context.Providers.AsQueryable();
 
@@ -24,6 +24,13 @@ public class ProviderRepository(MikeBerriesDBContext context) : Repository<Provi
         query = query.Skip((paginationParams.Page - 1) * paginationParams.PageSize)
                      .Take(paginationParams.PageSize);
 
-        return query.ToList();
+        var items = query.ToList();
+
+        return new PagedResult<Provider>
+        {
+            Items = items,
+            CurrentPage = paginationParams.Page,
+            TotalPages = query.Count()
+        };
     }
 }
