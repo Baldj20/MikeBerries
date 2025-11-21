@@ -123,7 +123,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
                     await unitOfWork.Files.DeleteFileAsync(key);
 
                     var imageEntity = product.Images.FirstOrDefault(img => img.Url == item.Url);
-                    if (imageEntity != null)
+                    if (imageEntity is not null)
                         await unitOfWork.Images.Delete(imageEntity);
                 }
                 else if (item.Action is UpdateImageAction.Add)
