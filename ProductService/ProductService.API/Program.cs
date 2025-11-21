@@ -25,7 +25,7 @@ public class Program
 
         var minioSettings = builder.Configuration.GetSection("Minio").Get<MinioSettings>();
         if (minioSettings == null)
-            throw new InvalidOperationException("Настройки Minio не найдены. Проверьте User Secrets.");
+            throw new InvalidOperationException("Minio settings not found");
         builder.Services.AddSingleton(provider => new MinioStorage(minioSettings));
         builder.Services.AddScoped<IFileRepository, MinioFileRepository>();
 
