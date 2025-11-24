@@ -36,7 +36,7 @@ public class MinioStorage
         bool exists = await BucketExistsAsync(_bucketName, token);
         if (!exists)
         {
-            await _client.PutBucketAsync(new PutBucketRequest { BucketName = _bucketName });
+            await _client.PutBucketAsync(new PutBucketRequest { BucketName = _bucketName }, token);
         }
     }
 
@@ -62,7 +62,7 @@ public class MinioStorage
         {
             if (fileStream.CanSeek) fileStream.Position = 0;
 
-            await EnsureBucketExistsAsync();
+            await EnsureBucketExistsAsync(ct);
 
             var request = new PutObjectRequest
             {
