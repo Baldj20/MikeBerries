@@ -21,6 +21,8 @@ public class ProviderRepository(MikeBerriesDBContext context) : Repository<Provi
 
         var query = filter.Apply(initialQuery);
 
+        var totalCount = query.Count();
+
         query = query.Skip((paginationParams.Page - 1) * paginationParams.PageSize)
                      .Take(paginationParams.PageSize);
 
@@ -30,7 +32,7 @@ public class ProviderRepository(MikeBerriesDBContext context) : Repository<Provi
         {
             Items = items,
             CurrentPage = paginationParams.Page,
-            TotalPages = query.Count()
+            TotalPages = (int)Math.Ceiling((double)totalCount / paginationParams.PageSize)
         };
     }
 }
