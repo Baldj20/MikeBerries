@@ -64,4 +64,12 @@ public static partial class HighPerfomanceLoggers
         this ILogger logger,
         string resourceName
     );
+
+    [LoggerMessage(EventId = 9, Level = LogLevel.Error,
+    Message = "Exception occured: {ExceptionInfo}.\nStack trace: {StackTrace}")]
+    public static partial void ExceptionOccured(
+        this ILogger logger,
+        string exceptionInfo,
+        string stackTrace
+    );
 }

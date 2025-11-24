@@ -13,6 +13,7 @@ namespace ProductService.API.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [AddStatusCode]
+[ExceptionFilter]
 public class ProvidersController(IProviderService providerService) : ControllerBase
 {
     [HttpPost]
