@@ -1,10 +1,17 @@
 ﻿using Mapster;
 using Microsoft.EntityFrameworkCore;
+using Polly;
+using Polly.CircuitBreaker;
+using Polly.Registry;
+using Polly.Retry;
 using ProductService.API.DTO;
+using ProductService.API.Resilience;
 using ProductService.BLL.DTO;
 using ProductService.BLL.Models;
 using ProductService.DAL;
 using ProductService.DAL.Entities;
+using ProductService.DAL.Interfaces.Repositories;
+using ProductService.DAL.Repositories;
 
 namespace ProductService.API;
 
@@ -54,5 +61,47 @@ public static class ApiExtensions
             .Ignore(d => d.Product.Provider.Products);
         TypeAdapterConfig<ProductImageModel, ProductImage>.NewConfig()
             .Ignore(dest => dest.Product);
+    }
+
+    public static void AddResiliencePipeline(this IServiceCollection services, 
+        string pipelineName, 
+        IConfiguration configuration, 
+        string configSectionName = "ResilienceSettings")
+    {
+        var options = configuration.GetSection(configSectionName).Get<ResilienceOptions>()
+            ?? new ResilienceOptions();
+
+        services.AddResiliencePipeline(pipelineName, builder =>
+        {
+            builder.AddRetry(new RetryStrategyOptions
+            {
+                MaxRetryAttempts = options.Retry.MaxRetryAttempts,
+                Delay = TimeSpan.FromMilliseconds(options.Retry.DelayMilliseconds),
+                BackoffType = DelayBackoffType.Exponential,
+            });
+
+            builder.AddCircuitBreaker(new CircuitBreakerStrategyOptions
+            {
+                FailureRatio = options.CircuitBreaker.FailureRatio,
+                SamplingDuration = TimeSpan.FromSeconds(options.CircuitBreaker.SamplingDurationSeconds),
+                MinimumThroughput = options.CircuitBreaker.MinimumThroughput,
+                BreakDuration = TimeSpan.FromSeconds(options.CircuitBreaker.BreakDurationSeconds)
+            });
+        });
+    }
+
+    public static void AddMinio(this IServiceCollection services, IConfiguration configuration)
+    {
+        var minioSettings = configuration.GetSection("Minio").Get<MinioSettings>();
+
+        if (minioSettings is null) throw new InvalidOperationException("Minio settings not found");
+
+        services.AddSingleton(sp =>
+        {
+            var pipelineProvider = sp.GetRequiredService<ResiliencePipelineProvider<string>>();
+            return new MinioStorage(minioSettings, pipelineProvider);
+        });
+
+        services.AddScoped<IFileRepository, MinioFileRepository>();
     }
 }

@@ -4,18 +4,19 @@ namespace ProductService.DAL.Repositories;
 
 public class MinioFileRepository(MinioStorage storage) : IFileRepository
 {
-    public async Task DeleteFileAsync(string key)
+    public async Task DeleteFileAsync(string key, CancellationToken token)
     {
-        await storage.DeleteFileAsync(key);
+        await storage.DeleteFileAsync(key, token);
     }
 
-    public async Task<Stream> GetFileAsync(string key)
+    public async Task<Stream> GetFileAsync(string key, CancellationToken token)
     {
-        return await storage.GetFileAsync(key);
+        return await storage.GetFileAsync(key, token);
     }
 
-    public async Task<string> UploadFileAsync(string key, Stream fileStream)
+    public async Task<string> UploadFileAsync(string key, Stream fileStream, 
+        CancellationToken token)
     {
-        return await storage.UploadFileAsync(key, fileStream);
+        return await storage.UploadFileAsync(key, fileStream, token);
     }
 }

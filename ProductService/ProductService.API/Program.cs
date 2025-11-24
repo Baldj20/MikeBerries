@@ -1,3 +1,4 @@
+using Polly.Registry;
 using ProductService.API.Configurations;
 using ProductService.BLL.Configurations;
 using ProductService.DAL;
@@ -23,11 +24,7 @@ public class Program
 
         builder.Configuration.AddUserSecrets<Program>();
 
-        var minioSettings = builder.Configuration.GetSection("Minio").Get<MinioSettings>();
-        if (minioSettings == null)
-            throw new InvalidOperationException("Minio settings not found");
-        builder.Services.AddSingleton(provider => new MinioStorage(minioSettings));
-        builder.Services.AddScoped<IFileRepository, MinioFileRepository>();
+        builder.Services.AddMinio(builder.Configuration);
 
         builder.Services.ConfigureDataAccessLayerDependencies(builder.Configuration);
 
@@ -42,6 +39,8 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
 
         builder.Services.AddSwaggerGen();
+
+        builder.Services.AddResiliencePipeline("standard-pipeline", builder.Configuration);
 
         var app = builder.Build();
 

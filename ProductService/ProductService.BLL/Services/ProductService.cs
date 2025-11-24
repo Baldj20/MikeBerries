@@ -21,7 +21,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         {
             var key = $"products/{product.Id}/{product.Images[i].Id}";
             using var fileStream = imageModels[i].Image!.OpenReadStream();
-            var url = await unitOfWork.Files.UploadFileAsync(key, fileStream);
+            var url = await unitOfWork.Files.UploadFileAsync(key, fileStream, token);
             product.Images[i].Url = url;
         }
 
@@ -120,7 +120,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
                     var cleanPath = uri.AbsolutePath.TrimStart('/');
                     var key = cleanPath.Substring(cleanPath.IndexOf('/') + 1);
 
-                    await unitOfWork.Files.DeleteFileAsync(key);
+                    await unitOfWork.Files.DeleteFileAsync(key, token);
 
                     var imageEntity = product.Images.FirstOrDefault(img => img.Url == item.Url);
                     if (imageEntity is not null)
@@ -137,7 +137,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
                     var key = $"products/{product.Id}/{image.Id}";
                     using var fileStream = item.Image!.OpenReadStream();
-                    var url = await unitOfWork.Files.UploadFileAsync(key, fileStream);
+                    var url = await unitOfWork.Files.UploadFileAsync(key, fileStream, token);
                     image.Url = url;
                     
                     await unitOfWork.Images.AddAsync(image, token);
