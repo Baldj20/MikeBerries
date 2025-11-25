@@ -7,10 +7,10 @@ services:
       - "8080:8080"
     environment:
       - ConnectionStrings__DefaultConnection=${connection_string}
-      - Minio__ServiceURL=http://minio:9000
-      - Minio__AccessKey=user
-      - Minio__SecretKey=password
-      - Minio__BucketName=sampad
+      - Minio__ServiceURL=${minio_service_url}
+      - Minio__AccessKey=${minio_access_key}
+      - Minio__SecretKey=${minio_secret_key}
+      - Minio__BucketName=${minio_bucket_name}
     depends_on:
       postgreDB:
         condition: service_healthy
