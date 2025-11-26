@@ -76,7 +76,7 @@ public class MinioStorage
 
         var uriBuilder = new UriBuilder(_serviceUrl)
         {
-            Path = Path.Combine(_bucketName, key).Replace('\\', '/')
+            Path = $"{_bucketName}/{key}"
         };
 
         return uriBuilder.ToString();
