@@ -66,7 +66,7 @@ public static class ApiExtensions
     public static void AddResiliencePipeline(this IServiceCollection services, 
         string pipelineName, 
         IConfiguration configuration, 
-        string configSectionName = "ResilienceSettings")
+        string configSectionName = ResilienceOptions.CONFIG_SECTION_NAME)
     {
         var options = configuration.GetSection(configSectionName).Get<ResilienceOptions>()
             ?? new ResilienceOptions();
