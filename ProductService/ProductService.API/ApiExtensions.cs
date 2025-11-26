@@ -92,7 +92,8 @@ public static class ApiExtensions
 
     public static void AddMinio(this IServiceCollection services, IConfiguration configuration)
     {
-        var minioSettings = configuration.GetSection("Minio").Get<MinioSettings>();
+        var minioSettings = configuration.GetSection(MinioSettings.CONFIG_SECTION_NAME)
+            .Get<MinioSettings>();
 
         if (minioSettings is null) throw new InvalidOperationException("Minio settings not found");
 
