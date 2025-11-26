@@ -130,7 +130,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
                 {
                     var image = new ProductImage
                     {
-                        Url = "",
+                        Url = string.Empty,
                         Product = product,
                         ProductId = product.Id
                     };
