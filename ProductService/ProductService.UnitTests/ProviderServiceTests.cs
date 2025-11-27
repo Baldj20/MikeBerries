@@ -62,7 +62,7 @@ public class ProviderServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(Result
-                .Failure(CustomError.ResourceNotFound<Provider>()));
+                .Failure(CustomError.ResourceNotFound<Provider>(), 204));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -100,7 +100,7 @@ public class ProviderServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(new Result<ProviderModel>(CustomError
-            .ResourceNotFound<Provider>()));
+            .ResourceNotFound<Provider>(), 404));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -138,7 +138,7 @@ public class ProviderServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(Result
-            .Failure(CustomError.ResourceNotFound<Provider>()));
+            .Failure(CustomError.ResourceNotFound<Provider>(), 404));
         await _providerRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -147,18 +147,19 @@ public class ProviderServiceTests : Mocks
     [Theory, AutoDataCustom]
     public void GetProviders_WhenDataIsValid_ShouldReturnPageSizedProvidersList(
         PaginationParams paginationParams,
-        List<Provider> pagedProviders)
+        PagedResult<Provider> pagedProviders)
     {
         //Arrange
         _providerRepository.GetPaged(paginationParams, null!)
             .Returns(pagedProviders);
-        var pagedProviderModels = pagedProviders.Adapt<List<ProviderModel>>();
+        var pagedProviderModels = pagedProviders.Adapt<PagedResult<ProviderModel>>();
 
         //Act
         var response = _providerService.GetProviders(paginationParams, null!, default);
 
         //Assert
         response.IsSuccess.ShouldBeTrue();
+        response.Value.ShouldNotBeNull();
         response.Value.ShouldBeEquivalentTo(pagedProviderModels);
         _providerRepository.Received(1).GetPaged(
             Arg.Any<PaginationParams>(),
@@ -172,7 +173,7 @@ public class ProviderServiceTests : Mocks
     {
         //Arrange
         _providerRepository.GetPaged(paginationParams, filter)
-            .Returns(new List<Provider>());
+            .Returns(new PagedResult<Provider>());
 
         //Act
         var response = _providerService.GetProviders(paginationParams, filter, default);
@@ -180,8 +181,8 @@ public class ProviderServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(
-            new Result<List<ProviderModel>>(CustomError
-                .ResourceNotFound<Provider>()));
+            new Result<PagedResult<ProviderModel>>(CustomError
+                .ResourceNotFound<Provider>(), 404));
         _providerRepository.Received(1).GetPaged(
             Arg.Any<PaginationParams>(),
             Arg.Any<ProviderFilter>());

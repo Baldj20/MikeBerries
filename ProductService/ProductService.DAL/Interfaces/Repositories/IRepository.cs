@@ -1,6 +1,6 @@
 ﻿namespace ProductService.DAL.Interfaces.Repositories;
 
-public interface IRepository<T> : IPagedRepository<T>
+public interface IRepository<T>
 {
     Task AddAsync(T entity, CancellationToken token);
     Task Delete(T entity);

@@ -15,6 +15,15 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
     public async Task<Result> AddProductAsync(ProductModel productModel, CancellationToken token)
     {
         var product = productModel.Adapt<Product>();
+        var imageModels = productModel.Images;
+
+        for (int i = 0; i < imageModels.Count; i++)
+        {
+            var key = $"products/{product.Id}/{product.Images[i].Id}";
+            using var fileStream = imageModels[i].Image!.OpenReadStream();
+            var url = await unitOfWork.Files.UploadFileAsync(key, fileStream, token);
+            product.Images[i].Url = url;
+        }
 
         await unitOfWork.Products.AddAsync(product, token);
 
@@ -22,7 +31,7 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
         logger.ResourceAdded(typeof(Product).Name, product.Id);
 
-        return Result.Success();
+        return Result.Success(201);
     }
 
     public async Task<Result> DeleteProductAsync(Guid id, CancellationToken token)
@@ -37,14 +46,14 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
             logger.ResourceDeleted(typeof(Product).Name, product.Id);
 
-            return Result.Success();
+            return Result.Success(204);
         }
         else
         {
             logger.ResourceToDeleteNotFound(typeof(Product).Name);
 
             return Result
-                .Failure(CustomError.ResourceNotFound<Product>());
+                .Failure(CustomError.ResourceNotFound<Product>(), 204);
         }
     }
 
@@ -56,40 +65,40 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         {
             logger.ResourceReturned(typeof(Product).Name, product.Id);
 
-            return new Result<ProductModel>(product.Adapt<ProductModel>());
+            return new Result<ProductModel>(product.Adapt<ProductModel>(), 200);
         }
         else
         {
             logger.ResourceNotFound(typeof(Product).Name, id);
 
-            return new Result<ProductModel>(CustomError.ResourceNotFound<Product>());
+            return new Result<ProductModel>(CustomError.ResourceNotFound<Product>(), 404);
         }
     }
 
-    public Result<List<ProductModel>> GetProducts(PaginationParams paginationParams, 
+    public Result<PagedResult<ProductModel>> GetProducts(PaginationParams paginationParams, 
         ProductFilter filter, CancellationToken token)
     {
         var result = unitOfWork.Products.GetPaged(paginationParams, filter);
 
-        if (result.Count != 0)
+        if (result.Items.Count != 0)
         {
-            foreach (var item in result)
+            foreach (var item in result.Items)
             {
                 logger.ResourceReturned(typeof(Product).Name, item.Id);
             }
 
-            return new Result<List<ProductModel>>(result.Adapt<List<ProductModel>>());
+            return new Result<PagedResult<ProductModel>>(result.Adapt<PagedResult<ProductModel>>(), 200);
         }
         else
         {
             logger.FilteredResourcesNotFound(typeof(Product).Name);
 
-            return new Result<List<ProductModel>>(CustomError
-                .ResourceNotFound<Product>());
+            return new Result<PagedResult<ProductModel>>(CustomError
+                .ResourceNotFound<Product>(), 404);
         }
     }
 
-    public async Task<Result> UpdateProductAsync(Guid id, ProductModel productModel, CancellationToken token)
+    public async Task<Result> UpdateProductAsync(Guid id, UpdateProductModel productModel, CancellationToken token)
     {
         var product = await unitOfWork.Products.GetByIdAsync(id, token);
 
@@ -97,17 +106,49 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
         {
             logger.ResourceToUpdateNotFound(typeof(Product).Name);
 
-            return Result.Failure(CustomError.ResourceNotFound<Product>());
+            return Result.Failure(CustomError.ResourceNotFound<Product>(), 404);
         }
         else
         {
             productModel.Adapt(product);
 
+            foreach (var item in productModel.Images)
+            {
+                if (item.Action is UpdateImageAction.Delete)
+                {
+                    var uri = new Uri(item.Url!);
+                    var cleanPath = uri.AbsolutePath.TrimStart('/');
+                    var key = cleanPath.Substring(cleanPath.IndexOf('/') + 1);
+
+                    await unitOfWork.Files.DeleteFileAsync(key, token);
+
+                    var imageEntity = product.Images.FirstOrDefault(img => img.Url == item.Url);
+                    if (imageEntity is not null)
+                        await unitOfWork.Images.Delete(imageEntity);
+                }
+                else if (item.Action is UpdateImageAction.Add)
+                {
+                    var image = new ProductImage
+                    {
+                        Url = string.Empty,
+                        Product = product,
+                        ProductId = product.Id
+                    };
+
+                    var key = $"products/{product.Id}/{image.Id}";
+                    using var fileStream = item.Image!.OpenReadStream();
+                    var url = await unitOfWork.Files.UploadFileAsync(key, fileStream, token);
+                    image.Url = url;
+                    
+                    await unitOfWork.Images.AddAsync(image, token);
+                }
+            }
+
             await unitOfWork.SaveChangesAsync(token);
 
             logger.ResourceUpdated(typeof(Product).Name, product.Id);
 
-            return Result.Success();
+            return Result.Success(204);
         }       
     }
 }

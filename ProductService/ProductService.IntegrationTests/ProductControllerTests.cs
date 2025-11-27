@@ -1,5 +1,8 @@
 ﻿using Mapster;
+using ProductService.API.DTO;
 using ProductService.BLL.DTO;
+using ProductService.BLL.Models;
+using ProductService.DAL;
 using Shouldly;
 using System.Net;
 
@@ -20,7 +23,7 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         var response = await _httpClient.PostAsync("api/products", formData);
 
         // Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.Created);
     }
 
     [Theory]
@@ -48,7 +51,7 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         var response = await _httpClient.DeleteAsync($"api/products/{product.Id}");
 
         // Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NoContent);
     }
 
     [Fact]
@@ -61,7 +64,7 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         var response = await _httpClient.DeleteAsync($"api/products/{id}");
 
         // Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NoContent);
 
         var result = await DeserializeResponse(response);
 
@@ -98,7 +101,7 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         var response = await _httpClient.GetAsync($"api/products/{id}");
 
         // Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NotFound);
 
         var result = await DeserializeResponse(response);
 
@@ -133,11 +136,11 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         // Assert
         response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
 
-        var result = await DeserializeResponseTo<List<GetProductDto>>(response);
+        var result = await DeserializeResponseTo<PagedResult<GetProductDto>>(response);
 
         result.ShouldNotBeNull();
         result.Value.ShouldNotBeNull();
-        result.Value.Count.ShouldBeEquivalentTo(pageSize);
+        result.Value.Items.Count.ShouldBeEquivalentTo(pageSize);
     }
 
     [Theory]
@@ -168,14 +171,14 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         //Assert
         response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
 
-        var result = await DeserializeResponseTo<List<GetProductDto>>(response);
+        var result = await DeserializeResponseTo<PagedResult<GetProductDto>>(response);
 
         result.ShouldNotBeNull();
         result.Value.ShouldNotBeNull();
-        result.Value.Count.ShouldBeEquivalentTo(pageSize);
+        result.Value.Items.Count.ShouldBeEquivalentTo(pageSize);
         for (int i = 0; i < pageSize; i++)
         {
-            result.Value[i].Title.ShouldBeEquivalentTo(title);
+            result.Value.Items[i].Title.ShouldBeEquivalentTo(title);
         }
     }
 
@@ -200,7 +203,7 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         var response = await _httpClient.GetAsync($"api/products?page={page}&pagesize={pageSize}");
 
         //Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NotFound);
 
         var result = await DeserializeResponse(response);
         result.ShouldNotBeNull();
@@ -212,13 +215,31 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
     {
         //Arrange
         var product = await Add(TestDataHelper.CreateProductEntity());
-        var updateFormData = TestDataHelper.UpdateProductDtoFormData();
+        var images = new List<UpdateImageDto>()
+        {
+            new UpdateImageDto()
+            {
+                Image = TestDataHelper.CreateTestImageFile("image1", "fake image 1", "image/jpeg"),
+                Action = UpdateImageAction.Add
+            },
+            new UpdateImageDto()
+            {
+                Image = TestDataHelper.CreateTestImageFile("image2", "fake image 2", "image/jpeg"),
+                Action = UpdateImageAction.Add
+            },
+            new UpdateImageDto()
+            {
+                Image = TestDataHelper.CreateTestImageFile("image3", "fake image 3", "image/jpeg"),
+                Action = UpdateImageAction.Add
+            }          
+        };
+        var updateFormData = TestDataHelper.UpdateProductDtoFormData(images: images);
 
         //Act
         var response = await _httpClient.PutAsync($"api/products/{product.Id}", updateFormData);
 
         //Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NoContent);
 
         var result = await DeserializeResponse(response);
         result.ShouldNotBeNull();
@@ -236,7 +257,7 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         var response = await _httpClient.PutAsync($"api/products/{id}", updateFormData);
 
         //Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NotFound);
 
         var result = await DeserializeResponse(response);
         result.ShouldNotBeNull();

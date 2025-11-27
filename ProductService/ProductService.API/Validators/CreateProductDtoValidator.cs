@@ -13,7 +13,6 @@ public class CreateProductDtoValidator : AbstractValidator<CreateProductDto>
         RuleFor(p => p.Price)
             .NotNull().WithMessage(ValidationConstants.VALUE_CANNOT_BE_NULL)
             .GreaterThan(0).WithMessage(ValidationConstants.PRICE_MUST_BE_GREATER_THAN_ZERO);
-        RuleForEach(p => p.Images).SetValidator(new UploadProductImageDtoValidator());
         RuleFor(p => p.Provider).SetValidator(new ProviderDtoValidator());
     }
 }

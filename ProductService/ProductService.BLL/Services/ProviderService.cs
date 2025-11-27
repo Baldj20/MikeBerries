@@ -22,7 +22,7 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
 
         logger.ResourceAdded(typeof(Provider).Name, provider.Id);
 
-        return Result.Success();
+        return Result.Success(201);
     }
 
     public async Task<Result> DeleteProviderAsync(Guid id, CancellationToken token)
@@ -37,14 +37,14 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
 
             logger.ResourceDeleted(typeof(Provider).Name, provider.Id);
 
-            return Result.Success();
+            return Result.Success(204);
         }
         else
         {
             logger.ResourceToDeleteNotFound(typeof(Provider).Name);
 
             return Result
-                .Failure(CustomError.ResourceNotFound<Provider>());
+                .Failure(CustomError.ResourceNotFound<Provider>(), 204);
         }
     }
 
@@ -56,36 +56,36 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
         {
             logger.ResourceReturned(typeof(Provider).Name, provider.Id);
 
-            return new Result<ProviderModel>(provider.Adapt<ProviderModel>());
+            return new Result<ProviderModel>(provider.Adapt<ProviderModel>(), 200);
         }
         else
         {
             logger.ResourceNotFound(typeof(Provider).Name, id);
 
-            return new Result<ProviderModel>(CustomError.ResourceNotFound<Provider>());
+            return new Result<ProviderModel>(CustomError.ResourceNotFound<Provider>(), 404);
         }
     }
 
-    public Result<List<ProviderModel>> GetProviders(PaginationParams paginationParams, 
+    public Result<PagedResult<ProviderModel>> GetProviders(PaginationParams paginationParams, 
         ProviderFilter filter, CancellationToken token)
     {
         var result = unitOfWork.Providers.GetPaged(paginationParams, filter);
 
-        if (result.Count != 0)
+        if (result.Items.Count != 0)
         {
-            foreach (var item in result)
+            foreach (var item in result.Items)
             {
                 logger.ResourceReturned(typeof(Provider).Name, item.Id);
             }
 
-            return new Result<List<ProviderModel>>(result.Adapt<List<ProviderModel>>());
+            return new Result<PagedResult<ProviderModel>>(result.Adapt<PagedResult<ProviderModel>>(), 200);
         }
         else
         {
             logger.FilteredResourcesNotFound(typeof(Provider).Name);
 
-            return new Result<List<ProviderModel>>(CustomError
-                .ResourceNotFound<Provider>());
+            return new Result<PagedResult<ProviderModel>>(CustomError
+                .ResourceNotFound<Provider>(), 404);
         }    
     }
 
@@ -97,7 +97,7 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
         {
             logger.ResourceToUpdateNotFound(typeof(Provider).Name);
 
-            return Result.Failure(CustomError.ResourceNotFound<Provider>());
+            return Result.Failure(CustomError.ResourceNotFound<Provider>(), 404);
         }
         else
         {
@@ -107,7 +107,7 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
 
             logger.ResourceUpdated(typeof(Provider).Name, provider.Id);
 
-            return Result.Success();
+            return Result.Success(204);
         }
     }
 }

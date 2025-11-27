@@ -25,13 +25,26 @@ env:
 
   SOLUTION_PATH: "./ProductService/ProductService.sln"
 
+  Minio__ServiceURL: "http://localhost:9000"
+  Minio__AccessKey: ${{ secrets.MINIO_ACCESSKEY }}
+  Minio__SecretKey: ${{ secrets.MINIO_SECRETKEY }}
+  Minio__BucketName: ${{ secrets.MINIO_BUCKETNAME }}
+
+  postgres_user: ${{ secrets.POSTGRES_USER }}
+  postgres_password: ${{ secrets.POSTGRES_PASSWORD }}
+  connection_string: ${{ secrets.CONNECTION_STRING }}
+  
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v3
-
+      
+      - name: Start Infrastructure
+        run: |
+          docker compose up -d --wait postgreDB minio
+          docker compose ps
+            
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:

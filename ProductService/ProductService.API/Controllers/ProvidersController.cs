@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using ProductService.API.Filters.Attributes;
 using ProductService.BLL;
 using ProductService.BLL.DTO;
 using ProductService.BLL.Interfaces.Services;
@@ -11,6 +12,8 @@ namespace ProductService.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[AddStatusCode]
+[ExceptionFilter]
 public class ProvidersController(IProviderService providerService) : ControllerBase
 {
     [HttpPost]
@@ -35,12 +38,12 @@ public class ProvidersController(IProviderService providerService) : ControllerB
         var provider = await providerService.GetProviderByIdAsync(id, token);
 
         return provider.IsSuccess ? 
-            new Result<ProviderDto>(provider.Value.Adapt<ProviderDto>()) :
-            new Result<ProviderDto>(provider.Error!);
+            new Result<ProviderDto>(provider.Value.Adapt<ProviderDto>(), provider.StatusCode) :
+            new Result<ProviderDto>(provider.Error!, provider.StatusCode);
     }
 
     [HttpGet]
-    public Result<List<ProviderDto>> GetAllPaged(
+    public Result<PagedResult<ProviderDto>> GetAllPaged(
         [FromQuery] PaginationParams paginationParams,
         [FromQuery] ProviderFilter filter,
         CancellationToken token)
@@ -48,8 +51,8 @@ public class ProvidersController(IProviderService providerService) : ControllerB
         var providers = providerService.GetProviders(paginationParams, filter, token);
 
         return providers.IsSuccess ? 
-            new Result<List<ProviderDto>>(providers.Value.Adapt<List<ProviderDto>>()) : 
-            new Result<List<ProviderDto>>(providers.Error!);
+            new Result<PagedResult<ProviderDto>>(providers.Value.Adapt<PagedResult<ProviderDto>>(), providers.StatusCode) : 
+            new Result<PagedResult<ProviderDto>>(providers.Error!, providers.StatusCode);
     }
 
     [HttpPut("{id}")]

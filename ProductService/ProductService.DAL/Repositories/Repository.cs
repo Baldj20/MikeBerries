@@ -4,8 +4,10 @@ using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.DAL.Repositories;
 
-public class Repository<T>(MikeBerriesDBContext context) : PagedRepository<T>(context), IRepository<T> where T : BaseEntity
+public class Repository<T>(MikeBerriesDBContext context): IRepository<T> where T : BaseEntity
 {
+    protected MikeBerriesDBContext Context => context;
+
     public async Task AddAsync(T entity, CancellationToken token)
     {
         await Context.Set<T>().AddAsync(entity, token);

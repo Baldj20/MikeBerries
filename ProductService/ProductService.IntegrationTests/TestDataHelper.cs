@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using ProductService.API.DTO;
 using ProductService.BLL.DTO;
+using ProductService.BLL.Models;
 using ProductService.DAL.Entities;
 using System.Net.Http.Headers;
 using System.Text;
@@ -18,12 +20,39 @@ public static class TestDataHelper
         string providerName = "TestProviderName"
         )
     {
-        var formData = UpdateProductDtoFormData(
-            title: title,
-            description: description,
-            price: price,
-            images: images
-            );
+        var formData = new MultipartFormDataContent();
+
+        formData.Add(new StringContent(title), "Title");
+        formData.Add(new StringContent(description!), "Description");
+        formData.Add(new StringContent(price.ToString()), "Price");
+
+        if (images is null)
+        {
+            var image = CreateTestImageFile(
+                "image1",
+                "Fake JPEG Content 1",
+                "image/jpeg"
+                );
+
+            var fileContent = new StreamContent(image.OpenReadStream());
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(image.ContentType);
+            formData.Add(fileContent, "Images[0]", image.FileName);
+
+        }
+        else
+        {
+            for (int i = 0; i < images.Count; i++)
+            {
+                var item = images[i];
+                if (item is not null)
+                {
+                    var fileContent = new StreamContent(item.OpenReadStream());
+                    fileContent.Headers.ContentType = new MediaTypeHeaderValue(item.ContentType);
+                    formData.Add(fileContent, $"Images[{i}].Image", item.FileName);
+                }
+
+            }
+        }
 
         formData.Add(new StringContent(providerEmail), "Provider.Email");
         formData.Add(new StringContent(providerName), "Provider.Name");
@@ -35,7 +64,7 @@ public static class TestDataHelper
         string title = "UpdatedProduct",
         string description = "UpdatedDescription",
         decimal price = 200,
-        List<IFormFile>? images = null
+        List<UpdateImageDto>? images = null
         )
     {
         var formData = new MultipartFormDataContent();
@@ -55,15 +84,28 @@ public static class TestDataHelper
             var fileContent = new StreamContent(image.OpenReadStream());
             fileContent.Headers.ContentType = new MediaTypeHeaderValue(image.ContentType);
             formData.Add(fileContent, "Images[0].Image", image.FileName);
-
+            formData.Add(fileContent, "Images[0].Action", UpdateImageAction.Add.ToString());
         }
         else
         {
             for (int i = 0; i < images.Count; i++)
             {
-                var fileContent = new StreamContent(images[i].OpenReadStream());
-                fileContent.Headers.ContentType = new MediaTypeHeaderValue(images[i].ContentType);
-                formData.Add(fileContent, $"Images[{i}].Image", images[i].FileName);
+                var item = images[i];
+
+                formData.Add(new StringContent(item.Action.ToString()), $"Images[{i}].Action");
+
+                if (!string.IsNullOrEmpty(item.Url))
+                {
+                    formData.Add(new StringContent(item.Url), $"Images[{i}].Url");
+                }
+
+                if (item.Image is not null)
+                {
+                    var fileContent = new StreamContent(item.Image.OpenReadStream());
+                    fileContent.Headers.ContentType = new MediaTypeHeaderValue(item.Image.ContentType);
+                    formData.Add(fileContent, $"Images[{i}].Image", item.Image.FileName);
+                }
+
             }
         }
 

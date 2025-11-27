@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Mvc;
+using ProductService.API.Filters.Attributes;
 using ProductService.BLL;
 using ProductService.BLL.DTO;
 using ProductService.BLL.Interfaces.Services;
@@ -11,6 +12,8 @@ namespace ProductService.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[AddStatusCode]
+[ExceptionFilter]
 public class ProductsController(IProductService productService) : ControllerBase
 {
     [HttpPost]
@@ -36,12 +39,12 @@ public class ProductsController(IProductService productService) : ControllerBase
         var product = await productService.GetProductByIdAsync(id, token);
 
         return product.IsSuccess ? 
-            new Result<GetProductDto>(product.Value.Adapt<GetProductDto>()) : 
-            new Result<GetProductDto>(product.Error!);
+            new Result<GetProductDto>(product.Value.Adapt<GetProductDto>(), product.StatusCode) : 
+            new Result<GetProductDto>(product.Error!, product.StatusCode);
     }
 
     [HttpGet]
-    public Result<List<GetProductDto>> GetAllPaged(
+    public Result<PagedResult<GetProductDto>> GetAllPaged(
         [FromQuery] PaginationParams paginationParams,
         [FromQuery] ProductFilter filter, 
         CancellationToken token)
@@ -49,15 +52,15 @@ public class ProductsController(IProductService productService) : ControllerBase
         var products = productService.GetProducts(paginationParams, filter, token);
 
         return products.IsSuccess ?
-            new Result<List<GetProductDto>>(products.Value.Adapt<List<GetProductDto>>()) :
-            new Result<List<GetProductDto>>(products.Error!);
+            new Result<PagedResult<GetProductDto>>(products.Value.Adapt<PagedResult<GetProductDto>>(), products.StatusCode) :
+            new Result<PagedResult<GetProductDto>>(products.Error!, products.StatusCode);
     }
 
     [HttpPut("{id}")]
     [Consumes("multipart/form-data")]
     public async Task<Result> Update(Guid id, [FromForm]UpdateProductDto dto, CancellationToken token)
     {
-        var response = await productService.UpdateProductAsync(id, dto.Adapt<ProductModel>(), token);
+        var response = await productService.UpdateProductAsync(id, dto.Adapt<UpdateProductModel>(), token);
 
         return response;
     }

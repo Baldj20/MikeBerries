@@ -66,7 +66,7 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(Result
-                .Failure(CustomError.ResourceNotFound<Product>()));
+                .Failure(CustomError.ResourceNotFound<Product>(), 204));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
@@ -104,16 +104,18 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(new Result<ProductModel>(CustomError
-            .ResourceNotFound<Product>()));
+            .ResourceNotFound<Product>(), 404));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);
     }
 
     [Theory, AutoDataCustom]
-    public async Task UpdateProductAsync_WhenProductExists_ShouldReturnSuccessResult(Product product, ProductModel productModel)
+    public async Task UpdateProductAsync_WhenProductExists_ShouldReturnSuccessResult(Product product, UpdateProductModel productModel)
     {
         //Arrange
+        foreach (var img in productModel.Images)
+            img.Url = $"http://localhost:9000/bucket/products/{Guid.NewGuid()}.jpg";
         var id = product.Id;
         _unitOfWork.Products.GetByIdAsync(id, default).Returns(product);
         var imageUrls = productModel.Images.Select(i => i.Url).ToList();
@@ -132,8 +134,6 @@ public class ProductServiceTests : Mocks
         product.Title.ShouldBeEquivalentTo(productModel.Title);
         product.Description.ShouldBeEquivalentTo(productModel.Description);
         product.Price.ShouldBeEquivalentTo(productModel.Price);
-        product.Provider.Name.ShouldBeEquivalentTo(productModel.Provider.Name);
-        product.Provider.Email.ShouldBeEquivalentTo(productModel.Provider.Email);
         product.Images.Count.ShouldBeEquivalentTo(productModel.Images.Count);
 
         for (int i = 0; i < imageUrls.Count; i++)
@@ -143,7 +143,7 @@ public class ProductServiceTests : Mocks
     }
 
     [Theory, AutoDataCustom]
-    public async Task UpdateProductAsync_WhenProductDoesNotExist_ShouldReturnFailureResult(ProductModel productModel)
+    public async Task UpdateProductAsync_WhenProductDoesNotExist_ShouldReturnFailureResult(UpdateProductModel productModel)
     {
         //Arrange
         var id = Guid.NewGuid();
@@ -155,7 +155,7 @@ public class ProductServiceTests : Mocks
         //Assert
         response.IsSuccess.ShouldBeFalse();
         response.ShouldBeEquivalentTo(Result
-            .Failure(CustomError.ResourceNotFound<Product>()));
+            .Failure(CustomError.ResourceNotFound<Product>(), 404));
         await _productRepository.Received(1).GetByIdAsync(
             Arg.Any<Guid>(),
             default);      
@@ -165,12 +165,12 @@ public class ProductServiceTests : Mocks
     public void GetProducts_ShouldReturnPageSizedProductsList(
         PaginationParams paginationParams,
         ProductFilter filter,
-        List<Product> pagedProducts)
+        PagedResult<Product> pagedProducts)
     {
         //Arrange
         _productRepository.GetPaged(paginationParams, filter)
             .Returns(pagedProducts);
-        var pagedProductModels = pagedProducts.Adapt<List<ProductModel>>();
+        var pagedProductModels = pagedProducts.Adapt<PagedResult<ProductModel>>();
 
         //Act
         var response = _productService.GetProducts(paginationParams, filter, default);
@@ -190,15 +190,15 @@ public class ProductServiceTests : Mocks
     {
         //Arrange
         _productRepository.GetPaged(paginationParams, filter)
-            .Returns(new List<Product>());
+            .Returns(new PagedResult<Product>());
 
         //Act
         var response = _productService.GetProducts(paginationParams, filter, default);
 
         //Assert
         response.IsSuccess.ShouldBeFalse();
-        response.ShouldBeEquivalentTo(new Result<List<ProductModel>>(CustomError
-                .ResourceNotFound<Product>()));
+        response.ShouldBeEquivalentTo(new Result<PagedResult<ProductModel>>(CustomError
+                .ResourceNotFound<Product>(), 404));
         _productRepository.Received(1).GetPaged(
             Arg.Any<PaginationParams>(),
             Arg.Any<ProductFilter>());

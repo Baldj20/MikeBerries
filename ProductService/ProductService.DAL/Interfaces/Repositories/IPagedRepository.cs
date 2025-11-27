@@ -4,5 +4,5 @@ namespace ProductService.DAL.Interfaces.Repositories;
 
 public interface IPagedRepository<T>
 {
-    List<T> GetPaged(PaginationParams paginationParams, IFilter<T> filter);
+    PagedResult<T> GetPaged(PaginationParams paginationParams, IFilter<T> filter);
 }

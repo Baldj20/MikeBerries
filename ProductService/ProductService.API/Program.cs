@@ -1,6 +1,10 @@
+using Polly.Registry;
 using ProductService.API.Configurations;
 using ProductService.BLL.Configurations;
+using ProductService.DAL;
 using ProductService.DAL.Configurations;
+using ProductService.DAL.Interfaces.Repositories;
+using ProductService.DAL.Repositories;
 using Serilog;
 
 namespace ProductService.API;
@@ -20,9 +24,13 @@ public class Program
 
         builder.Configuration.AddUserSecrets<Program>();
 
+        builder.Services.AddMinio(builder.Configuration);
+
         builder.Services.ConfigureDataAccessLayerDependencies(builder.Configuration);
 
         builder.Services.ConfigureBusinessLogicLayerDependencies();
+
+        ApiExtensions.ConfigureMapping();
 
         builder.Services.ConfigureValidators();
 
@@ -31,6 +39,8 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
 
         builder.Services.AddSwaggerGen();
+
+        builder.Services.AddResiliencePipeline("standard-pipeline", builder.Configuration);
 
         var app = builder.Build();
 

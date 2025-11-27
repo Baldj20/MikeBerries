@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ProductService.DAL.Entities;
+using ProductService.DAL.Interfaces.Filters;
 using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.DAL.Repositories;
@@ -14,5 +15,29 @@ public class ProductRepository(MikeBerriesDBContext context) : Repository<Produc
             .FirstOrDefaultAsync(token);
 
         return product;
+    }
+
+    public PagedResult<Product> GetPaged(PaginationParams paginationParams, IFilter<Product> filter)
+    {
+        var initialQuery = Context.Products
+            .Include(p => p.Provider)
+            .Include(p => p.Images)
+            .AsQueryable();
+
+        var query = filter.Apply(initialQuery);
+
+        var totalCount = query.Count();
+
+        query = query.Skip((paginationParams.Page - 1) * paginationParams.PageSize)
+                     .Take(paginationParams.PageSize);      
+
+        var items = query.ToList();
+
+        return new PagedResult<Product>
+        {
+            Items = items,
+            CurrentPage = paginationParams.Page,
+            TotalPages = (int)Math.Ceiling((double)totalCount / paginationParams.PageSize)
+        };
     }
 }

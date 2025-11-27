@@ -19,7 +19,7 @@ public class ProductServiceWebApplicationFactory : WebApplicationFactory<Program
         builder.ConfigureServices(services =>
         {
             var descriptorsToRemove = services.Where(d =>
-                d.ServiceType.Name.Contains("DbContextOptions")           
+                d.ServiceType.Name.Contains("DbContextOptions")
             ).ToList();
 
             foreach (var descriptor in descriptorsToRemove)
@@ -30,7 +30,7 @@ public class ProductServiceWebApplicationFactory : WebApplicationFactory<Program
             services.AddDbContext<MikeBerriesDBContext>(options =>
             {
                 options.UseInMemoryDatabase("TestDatabase", _root);
-            });          
+            });
         });
     }
 }
