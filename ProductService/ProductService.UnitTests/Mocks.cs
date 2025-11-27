@@ -31,6 +31,6 @@ public class Mocks
         _productServiceLogger = Substitute.For<ILogger<ProductService.BLL.Services.ProductService>>();
         _providerServiceLogger = Substitute.For<ILogger<ProviderService>>();
         _productService = new ProductService.BLL.Services.ProductService(_unitOfWork, _cacheRepository, _productServiceLogger);
-        _providerService = new ProviderService(_unitOfWork, _providerServiceLogger);
+        _providerService = new ProviderService(_unitOfWork, _cacheRepository, _providerServiceLogger);
     }
 }
