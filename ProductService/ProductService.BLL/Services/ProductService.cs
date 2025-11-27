@@ -10,7 +10,8 @@ using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.BLL.Services;
 
-public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logger) : IProductService
+public class ProductService(IUnitOfWork unitOfWork, ICacheRepository cache,
+    ILogger<ProductService> logger) : IProductService
 {
     public async Task<Result> AddProductAsync(ProductModel productModel, CancellationToken token)
     {
@@ -44,6 +45,9 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
             await unitOfWork.SaveChangesAsync(token);
 
+            var cacheKey = $"product:{id}";
+            await cache.RemoveData(cacheKey, token);
+
             logger.ResourceDeleted(typeof(Product).Name, product.Id);
 
             return Result.Success(204);
@@ -59,13 +63,25 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
 
     public async Task<Result<ProductModel>> GetProductByIdAsync(Guid id, CancellationToken token)
     {
+        var cacheKey = $"product:{id}";
+        var productModel = await cache.GetData<ProductModel>(cacheKey, token);
+
+        if (productModel is not null)
+        {
+            return new Result<ProductModel>(productModel, 200);
+        }
+
         var product = await unitOfWork.Products.GetByIdAsync(id, token);
 
         if (product is not null)
         {
             logger.ResourceReturned(typeof(Product).Name, product.Id);
 
-            return new Result<ProductModel>(product.Adapt<ProductModel>(), 200);
+            var model = product.Adapt<ProductModel>();
+
+            await cache.SetData(cacheKey, model);
+
+            return new Result<ProductModel>(model, 200);
         }
         else
         {
@@ -145,6 +161,9 @@ public class ProductService(IUnitOfWork unitOfWork, ILogger<ProductService> logg
             }
 
             await unitOfWork.SaveChangesAsync(token);
+
+            var cacheKey = $"product:{id}";
+            await cache.RemoveData(cacheKey, token);
 
             logger.ResourceUpdated(typeof(Product).Name, product.Id);
 

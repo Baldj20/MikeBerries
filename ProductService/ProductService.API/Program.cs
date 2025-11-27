@@ -42,6 +42,8 @@ public class Program
 
         builder.Services.AddResiliencePipeline("standard-pipeline", builder.Configuration);
 
+        builder.Services.AddRedis(builder.Configuration);
+
         var app = builder.Build();
 
         if (!app.Environment.IsEnvironment("IntegrationTesting"))

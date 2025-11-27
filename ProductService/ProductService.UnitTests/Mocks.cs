@@ -16,19 +16,21 @@ public class Mocks
     protected readonly IProductService _productService;
     protected readonly IProviderService _providerService;
     protected readonly IFileRepository _fileRepository;
+    protected readonly ICacheRepository _cacheRepository;
     
     protected Mocks()
     {
         _productRepository = Substitute.For<IProductRepository>();
         _providerRepository = Substitute.For<IProviderRepository>();
         _fileRepository = Substitute.For<IFileRepository>();
+        _cacheRepository = Substitute.For<ICacheRepository>();
         _unitOfWork = Substitute.For<IUnitOfWork>();
         _unitOfWork.Products.Returns(_productRepository);
         _unitOfWork.Providers.Returns(_providerRepository);
         _unitOfWork.Files.Returns(_fileRepository);
         _productServiceLogger = Substitute.For<ILogger<ProductService.BLL.Services.ProductService>>();
         _providerServiceLogger = Substitute.For<ILogger<ProviderService>>();
-        _productService = new ProductService.BLL.Services.ProductService(_unitOfWork, _productServiceLogger);
+        _productService = new ProductService.BLL.Services.ProductService(_unitOfWork, _cacheRepository, _productServiceLogger);
         _providerService = new ProviderService(_unitOfWork, _providerServiceLogger);
     }
 }

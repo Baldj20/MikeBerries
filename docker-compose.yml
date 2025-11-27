@@ -6,7 +6,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - ConnectionStrings__DefaultConnection=${connection_string}
+      - ConnectionStrings__DefaultConnection=${db_connection_string}
+      - ConnectionStrings__Redis=${redis_connection_string}
       - Minio__ServiceURL=${minio_service_url}
       - Minio__AccessKey=${minio_access_key}
       - Minio__SecretKey=${minio_secret_key}
@@ -15,6 +16,8 @@ services:
       postgreDB:
         condition: service_healthy
       minio:
+        condition: service_healthy
+      redis:
         condition: service_healthy
   postgreDB:
     image: postgres:16-alpine 
@@ -46,6 +49,20 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+  redis:
+    image: redis:alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 volumes:
   pgdata:
   minio_data:
+  redis_data:

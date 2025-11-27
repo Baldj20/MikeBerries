@@ -10,7 +10,8 @@ using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.BLL.Services;
 
-public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> logger) : IProviderService
+public class ProviderService(IUnitOfWork unitOfWork, ICacheRepository cache, 
+    ILogger<ProviderService> logger) : IProviderService
 {
     public async Task<Result> AddProviderAsync(ProviderModel providerModel, CancellationToken token)
     {
@@ -35,6 +36,9 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
 
             await unitOfWork.SaveChangesAsync(token);
 
+            var cacheKey = $"product:{id}";
+            await cache.RemoveData(cacheKey, token);
+
             logger.ResourceDeleted(typeof(Provider).Name, provider.Id);
 
             return Result.Success(204);
@@ -50,13 +54,25 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
 
     public async Task<Result<ProviderModel>> GetProviderByIdAsync(Guid id, CancellationToken token)
     {
+        var cacheKey = $"product:{id}";
+        var providerModel = await cache.GetData<ProviderModel>(cacheKey, token);
+
+        if (providerModel is not null)
+        {
+            return new Result<ProviderModel>(providerModel, 200);
+        }
+
         var provider = await unitOfWork.Providers.GetByIdAsync(id, token);
 
         if (provider is not null)
         {
             logger.ResourceReturned(typeof(Provider).Name, provider.Id);
 
-            return new Result<ProviderModel>(provider.Adapt<ProviderModel>(), 200);
+            var model = provider.Adapt<ProviderModel>();
+
+            await cache.SetData(cacheKey, model);
+
+            return new Result<ProviderModel>(model, 200);
         }
         else
         {
@@ -104,6 +120,9 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
             providerModel.Adapt(provider);
 
             await unitOfWork.SaveChangesAsync(token);
+
+            var cacheKey = $"product:{id}";
+            await cache.RemoveData(cacheKey, token);
 
             logger.ResourceUpdated(typeof(Provider).Name, provider.Id);
 

@@ -12,6 +12,7 @@ using ProductService.DAL;
 using ProductService.DAL.Entities;
 using ProductService.DAL.Interfaces.Repositories;
 using ProductService.DAL.Repositories;
+using StackExchange.Redis;
 
 namespace ProductService.API;
 
@@ -104,5 +105,15 @@ public static class ApiExtensions
         });
 
         services.AddScoped<IFileRepository, MinioFileRepository>();
+    }
+
+    public static void AddRedis(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis");
+        });
+
+        services.AddScoped<ICacheRepository, RedisCacheRepository>();
     }
 }
