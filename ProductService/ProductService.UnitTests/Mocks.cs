@@ -32,9 +32,8 @@ public class Mocks
         _unitOfWork.Providers.Returns(_providerRepository);
         _unitOfWork.Files.Returns(_fileRepository);
         _pipelineProvider = Substitute.For<ResiliencePipelineProvider<string>>();
-        _pipelineProvider
-            .GetPipeline<object?>(Arg.Any<string>())
-            .Returns(ResiliencePipeline<object?>.Empty);
+        _pipelineProvider.GetPipeline(Arg.Any<string>())
+            .Returns(ResiliencePipeline.Empty);
         _productServiceLogger = Substitute.For<ILogger<ProductService.BLL.Services.ProductService>>();
         _providerServiceLogger = Substitute.For<ILogger<ProviderService>>();
         _productService = new ProductService.BLL.Services.ProductService(_unitOfWork, _cacheRepository, _productServiceLogger, _pipelineProvider);
