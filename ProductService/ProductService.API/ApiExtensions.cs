@@ -120,30 +120,4 @@ public static class ApiExtensions
             });
         });
     }
-
-    public static void AddMinio(this IServiceCollection services, IConfiguration configuration)
-    {
-        var minioSettings = configuration.GetSection(MinioSettings.CONFIG_SECTION_NAME)
-            .Get<MinioSettings>();
-
-        if (minioSettings is null) throw new InvalidOperationException("Minio settings not found");
-
-        services.AddSingleton(sp =>
-        {
-            var pipelineProvider = sp.GetRequiredService<ResiliencePipelineProvider<string>>();
-            return new MinioStorage(minioSettings, pipelineProvider);
-        });
-
-        services.AddScoped<IFileRepository, MinioFileRepository>();
-    }
-
-    public static void AddRedis(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddStackExchangeRedisCache(options =>
-        {
-            options.Configuration = configuration.GetConnectionString("Redis");
-        });
-
-        services.AddScoped<ICacheRepository, RedisCacheRepository>();
-    }
 }

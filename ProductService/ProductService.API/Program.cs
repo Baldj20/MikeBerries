@@ -21,8 +21,6 @@ public class Program
 
         builder.Configuration.AddUserSecrets<Program>();
 
-        builder.Services.AddMinio(builder.Configuration);
-
         builder.Services.ConfigureDataAccessLayerDependencies(builder.Configuration);
 
         builder.Services.ConfigureBusinessLogicLayerDependencies();
@@ -39,8 +37,6 @@ public class Program
 
         builder.Services.AddResiliencePipeline(ResilienceConstants.STANDARD_PIPELINE_NAME, builder.Configuration);
         builder.Services.AddCachingResiliencePipeline(ResilienceConstants.CACHING_PIPELINE_NAME);
-
-        builder.Services.AddRedis(builder.Configuration);
 
         var app = builder.Build();
 
