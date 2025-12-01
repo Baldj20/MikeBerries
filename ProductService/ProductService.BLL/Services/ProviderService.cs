@@ -56,7 +56,7 @@ public class ProviderService : IProviderService
             {
                 var cacheKey = $"product:{id}";
                 await _cache.RemoveData(cacheKey, ct);
-            });         
+            }, token);         
 
             _logger.ResourceDeleted(typeof(Provider).Name, provider.Id);
 
@@ -70,7 +70,6 @@ public class ProviderService : IProviderService
                 .Failure(CustomError.ResourceNotFound<Provider>(), 204);
         }
     }
-
     public async Task<Result<ProviderModel>> GetProviderByIdAsync(Guid id, CancellationToken token)
     {
         var cacheKey = $"product:{id}";
@@ -78,7 +77,7 @@ public class ProviderService : IProviderService
         var providerModel = await _pipeline.ExecuteAsync(async ct =>
         {
             return await _cache.GetData<ProviderModel>(cacheKey, ct);           
-        });
+        }, token);
 
         if (providerModel is not null)
         {
@@ -96,7 +95,7 @@ public class ProviderService : IProviderService
             await _pipeline.ExecuteAsync(async ct =>
             {
                 await _cache.SetData(cacheKey, model, token: ct);
-            });
+            }, token);
 
             return new Result<ProviderModel>(model, 200);
         }
@@ -151,7 +150,7 @@ public class ProviderService : IProviderService
             {
                 var cacheKey = $"product:{id}";
                 await _cache.RemoveData(cacheKey, ct);
-            });
+            }, token);
 
             _logger.ResourceUpdated(typeof(Provider).Name, provider.Id);
 
