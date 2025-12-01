@@ -7,6 +7,5 @@ public class FakeHandle : IDistributedSynchronizationHandle
     public CancellationToken HandleLostToken => CancellationToken.None;
 
     public void Dispose() { }
-
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }
