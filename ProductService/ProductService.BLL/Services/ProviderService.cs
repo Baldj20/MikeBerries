@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Registry;
+using ProductService.BLL.Constants.Resilience;
 using ProductService.BLL.Interfaces.Services;
 using ProductService.BLL.Logging;
 using ProductService.BLL.Models;
@@ -22,7 +23,7 @@ public class ProviderService : IProviderService
     public ProviderService(IUnitOfWork unitOfWork, ICacheRepository cache, 
         ILogger<ProviderService> logger,
         ResiliencePipelineProvider<string> pipelineProvider,
-        string pipelineName = "caching-pipeline")
+        string pipelineName = ResilienceConstants.CACHING_PIPELINE_NAME)
     {
         _unitOfWork = unitOfWork;
         _cache = cache;

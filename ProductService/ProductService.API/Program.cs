@@ -1,5 +1,6 @@
 using ProductService.API.Configurations;
 using ProductService.BLL.Configurations;
+using ProductService.BLL.Constants.Resilience;
 using ProductService.DAL.Configurations;
 using Serilog;
 
@@ -36,8 +37,8 @@ public class Program
 
         builder.Services.AddSwaggerGen();
 
-        builder.Services.AddResiliencePipeline("standard-pipeline", builder.Configuration);
-        builder.Services.AddCachingResiliencePipeline("caching-pipeline");
+        builder.Services.AddResiliencePipeline(ResilienceConstants.STANDARD_PIPELINE_NAME, builder.Configuration);
+        builder.Services.AddCachingResiliencePipeline(ResilienceConstants.CACHING_PIPELINE_NAME);
 
         builder.Services.AddRedis(builder.Configuration);
 
