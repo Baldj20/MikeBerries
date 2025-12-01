@@ -2,11 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using Polly.CircuitBreaker;
+using Polly.Fallback;
 using Polly.Registry;
 using Polly.Retry;
 using ProductService.API.DTO;
 using ProductService.API.Resilience;
 using ProductService.BLL.DTO;
+using ProductService.BLL.Logging;
 using ProductService.BLL.Models;
 using ProductService.DAL;
 using ProductService.DAL.Entities;
@@ -87,6 +89,34 @@ public static class ApiExtensions
                 SamplingDuration = TimeSpan.FromSeconds(options.CircuitBreaker.SamplingDurationSeconds),
                 MinimumThroughput = options.CircuitBreaker.MinimumThroughput,
                 BreakDuration = TimeSpan.FromSeconds(options.CircuitBreaker.BreakDurationSeconds)
+            });
+        });
+    }
+
+    public static void AddCachingResiliencePipeline(this IServiceCollection services, string pipelineName
+        )
+    {
+        services.AddResiliencePipeline<string, object?>(pipelineName, builder =>
+        {
+            builder.AddFallback(new FallbackStrategyOptions<object?>
+            {
+                ShouldHandle = new PredicateBuilder<object?>().Handle<Exception>(),
+                FallbackAction = _ => Outcome.FromResultAsValueTask<object?>(null)
+            });
+
+            builder.AddRetry(new RetryStrategyOptions<object?>
+            {
+                MaxRetryAttempts = 2,
+                Delay = TimeSpan.FromMilliseconds(100),
+                BackoffType = DelayBackoffType.Constant
+            });
+
+            builder.AddCircuitBreaker(new CircuitBreakerStrategyOptions<object?>
+            {
+                FailureRatio = 0.5,
+                SamplingDuration = TimeSpan.FromSeconds(10),
+                MinimumThroughput = 5,
+                BreakDuration = TimeSpan.FromSeconds(30)
             });
         });
     }

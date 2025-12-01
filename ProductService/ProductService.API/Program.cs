@@ -1,10 +1,6 @@
-using Polly.Registry;
 using ProductService.API.Configurations;
 using ProductService.BLL.Configurations;
-using ProductService.DAL;
 using ProductService.DAL.Configurations;
-using ProductService.DAL.Interfaces.Repositories;
-using ProductService.DAL.Repositories;
 using Serilog;
 
 namespace ProductService.API;
@@ -41,6 +37,7 @@ public class Program
         builder.Services.AddSwaggerGen();
 
         builder.Services.AddResiliencePipeline("standard-pipeline", builder.Configuration);
+        builder.Services.AddCachingResiliencePipeline("caching-pipeline");
 
         builder.Services.AddRedis(builder.Configuration);
 

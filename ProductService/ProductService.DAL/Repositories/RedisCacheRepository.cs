@@ -20,7 +20,7 @@ public class RedisCacheRepository(IDistributedCache cache) : ICacheRepository
 
         if (bytes is null || bytes.Length == 0) return default;
 
-        return MessagePackSerializer.Deserialize<T>(bytes, options);
+        return MessagePackSerializer.Deserialize<T>(bytes, options, token);
     }
 
     public async Task RemoveData(string key, CancellationToken token)
@@ -38,7 +38,7 @@ public class RedisCacheRepository(IDistributedCache cache) : ICacheRepository
             SlidingExpiration = TimeSpan.FromMinutes(2)
         };
 
-        var bytes = MessagePackSerializer.Serialize(value, options);
+        var bytes = MessagePackSerializer.Serialize(value, options, token);
 
         await cache.SetAsync(key, bytes, finalOptions, token);
     }
