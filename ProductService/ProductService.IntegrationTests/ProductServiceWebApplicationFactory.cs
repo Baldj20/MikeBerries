@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Medallion.Threading;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Polly.Registry;
 using ProductService.API;
 using ProductService.DAL;
+using ProductService.IntegrationTests.Fakes;
 
 namespace ProductService.IntegrationTests;
 
@@ -34,6 +36,9 @@ public class ProductServiceWebApplicationFactory : WebApplicationFactory<Program
             {
                 options.UseInMemoryDatabase("TestDatabase", _root);
             });
+
+            services.RemoveAll<IDistributedLockProvider>();
+            services.AddSingleton<IDistributedLockProvider, FakeDistributedLockProvider>();
         });
 
         builder.ConfigureTestServices(services =>

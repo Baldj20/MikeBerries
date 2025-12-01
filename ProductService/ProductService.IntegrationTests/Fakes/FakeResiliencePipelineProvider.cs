@@ -1,7 +1,7 @@
 ﻿using Polly;
 using Polly.Registry;
 
-namespace ProductService.IntegrationTests;
+namespace ProductService.IntegrationTests.Fakes;
 
 public class FakeResiliencePipelineProvider : ResiliencePipelineProvider<string>
 {
