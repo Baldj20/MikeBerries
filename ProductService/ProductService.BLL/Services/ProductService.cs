@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Medallion.Threading;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Registry;
@@ -19,9 +20,11 @@ public class ProductService : IProductService
     private readonly ICacheRepository _cache;
     private readonly ResiliencePipeline _pipeline;
     private readonly ILogger<ProductService> _logger;
+    private readonly IDistributedLockProvider _lockProvider;
 
     public ProductService(IUnitOfWork unitOfWork, ICacheRepository cache,
         ILogger<ProductService> logger,
+        IDistributedLockProvider distributedLockProvider,
         ResiliencePipelineProvider<string> pipelineProvider,
         string pipelineName = ResilienceConstants.CACHING_PIPELINE_NAME)
     {
@@ -29,6 +32,7 @@ public class ProductService : IProductService
         _cache = cache;
         _pipeline = pipelineProvider.GetPipeline(pipelineName);
         _logger = logger;
+        _lockProvider = distributedLockProvider;
     }
     public async Task<Result> AddProductAsync(ProductModel productModel, CancellationToken token)
     {
@@ -54,31 +58,36 @@ public class ProductService : IProductService
 
     public async Task<Result> DeleteProductAsync(Guid id, CancellationToken token)
     {
-        var product = await _unitOfWork.Products.GetByIdAsync(id, token);
+        var lockKey = $"lock:product:{id}";
 
-        if (product is not null)
+        await using (await _lockProvider.AcquireLockAsync(lockKey, cancellationToken: token))
         {
-            await _unitOfWork.Products.Delete(product);
+            var product = await _unitOfWork.Products.GetByIdAsync(id, token);
 
-            await _unitOfWork.SaveChangesAsync(token);
-
-            await _pipeline.ExecuteAsync(async ct =>
+            if (product is not null)
             {
-                var cacheKey = $"product:{id}";
-                await _cache.RemoveData(cacheKey, ct);
-            }, token);
-            
-            _logger.ResourceDeleted(typeof(Product).Name, product.Id);
+                await _unitOfWork.Products.Delete(product);
 
-            return Result.Success(204);
-        }
-        else
-        {
-            _logger.ResourceToDeleteNotFound(typeof(Product).Name);
+                await _unitOfWork.SaveChangesAsync(token);
 
-            return Result
-                .Failure(CustomError.ResourceNotFound<Product>(), 204);
-        }
+                await _pipeline.ExecuteAsync(async ct =>
+                {
+                    var cacheKey = $"product:{id}";
+                    await _cache.RemoveData(cacheKey, ct);
+                }, token);
+
+                _logger.ResourceDeleted(typeof(Product).Name, product.Id);
+
+                return Result.Success(204);
+            }
+            else
+            {
+                _logger.ResourceToDeleteNotFound(typeof(Product).Name);
+
+                return Result
+                    .Failure(CustomError.ResourceNotFound<Product>(), 204);
+            }
+        }      
     }
 
     public async Task<Result<ProductModel>> GetProductByIdAsync(Guid id, CancellationToken token)
@@ -95,27 +104,42 @@ public class ProductService : IProductService
             return new Result<ProductModel>(productModel, 200);
         }
 
-        var product = await _unitOfWork.Products.GetByIdAsync(id, token);
+        var lockKey = $"lock:product:{id}";
 
-        if (product is not null)
+        await using(await _lockProvider.AcquireLockAsync(lockKey, cancellationToken: token))
         {
-            _logger.ResourceReturned(typeof(Product).Name, product.Id);
-
-            var model = product.Adapt<ProductModel>();
-
-            await _pipeline.ExecuteAsync(async ct =>
+            productModel = await _pipeline.ExecuteAsync(async ct =>
             {
-                await _cache.SetData(cacheKey, model, token: ct);
-            }, token);          
+                return await _cache.GetData<ProductModel>(cacheKey, ct);
+            }, token);
 
-            return new Result<ProductModel>(model, 200);
-        }
-        else
-        {
-            _logger.ResourceNotFound(typeof(Product).Name, id);
+            if (productModel is not null)
+            {
+                return new Result<ProductModel>(productModel, 200);
+            }
 
-            return new Result<ProductModel>(CustomError.ResourceNotFound<Product>(), 404);
-        }
+            var product = await _unitOfWork.Products.GetByIdAsync(id, token);
+
+            if (product is not null)
+            {
+                _logger.ResourceReturned(typeof(Product).Name, product.Id);
+
+                var model = product.Adapt<ProductModel>();
+
+                await _pipeline.ExecuteAsync(async ct =>
+                {
+                    await _cache.SetData(cacheKey, model, token: ct);
+                }, token);
+
+                return new Result<ProductModel>(model, 200);
+            }
+            else
+            {
+                _logger.ResourceNotFound(typeof(Product).Name, id);
+
+                return new Result<ProductModel>(CustomError.ResourceNotFound<Product>(), 404);
+            }
+        }     
     }
 
     public Result<PagedResult<ProductModel>> GetProducts(PaginationParams paginationParams, 
@@ -143,61 +167,66 @@ public class ProductService : IProductService
 
     public async Task<Result> UpdateProductAsync(Guid id, UpdateProductModel productModel, CancellationToken token)
     {
-        var product = await _unitOfWork.Products.GetByIdAsync(id, token);
+        var lockKey = $"lock:product:{id}";
 
-        if (product is null)
+        await using (await _lockProvider.AcquireLockAsync(lockKey, cancellationToken: token))
         {
-            _logger.ResourceToUpdateNotFound(typeof(Product).Name);
+            var product = await _unitOfWork.Products.GetByIdAsync(id, token);
 
-            return Result.Failure(CustomError.ResourceNotFound<Product>(), 404);
-        }
-        else
-        {
-            productModel.Adapt(product);
-
-            foreach (var item in productModel.Images)
+            if (product is null)
             {
-                if (item.Action is UpdateImageAction.Delete)
-                {
-                    var uri = new Uri(item.Url!);
-                    var cleanPath = uri.AbsolutePath.TrimStart('/');
-                    var key = cleanPath.Substring(cleanPath.IndexOf('/') + 1);
+                _logger.ResourceToUpdateNotFound(typeof(Product).Name);
 
-                    await _unitOfWork.Files.DeleteFileAsync(key, token);
-
-                    var imageEntity = product.Images.FirstOrDefault(img => img.Url == item.Url);
-                    if (imageEntity is not null)
-                        await _unitOfWork.Images.Delete(imageEntity);
-                }
-                else if (item.Action is UpdateImageAction.Add)
-                {
-                    var image = new ProductImage
-                    {
-                        Url = string.Empty,
-                        Product = product,
-                        ProductId = product.Id
-                    };
-
-                    var key = $"products/{product.Id}/{image.Id}";
-                    using var fileStream = item.Image!.OpenReadStream();
-                    var url = await _unitOfWork.Files.UploadFileAsync(key, fileStream, token);
-                    image.Url = url;
-                    
-                    await _unitOfWork.Images.AddAsync(image, token);
-                }
+                return Result.Failure(CustomError.ResourceNotFound<Product>(), 404);
             }
-
-            await _unitOfWork.SaveChangesAsync(token);
-
-            await _pipeline.ExecuteAsync(async ct =>
+            else
             {
-                var cacheKey = $"product:{id}";
-                await _cache.RemoveData(cacheKey, ct);
-            }, token);          
+                productModel.Adapt(product);
 
-            _logger.ResourceUpdated(typeof(Product).Name, product.Id);
+                foreach (var item in productModel.Images)
+                {
+                    if (item.Action is UpdateImageAction.Delete)
+                    {
+                        var uri = new Uri(item.Url!);
+                        var cleanPath = uri.AbsolutePath.TrimStart('/');
+                        var key = cleanPath.Substring(cleanPath.IndexOf('/') + 1);
 
-            return Result.Success(204);
-        }       
+                        await _unitOfWork.Files.DeleteFileAsync(key, token);
+
+                        var imageEntity = product.Images.FirstOrDefault(img => img.Url == item.Url);
+                        if (imageEntity is not null)
+                            await _unitOfWork.Images.Delete(imageEntity);
+                    }
+                    else if (item.Action is UpdateImageAction.Add)
+                    {
+                        var image = new ProductImage
+                        {
+                            Url = string.Empty,
+                            Product = product,
+                            ProductId = product.Id
+                        };
+
+                        var key = $"products/{product.Id}/{image.Id}";
+                        using var fileStream = item.Image!.OpenReadStream();
+                        var url = await _unitOfWork.Files.UploadFileAsync(key, fileStream, token);
+                        image.Url = url;
+
+                        await _unitOfWork.Images.AddAsync(image, token);
+                    }
+                }
+
+                await _unitOfWork.SaveChangesAsync(token);
+
+                await _pipeline.ExecuteAsync(async ct =>
+                {
+                    var cacheKey = $"product:{id}";
+                    await _cache.RemoveData(cacheKey, ct);
+                }, token);
+
+                _logger.ResourceUpdated(typeof(Product).Name, product.Id);
+
+                return Result.Success(204);
+            }
+        }              
     }
 }

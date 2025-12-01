@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Medallion.Threading;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Polly;
 using Polly.Registry;
@@ -20,6 +21,7 @@ public class Mocks
     protected readonly IFileRepository _fileRepository;
     protected readonly ICacheRepository _cacheRepository;
     protected readonly ResiliencePipelineProvider<string> _pipelineProvider;
+    protected readonly IDistributedLockProvider _lockProvider;
 
     protected Mocks()
     {
@@ -36,7 +38,17 @@ public class Mocks
             .Returns(ResiliencePipeline.Empty);
         _productServiceLogger = Substitute.For<ILogger<ProductService.BLL.Services.ProductService>>();
         _providerServiceLogger = Substitute.For<ILogger<ProviderService>>();
-        _productService = new ProductService.BLL.Services.ProductService(_unitOfWork, _cacheRepository, _productServiceLogger, _pipelineProvider);
-        _providerService = new ProviderService(_unitOfWork, _cacheRepository, _providerServiceLogger, _pipelineProvider);
+
+        _lockProvider = Substitute.For<IDistributedLockProvider>();
+        var lockHandle = Substitute.For<IDistributedSynchronizationHandle>();
+        var distributedLock = Substitute.For<IDistributedLock>();
+        distributedLock.AcquireAsync(Arg.Any<TimeSpan?>(), Arg.Any<CancellationToken>())
+            .Returns(new ValueTask<IDistributedSynchronizationHandle>(lockHandle));
+        _lockProvider.CreateLock(Arg.Any<string>()).Returns(distributedLock);
+
+        _productService = new ProductService.BLL.Services.ProductService(_unitOfWork, _cacheRepository, 
+            _productServiceLogger, _lockProvider, _pipelineProvider);
+        _providerService = new ProviderService(_unitOfWork, _cacheRepository, 
+            _providerServiceLogger, _lockProvider, _pipelineProvider);
     }
 }
