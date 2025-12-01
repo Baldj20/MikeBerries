@@ -61,10 +61,10 @@ public class ProductService : IProductService
 
             await _unitOfWork.SaveChangesAsync(token);
 
-            await _pipeline.ExecuteAsync(async token =>
+            await _pipeline.ExecuteAsync(async ct =>
             {
                 var cacheKey = $"product:{id}";
-                await _cache.RemoveData(cacheKey, token);
+                await _cache.RemoveData(cacheKey, ct);
             });
             
             _logger.ResourceDeleted(typeof(Product).Name, product.Id);
@@ -84,9 +84,9 @@ public class ProductService : IProductService
     {
         var cacheKey = $"product:{id}";
 
-        var productModel = await _pipeline.ExecuteAsync(async token =>
+        var productModel = await _pipeline.ExecuteAsync(async ct =>
         {
-            return await _cache.GetData<ProductModel>(cacheKey, token);
+            return await _cache.GetData<ProductModel>(cacheKey, ct);
         });
 
         if (productModel is not null)
@@ -102,9 +102,9 @@ public class ProductService : IProductService
 
             var model = product.Adapt<ProductModel>();
 
-            await _pipeline.ExecuteAsync(async token =>
+            await _pipeline.ExecuteAsync(async ct =>
             {
-                await _cache.SetData(cacheKey, model, token: token);
+                await _cache.SetData(cacheKey, model, token: ct);
             });          
 
             return new Result<ProductModel>(model, 200);
@@ -188,10 +188,10 @@ public class ProductService : IProductService
 
             await _unitOfWork.SaveChangesAsync(token);
 
-            await _pipeline.ExecuteAsync(async token =>
+            await _pipeline.ExecuteAsync(async ct =>
             {
                 var cacheKey = $"product:{id}";
-                await _cache.RemoveData(cacheKey, token);
+                await _cache.RemoveData(cacheKey, ct);
             });          
 
             _logger.ResourceUpdated(typeof(Product).Name, product.Id);

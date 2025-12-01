@@ -52,10 +52,10 @@ public class ProviderService : IProviderService
 
             await _unitOfWork.SaveChangesAsync(token);
 
-            await _pipeline.ExecuteAsync(async token =>
+            await _pipeline.ExecuteAsync(async ct =>
             {
                 var cacheKey = $"product:{id}";
-                await _cache.RemoveData(cacheKey, token);
+                await _cache.RemoveData(cacheKey, ct);
             });         
 
             _logger.ResourceDeleted(typeof(Provider).Name, provider.Id);
@@ -75,9 +75,9 @@ public class ProviderService : IProviderService
     {
         var cacheKey = $"product:{id}";
 
-        var providerModel = await _pipeline.ExecuteAsync(async token =>
+        var providerModel = await _pipeline.ExecuteAsync(async ct =>
         {
-            return await _cache.GetData<ProviderModel>(cacheKey, token);           
+            return await _cache.GetData<ProviderModel>(cacheKey, ct);           
         });
 
         if (providerModel is not null)
@@ -93,9 +93,9 @@ public class ProviderService : IProviderService
 
             var model = provider.Adapt<ProviderModel>();
 
-            await _pipeline.ExecuteAsync(async token =>
+            await _pipeline.ExecuteAsync(async ct =>
             {
-                await _cache.SetData(cacheKey, model, token: token);
+                await _cache.SetData(cacheKey, model, token: ct);
             });
 
             return new Result<ProviderModel>(model, 200);
@@ -147,10 +147,10 @@ public class ProviderService : IProviderService
 
             await _unitOfWork.SaveChangesAsync(token);
 
-            await _pipeline.ExecuteAsync(async token =>
+            await _pipeline.ExecuteAsync(async ct =>
             {
                 var cacheKey = $"product:{id}";
-                await _cache.RemoveData(cacheKey, token);
+                await _cache.RemoveData(cacheKey, ct);
             });
 
             _logger.ResourceUpdated(typeof(Provider).Name, provider.Id);
