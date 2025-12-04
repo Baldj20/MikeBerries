@@ -44,7 +44,7 @@ public class Mocks
         var lockHandle = Substitute.For<IDistributedSynchronizationHandle>();
         var distributedLock = Substitute.For<IDistributedLock>();
         distributedLock.AcquireAsync(Arg.Any<TimeSpan?>(), Arg.Any<CancellationToken>())
-            .Returns(_ => ValueTask.FromResult(lockHandle));
+            .Returns(ValueTask.FromResult(lockHandle));
         _lockProvider.CreateLock(Arg.Any<string>()).Returns(distributedLock);
 
         _productService = new ProductService.BLL.Services.ProductService(_unitOfWork, _cacheRepository, 
