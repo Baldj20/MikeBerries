@@ -33,6 +33,9 @@ env:
   postgres_user: ${{ secrets.POSTGRES_USER }}
   postgres_password: ${{ secrets.POSTGRES_PASSWORD }}
   connection_string: ${{ secrets.CONNECTION_STRING }}
+
+  Auth0__Authority: ${{ secrets.AUTH0_AUTHORITY }}
+  Auth0__Audience: ${{ secrets.AUTH0_AUDIENCE }}
   
 jobs:
   build:
