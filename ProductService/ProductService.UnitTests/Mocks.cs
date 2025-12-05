@@ -6,7 +6,6 @@ using Polly.Registry;
 using ProductService.BLL.Interfaces.Services;
 using ProductService.BLL.Services;
 using ProductService.DAL.Interfaces.Repositories;
-using ProductService.UnitTests;
 
 namespace UnitTests;
 
@@ -41,11 +40,6 @@ public class Mocks
         _providerServiceLogger = Substitute.For<ILogger<ProviderService>>();
 
         _lockProvider = Substitute.For<IDistributedLockProvider>();
-        var lockHandle = Substitute.For<IDistributedSynchronizationHandle>();
-        var distributedLock = Substitute.For<IDistributedLock>();
-        distributedLock.AcquireAsync(Arg.Any<TimeSpan?>(), Arg.Any<CancellationToken>())
-            .Returns(_ => ValueTask.FromResult(lockHandle));
-        _lockProvider.CreateLock(Arg.Any<string>()).Returns(distributedLock);
 
         _productService = new ProductService.BLL.Services.ProductService(_unitOfWork, _cacheRepository, 
             _productServiceLogger, _lockProvider, _pipelineProvider);
