@@ -1,10 +1,6 @@
-using Polly.Registry;
 using ProductService.API.Configurations;
 using ProductService.BLL.Configurations;
-using ProductService.DAL;
 using ProductService.DAL.Configurations;
-using ProductService.DAL.Interfaces.Repositories;
-using ProductService.DAL.Repositories;
 using Serilog;
 
 namespace ProductService.API;
@@ -23,6 +19,8 @@ public class Program
         builder.Host.UseSerilog();
 
         builder.Configuration.AddUserSecrets<Program>();
+
+        builder.Services.ConfigureAutentication(builder.Configuration);
 
         builder.Services.AddMinio(builder.Configuration);
 
@@ -56,6 +54,8 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+
+        app.UseAuthentication();
 
         app.UseAuthorization();
 

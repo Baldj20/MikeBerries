@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductService.API.Filters.Attributes;
 using ProductService.BLL;
@@ -12,6 +13,7 @@ namespace ProductService.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 [AddStatusCode]
 [ExceptionFilter]
 public class ProvidersController(IProviderService providerService) : ControllerBase

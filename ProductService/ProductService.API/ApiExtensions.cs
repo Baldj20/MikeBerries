@@ -1,4 +1,5 @@
 ﻿using Mapster;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using Polly.CircuitBreaker;
@@ -17,6 +18,21 @@ namespace ProductService.API;
 
 public static class ApiExtensions
 {
+    public static void ConfigureAutentication(this IServiceCollection services, IConfiguration configuration)
+    {
+        var authSettings = configuration.GetSection(AuthSettings.CONFIG_SECTION_NAME).Get<AuthSettings>();
+        if (authSettings is null) throw new InvalidOperationException("Authentication settings not found");
+
+        services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
+        {
+            options.Authority = authSettings.Authority;
+            options.Audience = authSettings.Audience;
+        });
+    }
     public static void ApplyMigrations(this WebApplication app)
     {
         using (var scope = app.Services.CreateScope())
