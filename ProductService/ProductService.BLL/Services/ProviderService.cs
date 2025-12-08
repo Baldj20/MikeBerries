@@ -1,5 +1,9 @@
 ﻿using Mapster;
+using Medallion.Threading;
 using Microsoft.Extensions.Logging;
+using Polly;
+using Polly.Registry;
+using ProductService.BLL.Constants.Resilience;
 using ProductService.BLL.Interfaces.Services;
 using ProductService.BLL.Logging;
 using ProductService.BLL.Models;
@@ -10,79 +14,141 @@ using ProductService.DAL.Interfaces.Repositories;
 
 namespace ProductService.BLL.Services;
 
-public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> logger) : IProviderService
+public class ProviderService : IProviderService
 {
+    private readonly IUnitOfWork _unitOfWork;
+    private readonly ICacheRepository _cache;
+    private readonly ResiliencePipeline _pipeline;
+    private readonly ILogger<ProviderService> _logger;
+    private readonly IDistributedLockProvider _lockProvider;
+
+    public ProviderService(IUnitOfWork unitOfWork, ICacheRepository cache, 
+        ILogger<ProviderService> logger,
+        IDistributedLockProvider distributedLockProvider,
+        ResiliencePipelineProvider<string> pipelineProvider,
+        string pipelineName = ResilienceConstants.CACHING_PIPELINE_NAME)
+    {
+        _unitOfWork = unitOfWork;
+        _cache = cache;
+        _pipeline = pipelineProvider.GetPipeline(pipelineName);
+        _logger = logger;
+        _lockProvider = distributedLockProvider;
+    }
     public async Task<Result> AddProviderAsync(ProviderModel providerModel, CancellationToken token)
     {
         var provider = providerModel.Adapt<Provider>();
 
-        await unitOfWork.Providers.AddAsync(provider, token);
+        await _unitOfWork.Providers.AddAsync(provider, token);
 
-        await unitOfWork.SaveChangesAsync(token);
+        await _unitOfWork.SaveChangesAsync(token);
 
-        logger.ResourceAdded(typeof(Provider).Name, provider.Id);
+        _logger.ResourceAdded(typeof(Provider).Name, provider.Id);
 
         return Result.Success(201);
     }
 
     public async Task<Result> DeleteProviderAsync(Guid id, CancellationToken token)
     {
-        var provider = await unitOfWork.Providers.GetByIdAsync(id, token);
+        var lockKey = $"lock:provider:{id}";
 
-        if (provider is not null)
+        await using (await _lockProvider.AcquireLockAsync(lockKey, cancellationToken: token))
         {
-            await unitOfWork.Providers.Delete(provider);
+            var provider = await _unitOfWork.Providers.GetByIdAsync(id, token);
 
-            await unitOfWork.SaveChangesAsync(token);
+            if (provider is not null)
+            {
+                await _unitOfWork.Providers.Delete(provider);
 
-            logger.ResourceDeleted(typeof(Provider).Name, provider.Id);
+                await _unitOfWork.SaveChangesAsync(token);
 
-            return Result.Success(204);
-        }
-        else
-        {
-            logger.ResourceToDeleteNotFound(typeof(Provider).Name);
+                await _pipeline.ExecuteAsync(async ct =>
+                {
+                    var cacheKey = $"provider:{id}";
+                    await _cache.RemoveData(cacheKey, ct);
+                }, token);
 
-            return Result
-                .Failure(CustomError.ResourceNotFound<Provider>(), 204);
+                _logger.ResourceDeleted(typeof(Provider).Name, provider.Id);
+
+                return Result.Success(204);
+            }
+            else
+            {
+                _logger.ResourceToDeleteNotFound(typeof(Provider).Name);
+
+                return Result
+                    .Failure(CustomError.ResourceNotFound<Provider>(), 204);
+            }
         }
     }
-
     public async Task<Result<ProviderModel>> GetProviderByIdAsync(Guid id, CancellationToken token)
     {
-        var provider = await unitOfWork.Providers.GetByIdAsync(id, token);
+        var cacheKey = $"provider:{id}";
 
-        if (provider is not null)
+        var providerModel = await _pipeline.ExecuteAsync(async ct =>
         {
-            logger.ResourceReturned(typeof(Provider).Name, provider.Id);
+            return await _cache.GetData<ProviderModel>(cacheKey, ct);
+        }, token);
 
-            return new Result<ProviderModel>(provider.Adapt<ProviderModel>(), 200);
-        }
-        else
+        if (providerModel is not null)
         {
-            logger.ResourceNotFound(typeof(Provider).Name, id);
-
-            return new Result<ProviderModel>(CustomError.ResourceNotFound<Provider>(), 404);
+            return new Result<ProviderModel>(providerModel, 200);
         }
+
+        var lockKey = $"lock:provider:{id}";
+
+        await using (await _lockProvider.AcquireLockAsync(lockKey, cancellationToken: token))
+        {
+            providerModel = await _pipeline.ExecuteAsync(async ct =>
+            {
+                return await _cache.GetData<ProviderModel>(cacheKey, ct);
+            }, token);
+
+            if (providerModel is not null)
+            {
+                return new Result<ProviderModel>(providerModel, 200);
+            }
+
+            var provider = await _unitOfWork.Providers.GetByIdAsync(id, token);
+
+            if (provider is not null)
+            {
+                _logger.ResourceReturned(typeof(Provider).Name, provider.Id);
+
+                var model = provider.Adapt<ProviderModel>();
+
+                await _pipeline.ExecuteAsync(async ct =>
+                {
+                    await _cache.SetData(cacheKey, model, token: ct);
+                }, token);
+
+                return new Result<ProviderModel>(model, 200);
+            }
+            else
+            {
+                _logger.ResourceNotFound(typeof(Provider).Name, id);
+
+                return new Result<ProviderModel>(CustomError.ResourceNotFound<Provider>(), 404);
+            }
+        }         
     }
 
     public Result<PagedResult<ProviderModel>> GetProviders(PaginationParams paginationParams, 
         ProviderFilter filter, CancellationToken token)
     {
-        var result = unitOfWork.Providers.GetPaged(paginationParams, filter);
+        var result = _unitOfWork.Providers.GetPaged(paginationParams, filter);
 
         if (result.Items.Count != 0)
         {
             foreach (var item in result.Items)
             {
-                logger.ResourceReturned(typeof(Provider).Name, item.Id);
+                _logger.ResourceReturned(typeof(Provider).Name, item.Id);
             }
 
             return new Result<PagedResult<ProviderModel>>(result.Adapt<PagedResult<ProviderModel>>(), 200);
         }
         else
         {
-            logger.FilteredResourcesNotFound(typeof(Provider).Name);
+            _logger.FilteredResourcesNotFound(typeof(Provider).Name);
 
             return new Result<PagedResult<ProviderModel>>(CustomError
                 .ResourceNotFound<Provider>(), 404);
@@ -91,23 +157,34 @@ public class ProviderService(IUnitOfWork unitOfWork, ILogger<ProviderService> lo
 
     public async Task<Result> UpdateProviderAsync(Guid id, ProviderModel providerModel, CancellationToken token)
     {
-        var provider = await unitOfWork.Providers.GetByIdAsync(id, token);
+        var lockKey = $"lock:provider:{id}";
 
-        if (provider is null)
+        await using (await _lockProvider.AcquireLockAsync(lockKey, cancellationToken: token))
         {
-            logger.ResourceToUpdateNotFound(typeof(Provider).Name);
+            var provider = await _unitOfWork.Providers.GetByIdAsync(id, token);
 
-            return Result.Failure(CustomError.ResourceNotFound<Provider>(), 404);
-        }
-        else
-        {
-            providerModel.Adapt(provider);
+            if (provider is null)
+            {
+                _logger.ResourceToUpdateNotFound(typeof(Provider).Name);
 
-            await unitOfWork.SaveChangesAsync(token);
+                return Result.Failure(CustomError.ResourceNotFound<Provider>(), 404);
+            }
+            else
+            {
+                providerModel.Adapt(provider);
 
-            logger.ResourceUpdated(typeof(Provider).Name, provider.Id);
+                await _unitOfWork.SaveChangesAsync(token);
 
-            return Result.Success(204);
+                await _pipeline.ExecuteAsync(async ct =>
+                {
+                    var cacheKey = $"provider:{id}";
+                    await _cache.RemoveData(cacheKey, ct);
+                }, token);
+
+                _logger.ResourceUpdated(typeof(Provider).Name, provider.Id);
+
+                return Result.Success(204);
+            }
         }
     }
 }

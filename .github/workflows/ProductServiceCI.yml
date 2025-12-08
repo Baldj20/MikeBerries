@@ -1,5 +1,4 @@
 name: ProductService CI
-
 on:
   push:
     branches:
@@ -7,7 +6,6 @@ on:
   pull_request:
     branches:
       - main
-
 env:
   DOTNET_VERSION: '8.0.x'
   
@@ -32,8 +30,9 @@ env:
 
   postgres_user: ${{ secrets.POSTGRES_USER }}
   postgres_password: ${{ secrets.POSTGRES_PASSWORD }}
-  connection_string: ${{ secrets.CONNECTION_STRING }}
-  
+  connection_string: ${{ secrets.DB_CONNECTION_STRING }}
+
+  ConnectionStrings__Redis: ${{ secrets.REDIS_CONNECTION_STRING }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -42,7 +41,7 @@ jobs:
       
       - name: Start Infrastructure
         run: |
-          docker compose up -d --wait postgreDB minio
+          docker compose up -d --wait postgreDB minio redis
           docker compose ps
             
       - name: Setup .NET

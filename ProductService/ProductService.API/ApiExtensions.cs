@@ -2,16 +2,19 @@
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using Polly.CircuitBreaker;
+using Polly.Fallback;
 using Polly.Registry;
 using Polly.Retry;
 using ProductService.API.DTO;
 using ProductService.API.Resilience;
 using ProductService.BLL.DTO;
+using ProductService.BLL.Logging;
 using ProductService.BLL.Models;
 using ProductService.DAL;
 using ProductService.DAL.Entities;
 using ProductService.DAL.Interfaces.Repositories;
 using ProductService.DAL.Repositories;
+using StackExchange.Redis;
 
 namespace ProductService.API;
 
@@ -90,19 +93,31 @@ public static class ApiExtensions
         });
     }
 
-    public static void AddMinio(this IServiceCollection services, IConfiguration configuration)
+    public static void AddCachingResiliencePipeline(this IServiceCollection services, string pipelineName
+        )
     {
-        var minioSettings = configuration.GetSection(MinioSettings.CONFIG_SECTION_NAME)
-            .Get<MinioSettings>();
-
-        if (minioSettings is null) throw new InvalidOperationException("Minio settings not found");
-
-        services.AddSingleton(sp =>
+        services.AddResiliencePipeline<string, object?>(pipelineName, builder =>
         {
-            var pipelineProvider = sp.GetRequiredService<ResiliencePipelineProvider<string>>();
-            return new MinioStorage(minioSettings, pipelineProvider);
-        });
+            builder.AddFallback(new FallbackStrategyOptions<object?>
+            {
+                ShouldHandle = new PredicateBuilder<object?>().Handle<Exception>(),
+                FallbackAction = _ => Outcome.FromResultAsValueTask<object?>(null)
+            });
 
-        services.AddScoped<IFileRepository, MinioFileRepository>();
+            builder.AddRetry(new RetryStrategyOptions<object?>
+            {
+                MaxRetryAttempts = 2,
+                Delay = TimeSpan.FromMilliseconds(100),
+                BackoffType = DelayBackoffType.Constant
+            });
+
+            builder.AddCircuitBreaker(new CircuitBreakerStrategyOptions<object?>
+            {
+                FailureRatio = 0.5,
+                SamplingDuration = TimeSpan.FromSeconds(10),
+                MinimumThroughput = 5,
+                BreakDuration = TimeSpan.FromSeconds(30)
+            });
+        });
     }
 }
