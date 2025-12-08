@@ -21,6 +21,8 @@ public class Program
 
         builder.Configuration.AddUserSecrets<Program>();
 
+        builder.Services.ConfigureAutentication(builder.Configuration);
+
         builder.Services.ConfigureDataAccessLayerDependencies(builder.Configuration);
 
         builder.Services.ConfigureBusinessLogicLayerDependencies();
@@ -52,6 +54,8 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+
+        app.UseAuthentication();
 
         app.UseAuthorization();
 

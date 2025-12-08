@@ -1,3 +1,4 @@
+﻿using Microsoft.AspNetCore.Authentication;
 ﻿using Medallion.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -45,6 +46,23 @@ public class ProductServiceWebApplicationFactory : WebApplicationFactory<Program
         {
             services.RemoveAll<ResiliencePipelineProvider<string>>();
             services.AddSingleton<ResiliencePipelineProvider<string>, FakeResiliencePipelineProvider>();
+        });
+
+        builder.ConfigureTestServices(services =>
+        {
+            services.Configure<AuthenticationOptions>(options =>
+            {
+                options.DefaultAuthenticateScheme = "Test";
+                options.DefaultChallengeScheme = "Test";
+            });
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "Test";
+                options.DefaultChallengeScheme = "Test";
+            })
+                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                        "Test", options => { });
         });
     }
 }

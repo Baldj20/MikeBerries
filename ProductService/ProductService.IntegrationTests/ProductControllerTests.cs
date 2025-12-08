@@ -5,14 +5,18 @@ using ProductService.BLL.Models;
 using ProductService.DAL;
 using Shouldly;
 using System.Net;
+using System.Net.Http.Headers;
 
 namespace ProductService.IntegrationTests;
 
-public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
-    : BaseTest(factory), IClassFixture<ProductServiceWebApplicationFactory>
+public class ProductControllerTests: BaseTest, IClassFixture<ProductServiceWebApplicationFactory>
 {
-    private readonly HttpClient _httpClient = factory.CreateClient();
-
+    private readonly HttpClient _httpClient;
+    public ProductControllerTests(ProductServiceWebApplicationFactory factory) : base(factory)
+    {
+        _httpClient = factory.CreateClient();
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
+    }
     [Fact]
     public async Task PostProduct_WhenDataIsValid_ShouldReturnSuccess()
     {
