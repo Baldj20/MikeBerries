@@ -4,18 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.Fallback;
-using Polly.Registry;
 using Polly.Retry;
 using ProductService.API.DTO;
 using ProductService.API.Resilience;
 using ProductService.BLL.DTO;
-using ProductService.BLL.Logging;
 using ProductService.BLL.Models;
 using ProductService.DAL;
 using ProductService.DAL.Entities;
-using ProductService.DAL.Interfaces.Repositories;
-using ProductService.DAL.Repositories;
-using StackExchange.Redis;
 
 namespace ProductService.API;
 
@@ -80,6 +75,11 @@ public static class ApiExtensions
             .Ignore(d => d.Product.Provider.Products);
         TypeAdapterConfig<ProductImageModel, ProductImage>.NewConfig()
             .Ignore(dest => dest.Product);
+
+        TypeAdapterConfig<ProviderModel, Provider>.NewConfig()
+            .Ignore(p => p.Id);
+        TypeAdapterConfig<ProductModel, Product>.NewConfig()
+            .Ignore(p => p.Id);
     }
 
     public static void AddResiliencePipeline(this IServiceCollection services, 
