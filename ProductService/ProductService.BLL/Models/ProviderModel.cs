@@ -1,5 +1,8 @@
-﻿namespace ProductService.BLL.Models;
+﻿using MessagePack;
 
+namespace ProductService.BLL.Models;
+
+[MessagePackObject(keyAsPropertyName: true)]
 public class ProviderModel
 {
     public required string Email { get; set; }

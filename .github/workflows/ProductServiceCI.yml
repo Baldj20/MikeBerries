@@ -1,5 +1,4 @@
 name: ProductService CI
-
 on:
   push:
     branches:
@@ -7,7 +6,6 @@ on:
   pull_request:
     branches:
       - main
-
 env:
   DOTNET_VERSION: '8.0.x'
   
@@ -36,7 +34,8 @@ env:
 
   Auth0__Authority: ${{ secrets.AUTH0_AUTHORITY }}
   Auth0__Audience: ${{ secrets.AUTH0_AUDIENCE }}
-  
+
+  ConnectionStrings__Redis: ${{ secrets.REDIS_CONNECTION_STRING }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -45,7 +44,7 @@ jobs:
       
       - name: Start Infrastructure
         run: |
-          docker compose up -d --wait postgreDB minio
+          docker compose up -d --wait postgreDB minio redis
           docker compose ps
             
       - name: Setup .NET

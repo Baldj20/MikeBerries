@@ -1,5 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Medallion.Threading;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
+using Polly;
+using Polly.Registry;
 using ProductService.BLL.Interfaces.Services;
 using ProductService.BLL.Services;
 using ProductService.DAL.Interfaces.Repositories;
@@ -16,19 +19,31 @@ public class Mocks
     protected readonly IProductService _productService;
     protected readonly IProviderService _providerService;
     protected readonly IFileRepository _fileRepository;
-    
+    protected readonly ICacheRepository _cacheRepository;
+    protected readonly ResiliencePipelineProvider<string> _pipelineProvider;
+    protected readonly IDistributedLockProvider _lockProvider;
+
     protected Mocks()
     {
         _productRepository = Substitute.For<IProductRepository>();
         _providerRepository = Substitute.For<IProviderRepository>();
         _fileRepository = Substitute.For<IFileRepository>();
+        _cacheRepository = Substitute.For<ICacheRepository>();
         _unitOfWork = Substitute.For<IUnitOfWork>();
         _unitOfWork.Products.Returns(_productRepository);
         _unitOfWork.Providers.Returns(_providerRepository);
         _unitOfWork.Files.Returns(_fileRepository);
+        _pipelineProvider = Substitute.For<ResiliencePipelineProvider<string>>();
+        _pipelineProvider.GetPipeline(Arg.Any<string>())
+            .Returns(ResiliencePipeline.Empty);
         _productServiceLogger = Substitute.For<ILogger<ProductService.BLL.Services.ProductService>>();
         _providerServiceLogger = Substitute.For<ILogger<ProviderService>>();
-        _productService = new ProductService.BLL.Services.ProductService(_unitOfWork, _productServiceLogger);
-        _providerService = new ProviderService(_unitOfWork, _providerServiceLogger);
+
+        _lockProvider = Substitute.For<IDistributedLockProvider>();
+
+        _productService = new ProductService.BLL.Services.ProductService(_unitOfWork, _cacheRepository, 
+            _productServiceLogger, _lockProvider, _pipelineProvider);
+        _providerService = new ProviderService(_unitOfWork, _cacheRepository, 
+            _providerServiceLogger, _lockProvider, _pipelineProvider);
     }
 }
