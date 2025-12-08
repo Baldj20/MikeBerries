@@ -23,8 +23,6 @@ public class Program
 
         builder.Services.ConfigureAutentication(builder.Configuration);
 
-        builder.Services.AddMinio(builder.Configuration);
-
         builder.Services.ConfigureDataAccessLayerDependencies(builder.Configuration);
 
         builder.Services.ConfigureBusinessLogicLayerDependencies();
