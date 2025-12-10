@@ -69,6 +69,20 @@ public class ProviderControllerTests(ProductServiceWebApplicationFactory factory
     }
 
     [Fact]
+    public async Task DeleteProvider_WhenUserIsNotAdmin_ShouldReturnForbidden()
+    {
+        //Arrange
+        var provider = await Add(TestDataHelper.CreateProviderEntity());
+        _httpClient.DefaultRequestHeaders.Add("X-Test-Role", "User");
+
+        // Act
+        var response = await _httpClient.DeleteAsync($"api/providers/{provider.Id}");
+
+        // Assert
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.Forbidden);
+    }
+
+    [Fact]
     public async Task GetProviderById_WhenProviderExists_ShouldReturnProvider()
     {
         //Arrange

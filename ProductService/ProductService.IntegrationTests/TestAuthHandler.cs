@@ -13,7 +13,7 @@ public class TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> option
 {
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
     {
-        var role = RolesNames.ADMIN;
+        var role = Context.Request.Headers["X-Test-Role"].FirstOrDefault() ?? RolesNames.ADMIN;
 
         var claims = new[]
         {

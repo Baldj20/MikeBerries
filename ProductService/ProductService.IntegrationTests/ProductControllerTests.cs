@@ -5,6 +5,7 @@ using ProductService.BLL.Models;
 using ProductService.DAL;
 using Shouldly;
 using System.Net;
+using System.Net.Http.Headers;
 
 namespace ProductService.IntegrationTests;
 
@@ -70,6 +71,20 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
 
         result.ShouldNotBeNull();
         result.IsSuccess.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task DeleteProduct_WhenUserIsNotItsOwner_ShouldReturnForbidden()
+    {
+        //Arrange
+        var product = await Add(TestDataHelper.CreateProductEntity());
+        _httpClient.DefaultRequestHeaders.Add("X-Test-Role", "User");
+
+        // Act
+        var response = await _httpClient.DeleteAsync($"api/products/{product.Id}");
+
+        // Assert
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.Forbidden);
     }
 
     [Fact]
