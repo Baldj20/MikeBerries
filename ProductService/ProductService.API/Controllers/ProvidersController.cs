@@ -14,12 +14,12 @@ namespace ProductService.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 [AddStatusCode]
 [ExceptionFilter]
 public class ProvidersController(IProviderService providerService) : ControllerBase
 {
-    [HttpPost]
-    [Authorize]
+    [HttpPost]    
     public async Task<Result> Add(ProviderDto dto, CancellationToken token)
     {
         var response = await providerService.AddProviderAsync(dto.Adapt<ProviderModel>(), token);
@@ -37,7 +37,6 @@ public class ProvidersController(IProviderService providerService) : ControllerB
     }
 
     [HttpGet("{id}")]
-    [Authorize]
     public async Task<Result<ProviderDto>> GetById(Guid id, CancellationToken token)
     {
         var provider = await providerService.GetProviderByIdAsync(id, token);
@@ -48,7 +47,6 @@ public class ProvidersController(IProviderService providerService) : ControllerB
     }
 
     [HttpGet]
-    [Authorize]
     public Result<PagedResult<ProviderDto>> GetAllPaged(
         [FromQuery] PaginationParams paginationParams,
         [FromQuery] ProviderFilter filter,
