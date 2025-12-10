@@ -146,12 +146,10 @@ public static class ApiExtensions
     {
         services.AddSingleton<IAuthorizationHandler, AuthorizationHandler>();
 
-        services.AddAuthorization(options =>
-        {
-            options.AddPolicy(PoliciesNames.USER_MUST_BE_PRODUCT_OWNER, policy =>
-                policy.Requirements.Add(new UserMustBeProductOwnerRequirement()));
-
-            options.AddPolicy(PoliciesNames.ADMIN, policy => policy.RequireRole(RolesNames.ADMIN));
-        });
+        services.AddAuthorizationBuilder()
+            .AddPolicy(PoliciesNames.USER_MUST_BE_PRODUCT_OWNER, policy =>
+                policy.Requirements.Add(new UserMustBeProductOwnerRequirement()))
+            .AddPolicy(PoliciesNames.ADMIN, policy => 
+                policy.RequireRole(RolesNames.ADMIN));
     }
 }
