@@ -23,6 +23,8 @@ public class Program
 
         builder.Services.ConfigureAutentication(builder.Configuration);
 
+        builder.Services.AddPolicyBasedAuthorization();
+
         builder.Services.ConfigureDataAccessLayerDependencies(builder.Configuration);
 
         builder.Services.ConfigureBusinessLogicLayerDependencies();

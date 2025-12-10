@@ -3,19 +3,13 @@ using ProductService.BLL.DTO;
 using ProductService.DAL;
 using Shouldly;
 using System.Net;
-using System.Net.Http.Headers;
 
 namespace ProductService.IntegrationTests;
 
-public class ProviderControllerTests : BaseTest, IClassFixture<ProductServiceWebApplicationFactory>
+public class ProviderControllerTests(ProductServiceWebApplicationFactory factory) 
+    : BaseTest(factory), IClassFixture<ProductServiceWebApplicationFactory>
 {
-    private readonly HttpClient _httpClient;
-
-    public ProviderControllerTests(ProductServiceWebApplicationFactory factory) : base(factory)
-    {
-        _httpClient = factory.CreateClient();
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
-    }
+    private readonly HttpClient _httpClient = factory.CreateClient();
 
     [Fact]
     public async Task PostProvider_WhenDataIsValid_ShouldReturnSuccess()

@@ -1,5 +1,6 @@
 ﻿using Mapster;
 using Medallion.Threading;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Registry;
@@ -11,6 +12,7 @@ using ProductService.DAL;
 using ProductService.DAL.Entities;
 using ProductService.DAL.Filters;
 using ProductService.DAL.Interfaces.Repositories;
+using System.Security.Claims;
 
 namespace ProductService.BLL.Services;
 
@@ -22,7 +24,7 @@ public class ProviderService : IProviderService
     private readonly ILogger<ProviderService> _logger;
     private readonly IDistributedLockProvider _lockProvider;
 
-    public ProviderService(IUnitOfWork unitOfWork, ICacheRepository cache, 
+    public ProviderService(IUnitOfWork unitOfWork, ICacheRepository cache,
         ILogger<ProviderService> logger,
         IDistributedLockProvider distributedLockProvider,
         ResiliencePipelineProvider<string> pipelineProvider,
@@ -47,37 +49,35 @@ public class ProviderService : IProviderService
         return Result.Success(201);
     }
 
-    public async Task<Result> DeleteProviderAsync(Guid id, CancellationToken token)
+    public async Task<Result> DeleteProviderAsync(Guid id, ClaimsPrincipal user, CancellationToken token)
     {
+        var provider = await _unitOfWork.Providers.GetByIdAsync(id, token);
+
+        if (provider is null)
+        {
+            _logger.ResourceToDeleteNotFound(typeof(Provider).Name);
+
+            return Result
+                .Failure(CustomError.ResourceNotFound<Provider>(), 204);
+        }
+
         var lockKey = $"lock:provider:{id}";
 
         await using (await _lockProvider.AcquireLockAsync(lockKey, cancellationToken: token))
         {
-            var provider = await _unitOfWork.Providers.GetByIdAsync(id, token);
+            await _unitOfWork.Providers.Delete(provider);
 
-            if (provider is not null)
+            await _unitOfWork.SaveChangesAsync(token);
+
+            await _pipeline.ExecuteAsync(async ct =>
             {
-                await _unitOfWork.Providers.Delete(provider);
+                var cacheKey = $"provider:{id}";
+                await _cache.RemoveData(cacheKey, ct);
+            }, token);
 
-                await _unitOfWork.SaveChangesAsync(token);
+            _logger.ResourceDeleted(typeof(Provider).Name, provider.Id);
 
-                await _pipeline.ExecuteAsync(async ct =>
-                {
-                    var cacheKey = $"provider:{id}";
-                    await _cache.RemoveData(cacheKey, ct);
-                }, token);
-
-                _logger.ResourceDeleted(typeof(Provider).Name, provider.Id);
-
-                return Result.Success(204);
-            }
-            else
-            {
-                _logger.ResourceToDeleteNotFound(typeof(Provider).Name);
-
-                return Result
-                    .Failure(CustomError.ResourceNotFound<Provider>(), 204);
-            }
+            return Result.Success(204);
         }
     }
     public async Task<Result<ProviderModel>> GetProviderByIdAsync(Guid id, CancellationToken token)
@@ -129,10 +129,10 @@ public class ProviderService : IProviderService
 
                 return new Result<ProviderModel>(CustomError.ResourceNotFound<Provider>(), 404);
             }
-        }         
+        }
     }
 
-    public Result<PagedResult<ProviderModel>> GetProviders(PaginationParams paginationParams, 
+    public Result<PagedResult<ProviderModel>> GetProviders(PaginationParams paginationParams,
         ProviderFilter filter, CancellationToken token)
     {
         var result = _unitOfWork.Providers.GetPaged(paginationParams, filter);
@@ -152,39 +152,37 @@ public class ProviderService : IProviderService
 
             return new Result<PagedResult<ProviderModel>>(CustomError
                 .ResourceNotFound<Provider>(), 404);
-        }    
+        }
     }
 
-    public async Task<Result> UpdateProviderAsync(Guid id, ProviderModel providerModel, CancellationToken token)
+    public async Task<Result> UpdateProviderAsync(Guid id, ClaimsPrincipal user, ProviderModel providerModel, CancellationToken token)
     {
+        var provider = await _unitOfWork.Providers.GetByIdAsync(id, token);
+
+        if (provider is null)
+        {
+            _logger.ResourceToUpdateNotFound(typeof(Provider).Name);
+
+            return Result.Failure(CustomError.ResourceNotFound<Provider>(), 404);
+        }
+
         var lockKey = $"lock:provider:{id}";
 
         await using (await _lockProvider.AcquireLockAsync(lockKey, cancellationToken: token))
         {
-            var provider = await _unitOfWork.Providers.GetByIdAsync(id, token);
+            providerModel.Adapt(provider);
 
-            if (provider is null)
+            await _unitOfWork.SaveChangesAsync(token);
+
+            await _pipeline.ExecuteAsync(async ct =>
             {
-                _logger.ResourceToUpdateNotFound(typeof(Provider).Name);
+                var cacheKey = $"provider:{id}";
+                await _cache.RemoveData(cacheKey, ct);
+            }, token);
 
-                return Result.Failure(CustomError.ResourceNotFound<Provider>(), 404);
-            }
-            else
-            {
-                providerModel.Adapt(provider);
+            _logger.ResourceUpdated(typeof(Provider).Name, provider.Id);
 
-                await _unitOfWork.SaveChangesAsync(token);
-
-                await _pipeline.ExecuteAsync(async ct =>
-                {
-                    var cacheKey = $"provider:{id}";
-                    await _cache.RemoveData(cacheKey, ct);
-                }, token);
-
-                _logger.ResourceUpdated(typeof(Provider).Name, provider.Id);
-
-                return Result.Success(204);
-            }
+            return Result.Success(204);
         }
     }
 }

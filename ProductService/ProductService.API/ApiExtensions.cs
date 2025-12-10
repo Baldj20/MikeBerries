@@ -1,12 +1,17 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.Fallback;
 using Polly.Retry;
+using ProductService.API.Authorization.Handlers;
+using ProductService.API.Authorization.Requirements;
+using ProductService.API.Constants;
 using ProductService.API.DTO;
 using ProductService.API.Resilience;
+using ProductService.BLL.Constants;
 using ProductService.BLL.DTO;
 using ProductService.BLL.Models;
 using ProductService.DAL;
@@ -82,9 +87,9 @@ public static class ApiExtensions
             .Ignore(p => p.Id);
     }
 
-    public static void AddResiliencePipeline(this IServiceCollection services, 
-        string pipelineName, 
-        IConfiguration configuration, 
+    public static void AddResiliencePipeline(this IServiceCollection services,
+        string pipelineName,
+        IConfiguration configuration,
         string configSectionName = ResilienceOptions.CONFIG_SECTION_NAME)
     {
         var options = configuration.GetSection(configSectionName).Get<ResilienceOptions>()
@@ -134,6 +139,19 @@ public static class ApiExtensions
                 MinimumThroughput = 5,
                 BreakDuration = TimeSpan.FromSeconds(30)
             });
+        });
+    }
+
+    public static void AddPolicyBasedAuthorization(this IServiceCollection services)
+    {
+        services.AddSingleton<IAuthorizationHandler, AuthorizationHandler>();
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(PoliciesNames.USER_MUST_BE_PRODUCT_OWNER, policy =>
+                policy.Requirements.Add(new UserMustBeProductOwnerRequirement()));
+
+            options.AddPolicy(PoliciesNames.ADMIN, policy => policy.RequireRole(RolesNames.ADMIN));
         });
     }
 }
