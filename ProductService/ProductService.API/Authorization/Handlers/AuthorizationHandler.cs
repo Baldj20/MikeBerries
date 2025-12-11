@@ -8,8 +8,10 @@ namespace ProductService.API.Authorization.Handlers;
 
 public class AuthorizationHandler : AuthorizationHandler<UserMustBeProductOwnerRequirement, Product>
 {
-    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, 
-        UserMustBeProductOwnerRequirement requirement, Product resource)
+    protected override Task HandleRequirementAsync(
+        AuthorizationHandlerContext context, 
+        UserMustBeProductOwnerRequirement requirement, 
+        Product resource)
     {
         if (context.User.IsInRole(RolesNames.ADMIN))
         {
