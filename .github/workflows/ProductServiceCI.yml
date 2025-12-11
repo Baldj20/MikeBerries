@@ -39,6 +39,10 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    env:
+      project_dir: ./ProductService 
+    
     steps:
       - uses: actions/checkout@v3
       
