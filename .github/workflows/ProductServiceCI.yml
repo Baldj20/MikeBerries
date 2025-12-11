@@ -69,7 +69,8 @@ jobs:
             /o:"$SONAR_ORGANIZATION" \
             /d:sonar.token="$SONAR_TOKEN" \
             /d:sonar.cs.opencover.reportsPaths=coverage_unit_tests.xml,coverage_integration_tests.xml \
-            /d:sonar.coverage.exclusions=$SONAR_EXCLUDE_FROM_COVERAGE
+            /d:sonar.coverage.exclusions=$SONAR_EXCLUDE_FROM_COVERAGE \
+            /d:sonar.projectBaseDir="${{ env.project_dir }}"
 
           dotnet build "$SOLUTION_PATH" --no-incremental
 
