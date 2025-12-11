@@ -28,7 +28,7 @@ public class ProductsController(IProductService productService) : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [RequireProductOwnness]
+    [RequireProductOwning]
     public async Task<Result> Delete(Guid id, CancellationToken token)
     {
         var response = await productService.DeleteProductAsync(id, token);
@@ -60,7 +60,7 @@ public class ProductsController(IProductService productService) : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [RequireProductOwnness]
+    [RequireProductOwning]
     [Consumes("multipart/form-data")]
     public async Task<Result> Update(Guid id, [FromForm]UpdateProductDto dto, CancellationToken token)
     {
