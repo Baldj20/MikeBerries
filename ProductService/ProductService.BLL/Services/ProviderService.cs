@@ -22,7 +22,8 @@ public class ProviderService : IProviderService
     private readonly ILogger<ProviderService> _logger;
     private readonly IDistributedLockProvider _lockProvider;
 
-    public ProviderService(IUnitOfWork unitOfWork, ICacheRepository cache,
+    public ProviderService(IUnitOfWork unitOfWork, 
+        ICacheRepository cache,
         ILogger<ProviderService> logger,
         IDistributedLockProvider distributedLockProvider,
         ResiliencePipelineProvider<string> pipelineProvider,

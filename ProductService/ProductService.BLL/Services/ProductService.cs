@@ -22,7 +22,8 @@ public class ProductService : IProductService
     private readonly ILogger<ProductService> _logger;
     private readonly IDistributedLockProvider _lockProvider;
 
-    public ProductService(IUnitOfWork unitOfWork, ICacheRepository cache,
+    public ProductService(IUnitOfWork unitOfWork, 
+        ICacheRepository cache,
         ILogger<ProductService> logger,
         IDistributedLockProvider distributedLockProvider,
         ResiliencePipelineProvider<string> pipelineProvider,

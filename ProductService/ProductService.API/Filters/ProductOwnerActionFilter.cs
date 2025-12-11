@@ -20,6 +20,7 @@ public class ProductOwnerActionFilter : IAsyncActionFilter
         _authorizationService = authorizationService;
         _unitOfWork = unitOfWork;
     }
+
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         if (context.ActionArguments["id"] is not Guid id)
