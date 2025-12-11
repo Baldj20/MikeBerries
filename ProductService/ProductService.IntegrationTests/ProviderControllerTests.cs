@@ -3,19 +3,13 @@ using ProductService.BLL.DTO;
 using ProductService.DAL;
 using Shouldly;
 using System.Net;
-using System.Net.Http.Headers;
 
 namespace ProductService.IntegrationTests;
 
-public class ProviderControllerTests : BaseTest, IClassFixture<ProductServiceWebApplicationFactory>
+public class ProviderControllerTests(ProductServiceWebApplicationFactory factory) 
+    : BaseTest(factory), IClassFixture<ProductServiceWebApplicationFactory>
 {
-    private readonly HttpClient _httpClient;
-
-    public ProviderControllerTests(ProductServiceWebApplicationFactory factory) : base(factory)
-    {
-        _httpClient = factory.CreateClient();
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
-    }
+    private readonly HttpClient _httpClient = factory.CreateClient();
 
     [Fact]
     public async Task PostProvider_WhenDataIsValid_ShouldReturnSuccess()
@@ -72,6 +66,20 @@ public class ProviderControllerTests : BaseTest, IClassFixture<ProductServiceWeb
 
         result.ShouldNotBeNull();
         result.IsSuccess.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task DeleteProvider_WhenUserIsNotAdmin_ShouldReturnForbidden()
+    {
+        //Arrange
+        var provider = await Add(TestDataHelper.CreateProviderEntity());
+        _httpClient.DefaultRequestHeaders.Add("X-Test-Role", "User");
+
+        // Act
+        var response = await _httpClient.DeleteAsync($"api/providers/{provider.Id}");
+
+        // Assert
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.Forbidden);
     }
 
     [Fact]

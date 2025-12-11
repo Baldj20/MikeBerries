@@ -1,21 +1,21 @@
 ﻿using Mapster;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.Fallback;
-using Polly.Registry;
 using Polly.Retry;
+using ProductService.API.Authorization.Handlers;
+using ProductService.API.Authorization.Requirements;
+using ProductService.API.Constants;
 using ProductService.API.DTO;
 using ProductService.API.Resilience;
+using ProductService.BLL.Constants;
 using ProductService.BLL.DTO;
-using ProductService.BLL.Logging;
 using ProductService.BLL.Models;
 using ProductService.DAL;
 using ProductService.DAL.Entities;
-using ProductService.DAL.Interfaces.Repositories;
-using ProductService.DAL.Repositories;
-using StackExchange.Redis;
 
 namespace ProductService.API;
 
@@ -80,11 +80,16 @@ public static class ApiExtensions
             .Ignore(d => d.Product.Provider.Products);
         TypeAdapterConfig<ProductImageModel, ProductImage>.NewConfig()
             .Ignore(dest => dest.Product);
+
+        TypeAdapterConfig<ProviderModel, Provider>.NewConfig()
+            .Ignore(p => p.Id);
+        TypeAdapterConfig<ProductModel, Product>.NewConfig()
+            .Ignore(p => p.Id);
     }
 
-    public static void AddResiliencePipeline(this IServiceCollection services, 
-        string pipelineName, 
-        IConfiguration configuration, 
+    public static void AddResiliencePipeline(this IServiceCollection services,
+        string pipelineName,
+        IConfiguration configuration,
         string configSectionName = ResilienceOptions.CONFIG_SECTION_NAME)
     {
         var options = configuration.GetSection(configSectionName).Get<ResilienceOptions>()
@@ -135,5 +140,16 @@ public static class ApiExtensions
                 BreakDuration = TimeSpan.FromSeconds(30)
             });
         });
+    }
+
+    public static void AddPolicyBasedAuthorization(this IServiceCollection services)
+    {
+        services.AddSingleton<IAuthorizationHandler, AuthorizationHandler>();
+
+        services.AddAuthorizationBuilder()
+            .AddPolicy(PoliciesNames.USER_MUST_BE_PRODUCT_OWNER, policy =>
+                policy.Requirements.Add(new UserMustBeProductOwnerRequirement()))
+            .AddPolicy(PoliciesNames.ADMIN, policy => 
+                policy.RequireRole(RolesNames.ADMIN));
     }
 }

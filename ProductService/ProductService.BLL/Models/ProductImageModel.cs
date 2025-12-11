@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 namespace ProductService.BLL.Models;
 
 [MessagePackObject(keyAsPropertyName: true)]
-public class ProductImageModel
+public class ProductImageModel : BaseModel
 {
     public string? Url { get; set; }
 

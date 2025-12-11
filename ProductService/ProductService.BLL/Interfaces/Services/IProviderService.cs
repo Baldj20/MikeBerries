@@ -1,6 +1,7 @@
 ﻿using ProductService.BLL.Models;
 using ProductService.DAL;
 using ProductService.DAL.Filters;
+using System.Security.Claims;
 
 namespace ProductService.BLL.Interfaces.Services;
 

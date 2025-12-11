@@ -5,18 +5,14 @@ using ProductService.BLL.Models;
 using ProductService.DAL;
 using Shouldly;
 using System.Net;
-using System.Net.Http.Headers;
 
 namespace ProductService.IntegrationTests;
 
-public class ProductControllerTests: BaseTest, IClassFixture<ProductServiceWebApplicationFactory>
+public class ProductControllerTests(ProductServiceWebApplicationFactory factory) 
+    : BaseTest(factory), IClassFixture<ProductServiceWebApplicationFactory>
 {
-    private readonly HttpClient _httpClient;
-    public ProductControllerTests(ProductServiceWebApplicationFactory factory) : base(factory)
-    {
-        _httpClient = factory.CreateClient();
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Test");
-    }
+    private readonly HttpClient _httpClient  = factory.CreateClient();
+
     [Fact]
     public async Task PostProduct_WhenDataIsValid_ShouldReturnSuccess()
     {
@@ -68,12 +64,26 @@ public class ProductControllerTests: BaseTest, IClassFixture<ProductServiceWebAp
         var response = await _httpClient.DeleteAsync($"api/products/{id}");
 
         // Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NoContent);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NotFound);
 
         var result = await DeserializeResponse(response);
 
         result.ShouldNotBeNull();
         result.IsSuccess.ShouldBeFalse();
+    }
+
+    [Fact]
+    public async Task DeleteProduct_WhenUserIsNotItsOwner_ShouldReturnForbidden()
+    {
+        //Arrange
+        var product = await Add(TestDataHelper.CreateProductEntity());
+        _httpClient.DefaultRequestHeaders.Add("X-Test-Role", "User");
+
+        // Act
+        var response = await _httpClient.DeleteAsync($"api/products/{product.Id}");
+
+        // Assert
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.Forbidden);
     }
 
     [Fact]

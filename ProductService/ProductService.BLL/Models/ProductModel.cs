@@ -3,7 +3,7 @@
 namespace ProductService.BLL.Models;
 
 [MessagePackObject(keyAsPropertyName: true)]
-public class ProductModel
+public class ProductModel : BaseModel
 {
     public required string Title { get; set; }
     public string? Description { get; set; }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductService.API.Filters.Attributes;
 using ProductService.BLL;
+using ProductService.BLL.Constants;
 using ProductService.BLL.DTO;
 using ProductService.BLL.Interfaces.Services;
 using ProductService.BLL.Models;
@@ -18,7 +19,7 @@ namespace ProductService.API.Controllers;
 [ExceptionFilter]
 public class ProvidersController(IProviderService providerService) : ControllerBase
 {
-    [HttpPost]
+    [HttpPost]    
     public async Task<Result> Add(ProviderDto dto, CancellationToken token)
     {
         var response = await providerService.AddProviderAsync(dto.Adapt<ProviderModel>(), token);
@@ -27,6 +28,7 @@ public class ProvidersController(IProviderService providerService) : ControllerB
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Policy = PoliciesNames.ADMIN)]
     public async Task<Result> Delete(Guid id, CancellationToken token)
     {
         var response = await providerService.DeleteProviderAsync(id, token);
@@ -58,6 +60,7 @@ public class ProvidersController(IProviderService providerService) : ControllerB
     }
 
     [HttpPut("{id}")]
+    [Authorize(Policy = PoliciesNames.ADMIN)]
     public async Task<Result> Update(Guid id, ProviderDto dto, CancellationToken token)
     {
         var response = await providerService.UpdateProviderAsync(id, dto.Adapt<ProviderModel>(), token);
