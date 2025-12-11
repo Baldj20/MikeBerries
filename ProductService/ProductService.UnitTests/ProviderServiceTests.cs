@@ -38,7 +38,7 @@ public class ProviderServiceTests : Mocks
         _unitOfWork.Providers.Delete(providerEntity).Returns(Task.CompletedTask);
 
         //Act
-        var response = await _providerService.DeleteProviderAsync(id, user, default);
+        var response = await _providerService.DeleteProviderAsync(id, default);
 
         //Assert
         response.IsSuccess.ShouldBeTrue();
@@ -57,7 +57,7 @@ public class ProviderServiceTests : Mocks
         _unitOfWork.Providers.GetByIdAsync(id, default).Returns((Provider)null!);
 
         //Act
-        var response = await _providerService.DeleteProviderAsync(id, user, default);
+        var response = await _providerService.DeleteProviderAsync(id, default);
 
         //Assert
         response.IsSuccess.ShouldBeFalse();
@@ -114,7 +114,7 @@ public class ProviderServiceTests : Mocks
         _unitOfWork.Providers.GetByIdAsync(id, default).Returns(provider);
 
         //Act
-        var response = await _providerService.UpdateProviderAsync(id, user, providerModel, default);
+        var response = await _providerService.UpdateProviderAsync(id, providerModel, default);
 
         //Assert
         response.IsSuccess.ShouldBeTrue();
@@ -133,7 +133,7 @@ public class ProviderServiceTests : Mocks
         _providerRepository.GetByIdAsync(id, default).Returns((Provider)null!);
 
         //Act
-        var response = await _providerService.UpdateProviderAsync(id, user, providerModel, default);
+        var response = await _providerService.UpdateProviderAsync(id, providerModel, default);
 
         //Assert
         response.IsSuccess.ShouldBeFalse();

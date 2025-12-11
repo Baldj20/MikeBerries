@@ -48,7 +48,7 @@ public class Mocks
         _lockProvider = Substitute.For<IDistributedLockProvider>();
 
         _productService = new ProductService.BLL.Services.ProductService(_unitOfWork, _cacheRepository, 
-            _authService, _productServiceLogger, _lockProvider, _pipelineProvider);
+            _productServiceLogger, _lockProvider, _pipelineProvider);
         _providerService = new ProviderService(_unitOfWork, _cacheRepository,
             _providerServiceLogger, _lockProvider, _pipelineProvider);
 

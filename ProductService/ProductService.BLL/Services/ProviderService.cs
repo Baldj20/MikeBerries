@@ -1,6 +1,5 @@
 ﻿using Mapster;
 using Medallion.Threading;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Registry;
@@ -12,7 +11,6 @@ using ProductService.DAL;
 using ProductService.DAL.Entities;
 using ProductService.DAL.Filters;
 using ProductService.DAL.Interfaces.Repositories;
-using System.Security.Claims;
 
 namespace ProductService.BLL.Services;
 
@@ -49,7 +47,7 @@ public class ProviderService : IProviderService
         return Result.Success(201);
     }
 
-    public async Task<Result> DeleteProviderAsync(Guid id, ClaimsPrincipal user, CancellationToken token)
+    public async Task<Result> DeleteProviderAsync(Guid id, CancellationToken token)
     {
         var provider = await _unitOfWork.Providers.GetByIdAsync(id, token);
 
@@ -155,7 +153,7 @@ public class ProviderService : IProviderService
         }
     }
 
-    public async Task<Result> UpdateProviderAsync(Guid id, ClaimsPrincipal user, ProviderModel providerModel, CancellationToken token)
+    public async Task<Result> UpdateProviderAsync(Guid id, ProviderModel providerModel, CancellationToken token)
     {
         var provider = await _unitOfWork.Providers.GetByIdAsync(id, token);
 

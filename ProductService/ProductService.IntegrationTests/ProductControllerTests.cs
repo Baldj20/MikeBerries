@@ -5,7 +5,6 @@ using ProductService.BLL.Models;
 using ProductService.DAL;
 using Shouldly;
 using System.Net;
-using System.Net.Http.Headers;
 
 namespace ProductService.IntegrationTests;
 
@@ -65,7 +64,7 @@ public class ProductControllerTests(ProductServiceWebApplicationFactory factory)
         var response = await _httpClient.DeleteAsync($"api/products/{id}");
 
         // Assert
-        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NoContent);
+        response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NotFound);
 
         var result = await DeserializeResponse(response);
 

@@ -31,7 +31,7 @@ public class ProvidersController(IProviderService providerService) : ControllerB
     [Authorize(Policy = PoliciesNames.ADMIN)]
     public async Task<Result> Delete(Guid id, CancellationToken token)
     {
-        var response = await providerService.DeleteProviderAsync(id, User, token);
+        var response = await providerService.DeleteProviderAsync(id, token);
 
         return response;
     }
@@ -63,7 +63,7 @@ public class ProvidersController(IProviderService providerService) : ControllerB
     [Authorize(Policy = PoliciesNames.ADMIN)]
     public async Task<Result> Update(Guid id, ProviderDto dto, CancellationToken token)
     {
-        var response = await providerService.UpdateProviderAsync(id, User, dto.Adapt<ProviderModel>(), token);
+        var response = await providerService.UpdateProviderAsync(id, dto.Adapt<ProviderModel>(), token);
 
         return response;
     }

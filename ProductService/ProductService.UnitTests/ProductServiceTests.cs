@@ -40,7 +40,7 @@ public class ProductServiceTests : Mocks
         _unitOfWork.Products.Delete(productEntity).Returns(Task.CompletedTask);
 
         //Act
-        var response = await _productService.DeleteProductAsync(id, user, default);
+        var response = await _productService.DeleteProductAsync(id, default);
 
         //Assert
         response.IsSuccess.ShouldBeTrue();
@@ -61,7 +61,7 @@ public class ProductServiceTests : Mocks
         _unitOfWork.Products.GetByIdAsync(id, default).Returns((Product)null!);
 
         //Act
-        var response = await _productService.DeleteProductAsync(id, user, default);
+        var response = await _productService.DeleteProductAsync(id, default);
 
         //Assert
         response.IsSuccess.ShouldBeFalse();
@@ -121,7 +121,7 @@ public class ProductServiceTests : Mocks
         var imageUrls = productModel.Images.Select(i => i.Url).ToList();
 
         //Act
-        var response = await _productService.UpdateProductAsync(id, user, productModel, default);
+        var response = await _productService.UpdateProductAsync(id, productModel, default);
 
         //Assert
         response.IsSuccess.ShouldBeTrue();
@@ -150,7 +150,7 @@ public class ProductServiceTests : Mocks
         _productRepository.GetByIdAsync(id, default).Returns((Product)null!);
 
         //Act
-        var response = await _productService.UpdateProductAsync(id, user, productModel, default);
+        var response = await _productService.UpdateProductAsync(id, productModel, default);
 
         //Assert
         response.IsSuccess.ShouldBeFalse();
