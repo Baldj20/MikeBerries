@@ -3,9 +3,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'ProductService/**'
   pull_request:
     branches:
       - main
+    paths:
+      - 'ProductService/**'
 env:
   DOTNET_VERSION: '8.0.x'
   
@@ -38,7 +42,7 @@ env:
   ConnectionStrings__Redis: ${{ secrets.REDIS_CONNECTION_STRING }}
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest  
     steps:
       - uses: actions/checkout@v3
       
