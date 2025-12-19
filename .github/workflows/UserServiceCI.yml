@@ -17,7 +17,7 @@ env:
   SONAR_PROJECT_KEY: "Baldj20_MikeBerries"
   SONAR_ORGANIZATION: "baldj20"
   SONAR_PROJECT_NAME: "UserService"
-  SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs,**/Dockerfile"
+  SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs,**/Dockerfile,**/UserService.DAL/**"
 
   BUILT_UNIT_TESTS_PATH: "./UserService/UserService.UnitTests/bin/Debug/net8.0/UserService.UnitTests.dll"
   UNIT_TESTS_PROJECT_PATH: "./UserService/UserService.UnitTests/UserService.UnitTests.csproj"
