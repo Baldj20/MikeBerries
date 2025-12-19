@@ -38,8 +38,7 @@ jobs:
           dotnet sonarscanner begin \
             /k:"$SONAR_PROJECT_KEY" \
             /o:"$SONAR_ORGANIZATION" \
-            /d:sonar.token="$SONAR_TOKEN" \  
-            /d:sonar.cs.opencover.reportsPaths=coverage_unit_tests.xml,coverage_integration_tests.xml \
+            /d:sonar.token="$SONAR_TOKEN" \
             /d:sonar.coverage.exclusions=$SONAR_EXCLUDE_FROM_COVERAGE
 
           dotnet build "$SOLUTION_PATH" --no-incremental
