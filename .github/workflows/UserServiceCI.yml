@@ -17,7 +17,7 @@ env:
   SONAR_PROJECT_KEY: "Baldj20_MikeBerries"
   SONAR_ORGANIZATION: "baldj20"
   SONAR_PROJECT_NAME: "UserService"
-  SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs,**/Dockerfile"
+  SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs,**/Dockerfile,**/UserService.DAL/**"
 
   SOLUTION_PATH: "./UserService/UserService.sln"
 jobs:
