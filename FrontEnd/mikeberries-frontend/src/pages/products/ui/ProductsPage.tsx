@@ -10,7 +10,8 @@ function ProductsPage() {
     useEffect(() => {
         const loadProducts = async () => {
             try {
-                const data = await productsService.getAll(1, 10);
+                const data = await productsService.getAll(1, 12);
+
                 setProducts(data.value.items);
             } catch (err) {
                 console.error(err);
