@@ -60,7 +60,7 @@ public static class ApiExtensions
                     var imageModel = new ProductImageModel
                     {
                         Image = image,
-                        Product = null!
+                        Product = model
                     };
 
                     model.Images.Add(imageModel);
@@ -114,8 +114,7 @@ public static class ApiExtensions
         });
     }
 
-    public static void AddCachingResiliencePipeline(this IServiceCollection services, string pipelineName
-        )
+    public static void AddCachingResiliencePipeline(this IServiceCollection services, string pipelineName)
     {
         services.AddResiliencePipeline<string, object?>(pipelineName, builder =>
         {
@@ -124,7 +123,7 @@ public static class ApiExtensions
                 ShouldHandle = new PredicateBuilder<object?>().Handle<Exception>(),
                 FallbackAction = _ => Outcome.FromResultAsValueTask<object?>(null)
             });
-
+            
             builder.AddRetry(new RetryStrategyOptions<object?>
             {
                 MaxRetryAttempts = 2,

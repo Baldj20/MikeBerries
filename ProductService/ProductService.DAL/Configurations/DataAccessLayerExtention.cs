@@ -1,9 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Medallion.Threading;
+using Medallion.Threading.Redis;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Polly.Registry;
 using ProductService.DAL.Interfaces.Repositories;
 using ProductService.DAL.Repositories;
+using StackExchange.Redis;
 
 namespace ProductService.DAL.Configurations;
 
@@ -37,6 +40,15 @@ public static class DataAccessLayerExtention
     }
     private static void AddRedis(this IServiceCollection services, IConfiguration configuration)
     {
+        var redisConnectionString = configuration.GetConnectionString("Redis");
+
+        if(redisConnectionString is null) throw new InvalidOperationException("Redis connection string is not found");
+
+        var connection = ConnectionMultiplexer.Connect(redisConnectionString);
+
+        services.AddSingleton<IDistributedLockProvider>(_ =>
+            new RedisDistributedSynchronizationProvider(connection.GetDatabase()));
+
         services.AddStackExchangeRedisCache(options =>
         {
             options.Configuration = configuration.GetConnectionString("Redis");

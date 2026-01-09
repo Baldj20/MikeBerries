@@ -13,7 +13,6 @@ namespace ProductService.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
 [AddStatusCode]
 [ExceptionFilter]
 public class ProductsController(IProductService productService) : ControllerBase

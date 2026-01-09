@@ -24,9 +24,11 @@ public class Mocks
     protected readonly IFileRepository _fileRepository;
     protected readonly ICacheRepository _cacheRepository;
     protected readonly IAuthorizationService _authService;
-    protected readonly ResiliencePipelineProvider<string> _pipelineProvider;
+    protected readonly ResiliencePipelineProvider<string> _productPipelineProvider;
+    protected readonly ResiliencePipelineProvider<string> _providerPipelineProvider;
     protected readonly IDistributedLockProvider _lockProvider;
     protected readonly ClaimsPrincipal user;
+    
 
     protected Mocks()
     {
@@ -39,8 +41,11 @@ public class Mocks
         _unitOfWork.Products.Returns(_productRepository);
         _unitOfWork.Providers.Returns(_providerRepository);
         _unitOfWork.Files.Returns(_fileRepository);
-        _pipelineProvider = Substitute.For<ResiliencePipelineProvider<string>>();
-        _pipelineProvider.GetPipeline(Arg.Any<string>())
+        _productPipelineProvider = Substitute.For<ResiliencePipelineProvider<string>>();
+        _productPipelineProvider.GetPipeline<object?>(Arg.Any<string>())
+            .Returns(ResiliencePipeline<object?>.Empty);
+        _providerPipelineProvider = Substitute.For<ResiliencePipelineProvider<string>>();
+        _providerPipelineProvider.GetPipeline(Arg.Any<string>())
             .Returns(ResiliencePipeline.Empty);
         _productServiceLogger = Substitute.For<ILogger<ProductService.BLL.Services.ProductService>>();
         _providerServiceLogger = Substitute.For<ILogger<ProviderService>>();
@@ -48,9 +53,9 @@ public class Mocks
         _lockProvider = Substitute.For<IDistributedLockProvider>();
 
         _productService = new ProductService.BLL.Services.ProductService(_unitOfWork, _cacheRepository, 
-            _productServiceLogger, _lockProvider, _pipelineProvider);
+            _productServiceLogger, _lockProvider, _productPipelineProvider);
         _providerService = new ProviderService(_unitOfWork, _cacheRepository,
-            _providerServiceLogger, _lockProvider, _pipelineProvider);
+            _providerServiceLogger, _lockProvider, _providerPipelineProvider);
 
         user = new ClaimsPrincipal(new ClaimsIdentity(new[]
         {
