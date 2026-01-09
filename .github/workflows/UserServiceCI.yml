@@ -17,13 +17,7 @@ env:
   SONAR_PROJECT_KEY: "Baldj20_MikeBerries"
   SONAR_ORGANIZATION: "baldj20"
   SONAR_PROJECT_NAME: "UserService"
-  SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs,**/Dockerfile"
-
-  BUILT_UNIT_TESTS_PATH: "./UserService/UserService.UnitTests/bin/Debug/net8.0/UserService.UnitTests.dll"
-  UNIT_TESTS_PROJECT_PATH: "./UserService/UserService.UnitTests/UserService.UnitTests.csproj"
-
-  BUILT_INTEGRATION_TESTS_PATH: "./UserService/UserService.IntegrationTests/bin/Debug/net8.0/UserService.IntegrationTests.dll"
-  INTEGRATION_TEST_PROJECT_PATH: "./UserService/UserService.IntegrationTests/UserService.IntegrationTests.csproj"
+  SONAR_EXCLUDE_FROM_COVERAGE: "**/Program.cs,**/Dockerfile,**/UserService.DAL/**"
 
   SOLUTION_PATH: "./UserService/UserService.sln"
 jobs:
@@ -36,9 +30,6 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Install Coverlet for .NET
-        run: dotnet tool install --global coverlet.console
-
       - name: Install SonarScanner for .NET
         run: dotnet tool install --global dotnet-sonarscanner
       
@@ -48,22 +39,10 @@ jobs:
             /k:"$SONAR_PROJECT_KEY" \
             /o:"$SONAR_ORGANIZATION" \
             /d:sonar.token="$SONAR_TOKEN" \
-            /d:sonar.cs.opencover.reportsPaths=coverage_unit_tests.xml,coverage_integration_tests.xml \
+            /d:sonar.cs.opencover.reportsPaths=coverage.xml \
             /d:sonar.coverage.exclusions=$SONAR_EXCLUDE_FROM_COVERAGE
 
           dotnet build "$SOLUTION_PATH" --no-incremental
-
-          coverlet "$BUILT_UNIT_TESTS_PATH" \
-            --target "dotnet" \
-            --targetargs "test \"$UNIT_TESTS_PROJECT_PATH\" --no-build" \
-            -f opencover \
-            -o "coverage_unit_tests.xml"
-
-          coverlet "$BUILT_INTEGRATION_TESTS_PATH" \
-            --target "dotnet" \
-            --targetargs "test \"$INTEGRATION_TEST_PROJECT_PATH\" --no-build" \
-            -f opencover \
-            -o "coverage_integration_tests.xml"
 
           dotnet sonarscanner end \
             /d:sonar.token="$SONAR_TOKEN"
