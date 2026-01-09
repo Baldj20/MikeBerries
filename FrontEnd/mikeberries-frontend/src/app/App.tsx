@@ -1,9 +1,10 @@
 import ProductsPage from "../pages/products/ui/ProductsPage.tsx";
+import styles from './App.module.css';
 
 
 function App() {
   return (
-    <div style={{backgroundColor: "red", width: "100%", minHeight: "100vh"}}>
+    <div className={styles.app}>
         <ProductsPage />
     </div>
   )
