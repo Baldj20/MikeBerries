@@ -7,5 +7,5 @@ public class Cart
     public required int TotalPrice { get; set; }
     public required int TotalCount { get; set; }
 
-    public required User User { get; set; }
+    public User? User { get; set; }
 }

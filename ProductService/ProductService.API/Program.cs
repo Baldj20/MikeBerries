@@ -27,7 +27,7 @@ public class Program
 
         builder.Services.ConfigureDataAccessLayerDependencies(builder.Configuration);
 
-        builder.Services.ConfigureBusinessLogicLayerDependencies();
+        builder.Services.ConfigureBusinessLogicLayerDependencies(builder.Configuration);
 
         ApiExtensions.ConfigureMapping();
 
@@ -39,8 +39,21 @@ public class Program
 
         builder.Services.AddSwaggerGen();
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowFrontend", policy =>
+            {
+                policy.WithOrigins("http://localhost:5173")
+                      .AllowAnyMethod()
+                      .AllowAnyHeader()
+                      .AllowCredentials();
+            });
+        });
+
         builder.Services.AddResiliencePipeline(ResilienceConstants.STANDARD_PIPELINE_NAME, builder.Configuration);
         builder.Services.AddCachingResiliencePipeline(ResilienceConstants.CACHING_PIPELINE_NAME);
+
+        
 
         var app = builder.Build();
 
@@ -54,6 +67,8 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        app.UseCors("AllowFrontend");
 
         app.UseHttpsRedirection();
 
