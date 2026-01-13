@@ -39,6 +39,8 @@ jobs:
             /k:"$SONAR_PROJECT_KEY" \
             /o:"$SONAR_ORGANIZATION" \
             /d:sonar.token="$SONAR_TOKEN" \
+            /d:sonar.projectBaseDir="UserService" \
+            /d:sonar.sources="." \
             /d:sonar.cs.opencover.reportsPaths=coverage.xml \
             /d:sonar.coverage.exclusions=$SONAR_EXCLUDE_FROM_COVERAGE
 
