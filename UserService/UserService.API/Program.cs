@@ -1,3 +1,5 @@
+using UserService.DAL.Configurations;
+
 namespace UserService.API;
 
 public class Program
@@ -9,7 +11,9 @@ public class Program
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-
+        
+        builder.ConfigureDalDependencies();
+        
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
