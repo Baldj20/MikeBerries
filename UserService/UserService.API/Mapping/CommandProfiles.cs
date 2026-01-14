@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
 using UserService.API.DTOs;
+using UserService.BLL.Carts.Commands.AddItemToCart;
+using UserService.BLL.Carts.Commands.DeleteItemFromCart;
 using UserService.BLL.Users.Commands.DeleteUser;
 using UserService.BLL.Users.Commands.UpdateUser;
 
@@ -12,5 +14,10 @@ public class CommandProfiles : Profile
         CreateMap<string, DeleteUserCommand>()
             .ForMember(dest => dest.Auth0Id, opt => opt.MapFrom(src => src));
         CreateMap<UpdateUserDto, UpdateUserCommand>();
+        CreateMap<AddItemDto, AddItemToCartCommand>()
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.CartId));
+        CreateMap<DeleteItemFromCartDto, DeleteItemFromCartCommand>()
+            .ForMember(dest => dest.CartItemId, opt => opt.MapFrom(src => src.ItemId))
+            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.CartId));
     }
 }
