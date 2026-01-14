@@ -1,5 +1,9 @@
+using UserService.API.Configurations;
+using UserService.API.Mapping;
 using UserService.BLL.Users.Commands.CreateUser;
 using UserService.DAL.Configurations;
+using UserService.DAL.Repositories;
+using UserService.DAL.Repositories.Interfaces;
 
 namespace UserService.API;
 
@@ -14,10 +18,10 @@ public class Program
         builder.Services.AddSwaggerGen();
         
         builder.ConfigureDalDependencies();
+
+        builder.Services.ConfigureMediator();
         
-        builder.Services.AddMediatR(cfg => {
-            cfg.RegisterServicesFromAssembly(typeof(CreateUserCommand).Assembly);
-        });
+        builder.Services.ConfigureMapper();
         
         var app = builder.Build();
 
