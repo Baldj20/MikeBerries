@@ -1,4 +1,4 @@
-﻿using UserService.BLL.Common;
+﻿using MediatR;
 using UserService.DAL.Entities;
 using UserService.DAL.Repositories.Interfaces;
 

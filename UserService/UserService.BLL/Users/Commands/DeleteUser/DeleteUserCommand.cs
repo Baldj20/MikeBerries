@@ -1,6 +1,8 @@
-﻿namespace UserService.BLL.Users.Commands.DeleteUser;
+﻿using MediatR;
 
-public class DeleteUserCommand
+namespace UserService.BLL.Users.Commands.DeleteUser;
+
+public class DeleteUserCommand : IRequest<bool>
 {
     public required string Auth0Id { get; set; }
 }

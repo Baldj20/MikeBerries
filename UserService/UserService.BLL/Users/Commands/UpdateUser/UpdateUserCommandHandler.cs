@@ -1,4 +1,4 @@
-﻿using UserService.BLL.Common;
+﻿using MediatR;
 using UserService.DAL.Repositories.Interfaces;
 
 namespace UserService.BLL.Users.Commands.UpdateUser;
