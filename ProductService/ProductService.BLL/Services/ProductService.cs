@@ -18,7 +18,7 @@ public class ProductService : IProductService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICacheRepository _cache;
-    private readonly ResiliencePipeline _pipeline;
+    private readonly ResiliencePipeline<object?> _pipeline;
     private readonly ILogger<ProductService> _logger;
     private readonly IDistributedLockProvider _lockProvider;
 
@@ -31,7 +31,7 @@ public class ProductService : IProductService
     {
         _unitOfWork = unitOfWork;
         _cache = cache;
-        _pipeline = pipelineProvider.GetPipeline(pipelineName);
+        _pipeline = pipelineProvider.GetPipeline<object?>(pipelineName);
         _logger = logger;
         _lockProvider = distributedLockProvider;
     }
@@ -42,7 +42,7 @@ public class ProductService : IProductService
 
         for (int i = 0; i < imageModels.Count; i++)
         {
-            var key = $"products/{product.Id}/{product.Images[i].Id}";
+            var key = $"products/{product.Id}/{product.Images[i].Id}{Path.GetExtension(imageModels[i]?.Image?.FileName)}";
             using var fileStream = imageModels[i].Image!.OpenReadStream();
             var url = await _unitOfWork.Files.UploadFileAsync(key, fileStream, token);
             product.Images[i].Url = url;
@@ -81,6 +81,7 @@ public class ProductService : IProductService
             {
                 var cacheKey = $"product:{id}";
                 await _cache.RemoveData(cacheKey, ct);
+                return ValueTask.CompletedTask;
             }, token);
 
             _logger.ResourceDeleted(typeof(Product).Name, product.Id);
@@ -128,6 +129,7 @@ public class ProductService : IProductService
                 await _pipeline.ExecuteAsync(async ct =>
                 {
                     await _cache.SetData(cacheKey, model, token: ct);
+                    return ValueTask.CompletedTask;
                 }, token);
 
                 return new Result<ProductModel>(model, 200);
@@ -219,6 +221,7 @@ public class ProductService : IProductService
             {
                 var cacheKey = $"product:{id}";
                 await _cache.RemoveData(cacheKey, ct);
+                return ValueTask.CompletedTask;
             }, token);
 
             _logger.ResourceUpdated(typeof(Product).Name, product.Id);
