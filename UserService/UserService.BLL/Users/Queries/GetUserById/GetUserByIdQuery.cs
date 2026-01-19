@@ -2,5 +2,5 @@
 
 public class GetUserByIdQuery
 {
-    public string Auth0Id { get; set; }
+    public required string Auth0Id { get; set; }
 }
