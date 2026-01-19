@@ -5,5 +5,5 @@ namespace UserService.BLL.Users.Queries.GetUserById;
 
 public class GetUserByIdQuery : IRequest<User>
 {
-    public string Auth0Id { get; set; }
+    public required string Auth0Id { get; set; }
 }
