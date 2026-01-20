@@ -23,6 +23,10 @@ public class Program
         
         builder.Services.ConfigureMapper();
         
+        builder.Services.AddMediatR(cfg => {
+            cfg.RegisterServicesFromAssembly(typeof(CreateUserCommand).Assembly);
+        });
+        
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
