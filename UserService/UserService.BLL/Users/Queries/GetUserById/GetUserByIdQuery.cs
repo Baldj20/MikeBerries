@@ -7,3 +7,4 @@ public class GetUserByIdQuery : IRequest<User>
 {
     public required string Auth0Id { get; set; }
 }
+
