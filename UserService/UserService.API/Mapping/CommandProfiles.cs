@@ -12,7 +12,6 @@ public class CommandProfiles : Profile
     public CommandProfiles()
     {
         CreateMap<UpdateUserDto, UpdateUserCommand>();
-        CreateMap<AddItemDto, AddItemToCartCommand>()
-            .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.CartId));
+        CreateMap<AddItemDto, AddItemToCartCommand>();
     }
 }

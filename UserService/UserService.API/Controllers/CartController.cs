@@ -26,9 +26,11 @@ public class CartsController(IMediator mediator, IMapper mapper) : ControllerBas
     }
     
     [HttpPost("{cartId}/items")]
-    public async Task<ActionStatusDto> AddItemToCart(AddItemDto dto, CancellationToken cancellationToken)
+    public async Task<ActionStatusDto> AddItemToCart(string cartId, AddItemDto dto, CancellationToken cancellationToken)
     {
         var command = mapper.Map<AddItemToCartCommand>(dto);
+
+        command.UserId = cartId;
         
         var success = await mediator.Send(command, cancellationToken);
 
