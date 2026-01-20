@@ -1,6 +1,8 @@
-﻿namespace UserService.BLL.Carts.Commands.AddItemToCart;
+﻿using MediatR;
 
-public class AddItemToCartCommand
+namespace UserService.BLL.Carts.Commands.AddItemToCart;
+
+public class AddItemToCartCommand : IRequest<bool>
 {
     public required string UserId { get; set; }
     public required Guid ProductId { get; set; }

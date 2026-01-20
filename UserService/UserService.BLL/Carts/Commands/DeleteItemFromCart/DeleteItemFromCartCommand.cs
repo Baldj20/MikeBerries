@@ -1,6 +1,8 @@
-﻿namespace UserService.BLL.Carts.Commands.DeleteItemFromCart;
+﻿using MediatR;
 
-public class DeleteItemFromCartCommand
+namespace UserService.BLL.Carts.Commands.DeleteItemFromCart;
+
+public class DeleteItemFromCartCommand : IRequest<bool>
 {
     public required Guid CartItemId { get; set; }
     public required string UserId { get; set; }

@@ -1,6 +1,9 @@
-﻿namespace UserService.BLL.Users.Commands.CreateUser;
+﻿using MediatR;
+using UserService.DAL.Entities;
 
-public class CreateUserCommand
+namespace UserService.BLL.Users.Commands.CreateUser;
+
+public class CreateUserCommand : IRequest<User>
 {
     public required string Auth0Id { get; set; }
     public required string Email { get; set; }

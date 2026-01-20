@@ -1,6 +1,9 @@
-﻿namespace UserService.BLL.Users.Commands.UpdateUser;
+﻿using MediatR;
+using UserService.DAL.Entities;
 
-public class UpdateUserCommand
+namespace UserService.BLL.Users.Commands.UpdateUser;
+
+public class UpdateUserCommand : IRequest<User>
 {
     public required string Auth0Id { get; set; }
     public string? Email { get; set; }
