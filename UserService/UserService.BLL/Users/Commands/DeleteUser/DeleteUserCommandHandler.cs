@@ -8,7 +8,10 @@ public class DeleteUserCommandHandler(IUserRepository userRepository) : IRequest
     public async Task<bool> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetUserByAuth0Id(request.Auth0Id);
-        if (user is null) return false;
+        if (user is null)
+        {
+            return false;
+        }
         
         await userRepository.Delete(user);
         await userRepository.SaveChangesAsync(cancellationToken);
