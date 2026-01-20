@@ -8,7 +8,11 @@ public class DeleteItemFromCartCommandHandler(IUserRepository userRepository) : 
     public async Task<bool> Handle(DeleteItemFromCartCommand request, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetUserByAuth0Id(request.UserId);
-        if (user is null) return false;
+
+        if (user is null)
+        {
+            return false;
+        }
         
         user.Cart.Items.RemoveAll(ci => ci.Id == request.CartItemId);
         

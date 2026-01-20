@@ -9,7 +9,11 @@ public class AddItemToCartCommandHandler(IUserRepository userRepository) : IRequ
     public async Task<bool> Handle(AddItemToCartCommand request, CancellationToken cancellationToken)
     {
         var user = await userRepository.GetUserByAuth0Id(request.UserId);
-        if (user is null) return false;
+        
+        if (user is null)
+        {
+            return false;
+        }
 
         var cartItem = new CartItem
         {
