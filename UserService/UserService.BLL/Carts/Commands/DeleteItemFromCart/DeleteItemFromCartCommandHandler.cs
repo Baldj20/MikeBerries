@@ -1,22 +1,20 @@
 ﻿using MediatR;
+using UserService.DAL.Entities;
 using UserService.DAL.Repositories.Interfaces;
 
 namespace UserService.BLL.Carts.Commands.DeleteItemFromCart;
 
-public class DeleteItemFromCartCommandHandler(IUserRepository userRepository) : IRequestHandler<DeleteItemFromCartCommand, bool>
+public class DeleteItemFromCartCommandHandler(ICartItemRepository cartItemRepository) : IRequestHandler<DeleteItemFromCartCommand, bool>
 {
     public async Task<bool> Handle(DeleteItemFromCartCommand request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetUserByAuth0Id(request.UserId);
-
-        if (user is null)
-        {
-            return false;
-        }
+        var cartItem = await cartItemRepository.GetItemByIdAsync(request.CartItemId, cancellationToken);
         
-        user.Cart.Items.RemoveAll(ci => ci.Id == request.CartItemId);
+        if (cartItem is null) return false;
         
-        await userRepository.SaveChangesAsync(cancellationToken);
+        await cartItemRepository.Delete(cartItem);
+        
+        await cartItemRepository.SaveChangesAsync(cancellationToken);
         
         return true;
     }

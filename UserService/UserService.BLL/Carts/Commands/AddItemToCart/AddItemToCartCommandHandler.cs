@@ -4,17 +4,10 @@ using UserService.DAL.Repositories.Interfaces;
 
 namespace UserService.BLL.Carts.Commands.AddItemToCart;
 
-public class AddItemToCartCommandHandler(IUserRepository userRepository) : IRequestHandler<AddItemToCartCommand, bool>
+public class AddItemToCartCommandHandler(ICartItemRepository cartItemRepository) : IRequestHandler<AddItemToCartCommand, bool>
 {
     public async Task<bool> Handle(AddItemToCartCommand request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetUserByAuth0Id(request.UserId);
-        
-        if (user is null)
-        {
-            return false;
-        }
-
         var cartItem = new CartItem
         {
             Id = Guid.NewGuid(),
@@ -22,12 +15,11 @@ public class AddItemToCartCommandHandler(IUserRepository userRepository) : IRequ
             UserId = request.UserId,
             Count = request.Count,
             IsChosen = true,
-            Cart =  user.Cart
         };
         
-        user.Cart.Items.Add(cartItem);
+        await cartItemRepository.AddAsync(cartItem, cancellationToken);
         
-        await userRepository.SaveChangesAsync(cancellationToken);
+        await cartItemRepository.SaveChangesAsync(cancellationToken);
         
         return true;
     }

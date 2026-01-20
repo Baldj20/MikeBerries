@@ -8,5 +8,5 @@ public class CartItem
     public required int Count { get; set; } = 0;
     public required bool IsChosen { get; set; } = false;
 
-    public required Cart Cart { get; set; }
+    public Cart? Cart { get; set; }
 }
