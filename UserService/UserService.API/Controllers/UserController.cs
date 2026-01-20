@@ -42,9 +42,9 @@ public class UsersController(IMediator mediator, IMapper mapper) : ControllerBas
     [HttpPut("{id}")]
     public async Task<GetUserDto> UpdateUserById(string id, UpdateUserDto dto, CancellationToken cancellationToken)
     {
-        dto.Auth0Id = id;
-        
         var command = mapper.Map<UpdateUserCommand>(dto);
+        
+        command.Auth0Id = id;
 
         var user = await mediator.Send(command, cancellationToken);
 
