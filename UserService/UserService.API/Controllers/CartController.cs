@@ -8,7 +8,7 @@ namespace UserService.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CartController(IMediator mediator, IMapper mapper) : ControllerBase
+public class CartsController(IMediator mediator, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<GetCartDto> GetUserCart(string id, CancellationToken cancellationToken)

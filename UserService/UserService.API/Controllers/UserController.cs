@@ -10,7 +10,7 @@ namespace UserService.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class UserController(IMediator mediator, IMapper mapper) : ControllerBase
+public class UsersController(IMediator mediator, IMapper mapper) : ControllerBase
 {
     [HttpGet]
     public async Task<GetUserDto> GetUserById(string id, CancellationToken cancellationToken)

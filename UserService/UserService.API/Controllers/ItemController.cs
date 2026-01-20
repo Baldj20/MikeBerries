@@ -9,7 +9,7 @@ namespace UserService.API.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ItemController(IMediator mediator, IMapper mapper) : ControllerBase
+public class ItemsController(IMediator mediator, IMapper mapper) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionStatusDto> AddItemToCart(AddItemDto dto, CancellationToken cancellationToken)
