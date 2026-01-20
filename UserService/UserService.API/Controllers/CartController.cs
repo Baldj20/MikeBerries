@@ -10,10 +10,13 @@ namespace UserService.API.Controllers;
 [ApiController]
 public class CartsController(IMediator mediator, IMapper mapper) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("{id}")]
     public async Task<GetCartDto> GetUserCart(string id, CancellationToken cancellationToken)
     {
-        var query = mapper.Map<GetUserCartQuery>(id);
+        var query = new GetUserCartQuery
+        {
+            UserId = id
+        };
         
         var cart = await mediator.Send(query, cancellationToken);
         
