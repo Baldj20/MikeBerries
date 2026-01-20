@@ -4,9 +4,9 @@ using UserService.DAL.Repositories.Interfaces;
 
 namespace UserService.BLL.Users.Commands.CreateUser;
 
-public class CreateUserCommandHandler(IUserRepository userRepository) : IRequestHandler<CreateUserCommand, bool>
+public class CreateUserCommandHandler(IUserRepository userRepository) : IRequestHandler<CreateUserCommand, User>
 {
-    public async Task<bool> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<User> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var user = new User
         {
@@ -24,6 +24,6 @@ public class CreateUserCommandHandler(IUserRepository userRepository) : IRequest
         
         await userRepository.AddAsync(user, cancellationToken);
         await userRepository.SaveChangesAsync(cancellationToken);
-        return true;    
+        return user;    
     }
 }
