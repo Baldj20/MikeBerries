@@ -30,7 +30,7 @@ public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddlewa
         }
     }
 
-    private async Task WriteErrorResponse(
+    private static async Task WriteErrorResponse(
         HttpContext context,
         Exception exception,
         HttpStatusCode statusCode)
