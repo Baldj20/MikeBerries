@@ -1,4 +1,5 @@
 using MediatR;
+using UserService.DAL.Entities;
 using UserService.DAL.Repositories.Interfaces;
 
 namespace UserService.BLL.Users.Commands.UpdateUser;
@@ -9,7 +10,7 @@ public class UpdateUserCommandHandler(IUserRepository userRepository) : IRequest
     {
         var user = await userRepository.GetUserByAuth0Id(request.Auth0Id);
         
-        if (user == null)
+        if (user is null)
         {
             throw new NullReferenceException("User not found");
         }
