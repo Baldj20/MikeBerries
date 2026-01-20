@@ -4,3 +4,4 @@ public class GetUserByIdQuery
 {
     public required string Auth0Id { get; set; }
 }
+
