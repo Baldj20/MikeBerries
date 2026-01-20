@@ -12,10 +12,13 @@ namespace UserService.API.Controllers;
 [ApiController]
 public class UsersController(IMediator mediator, IMapper mapper) : ControllerBase
 {
-    [HttpGet]
+    [HttpGet("{id}")]
     public async Task<GetUserDto> GetUserById(string id, CancellationToken cancellationToken)
     {
-        var query = mapper.Map<GetUserByIdQuery>(id);
+        var query = new GetUserByIdQuery
+        {
+            Auth0Id = id
+        };
         
         var user = await mediator.Send(query, cancellationToken);
         

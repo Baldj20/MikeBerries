@@ -11,8 +11,6 @@ public class CommandProfiles : Profile
 {
     public CommandProfiles()
     {
-        CreateMap<string, DeleteUserCommand>()
-            .ForMember(dest => dest.Auth0Id, opt => opt.MapFrom(src => src));
         CreateMap<UpdateUserDto, UpdateUserCommand>();
         CreateMap<AddItemDto, AddItemToCartCommand>()
             .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.CartId));
