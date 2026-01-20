@@ -37,18 +37,18 @@ public class UsersController(IMediator mediator, IMapper mapper) : ControllerBas
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionStatusDto> UpdateUserById(string id, UpdateUserDto dto, CancellationToken cancellationToken)
+    public async Task<GetUserDto> UpdateUserById(string id, UpdateUserDto dto, CancellationToken cancellationToken)
     {
         dto.Auth0Id = id;
         
         var command = mapper.Map<UpdateUserCommand>(dto);
 
-        var success = await mediator.Send(command, cancellationToken);
+        var user = await mediator.Send(command, cancellationToken);
 
-        return new ActionStatusDto
+        return new GetUserDto
         {
-            Status = success,
-            Message = success ? string.Empty : "Update failed."
+            Name = user.Name,
+            Email = user.Email,
         };
     }
 }
