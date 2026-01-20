@@ -15,7 +15,6 @@ public class AddItemToCartCommandHandler(ICartItemRepository cartItemRepository)
             UserId = request.UserId,
             Count = request.Count,
             IsChosen = true,
-            Cart =  null!
         };
         
         await cartItemRepository.AddAsync(cartItem, cancellationToken);
