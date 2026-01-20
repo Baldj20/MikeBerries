@@ -1,4 +1,5 @@
 using MediatR;
+using UserService.API.Exceptions;
 using UserService.DAL.Entities;
 using UserService.DAL.Repositories.Interfaces;
 
@@ -12,7 +13,7 @@ public class UpdateUserCommandHandler(IUserRepository userRepository) : IRequest
         
         if (user is null)
         {
-            throw new NullReferenceException("User not found");
+            throw new NotFoundException("User to update not found");
         }
         
         user.Name = request.Name ?? user.Name;
