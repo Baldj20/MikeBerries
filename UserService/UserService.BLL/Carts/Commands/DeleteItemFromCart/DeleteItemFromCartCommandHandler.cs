@@ -10,7 +10,7 @@ public class DeleteItemFromCartCommandHandler(ICartItemRepository cartItemReposi
     {
         var cartItem = await cartItemRepository.GetItemByIdAsync(request.CartItemId, cancellationToken);
         
-        if (cartItem == null) return false;
+        if (cartItem is null) return false;
         
         await cartItemRepository.Delete(cartItem);
         
