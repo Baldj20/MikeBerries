@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using UserService.API.Exceptions;
 using UserService.DAL.Repositories.Interfaces;
 
 namespace UserService.BLL.Users.Commands.DeleteUser;
@@ -10,7 +11,7 @@ public class DeleteUserCommandHandler(IUserRepository userRepository) : IRequest
         var user = await userRepository.GetUserByAuth0Id(request.Auth0Id);
         if (user is null)
         {
-            return false;
+            throw new NotFoundException("User to delete not found");
         }
         
         await userRepository.Delete(user);

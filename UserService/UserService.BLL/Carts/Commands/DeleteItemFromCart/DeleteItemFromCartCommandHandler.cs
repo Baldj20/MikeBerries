@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using UserService.DAL.Entities;
+using UserService.API.Exceptions;
 using UserService.DAL.Repositories.Interfaces;
 
 namespace UserService.BLL.Carts.Commands.DeleteItemFromCart;
@@ -10,7 +10,7 @@ public class DeleteItemFromCartCommandHandler(ICartItemRepository cartItemReposi
     {
         var cartItem = await cartItemRepository.GetItemByIdAsync(request.CartItemId, cancellationToken);
         
-        if (cartItem is null) return false;
+        if (cartItem is null) throw new NotFoundException("Cart item to delete not found");
         
         await cartItemRepository.Delete(cartItem);
         
