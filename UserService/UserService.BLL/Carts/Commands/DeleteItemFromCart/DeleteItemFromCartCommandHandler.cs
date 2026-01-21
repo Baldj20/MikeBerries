@@ -8,9 +8,8 @@ public class DeleteItemFromCartCommandHandler(ICartItemRepository cartItemReposi
 {
     public async Task<bool> Handle(DeleteItemFromCartCommand request, CancellationToken cancellationToken)
     {
-        var cartItem = await cartItemRepository.GetItemByIdAsync(request.CartItemId, cancellationToken);
-        
-        if (cartItem is null) throw new NotFoundException("Cart item to delete not found");
+        var cartItem = await cartItemRepository.GetItemByIdAsync(request.CartItemId, cancellationToken)
+            ?? throw new NotFoundException("Cart item to delete not found");
         
         await cartItemRepository.Delete(cartItem);
         
