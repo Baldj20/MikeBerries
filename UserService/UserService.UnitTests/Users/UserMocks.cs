@@ -28,7 +28,6 @@ public class UserMocks
     
     protected readonly UserFaker _userFaker;
     
-
     protected UserMocks()
     {
         _userRepositoryMock = new Mock<IUserRepository>();

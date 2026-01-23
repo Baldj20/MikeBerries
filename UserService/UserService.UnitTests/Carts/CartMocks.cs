@@ -24,7 +24,6 @@ public class CartMocks
     protected readonly CartItemFaker _cartItemFaker;
     protected readonly CartFaker _cartFaker;
     
-    
     protected CartMocks()
     {
         _cartItemRepositoryMock = new Mock<ICartItemRepository>();
