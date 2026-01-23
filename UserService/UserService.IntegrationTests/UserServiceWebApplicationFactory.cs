@@ -12,8 +12,7 @@ namespace UserService.IntegrationTests;
 
 public class UserServiceWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder()
-        .WithImage(PostgreSqlTestDatabaseCredentials.ImageName)
+    private readonly PostgreSqlContainer _container = new PostgreSqlBuilder(PostgreSqlTestDatabaseCredentials.ImageName)
         .WithDatabase(PostgreSqlTestDatabaseCredentials.DatabaseName)
         .WithUsername(PostgreSqlTestDatabaseCredentials.Username)
         .WithPassword(PostgreSqlTestDatabaseCredentials.Password)
