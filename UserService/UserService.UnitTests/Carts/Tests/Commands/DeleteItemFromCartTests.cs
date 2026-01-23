@@ -32,10 +32,10 @@ public class DeleteItemFromCartTests : CartMocks
         _cartItemRepositoryMock.Setup(m => m.SaveChangesAsync(CancellationToken.None)).Returns(Task.CompletedTask);
         _cartItemRepositoryMock.Setup(m => m.GetItemByIdAsync(request.CartItemId, CancellationToken.None)).ReturnsAsync((CartItem)null!);
         
-        //Act & Assert
-        await Should.ThrowAsync<NotFoundException>(async () =>
-        {
-            await _deleteItemFromCartCommandHandler.Handle(request, CancellationToken.None);
-        });
+        //Act
+        var act = () =>   _deleteItemFromCartCommandHandler.Handle(request, CancellationToken.None);
+        
+        //Assert
+        await act.ShouldThrowAsync<NotFoundException>();
     }
 }

@@ -26,7 +26,7 @@ public class DeleteUserTests : UserMocks
     }
     
     [Fact]
-    public async Task DeleteUserIfUserNotExists_ShouldReturnFalse()
+    public async Task DeleteUserIfUserNotExists_ShouldThrowNotFoundException()
     {
         //Arrange
         _userRepositoryMock.Setup(m => m.GetUserByAuth0Id(It.IsAny<string>())).ReturnsAsync((User)null!);
@@ -34,10 +34,10 @@ public class DeleteUserTests : UserMocks
  
         var request = _deleteUserCommandFaker.Generate();
         
-        //Act & Assert
-        await Should.ThrowAsync<NotFoundException>(async () =>
-        {
-            await _deleteUserCommandHandler.Handle(request, CancellationToken.None);
-        });
+        //Act
+        var act = () => _deleteUserCommandHandler.Handle(request, CancellationToken.None);
+        
+        //Assert
+        await act.ShouldThrowAsync<NotFoundException>();
     }
 }
