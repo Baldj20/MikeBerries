@@ -13,9 +13,8 @@ public class BaseTest(UserServiceWebApplicationFactory factory)
     
     protected readonly AddItemDtoFaker AddItemDtoFaker = new AddItemDtoFaker();
     
-    protected readonly CartItemFaker CartItemFaker = new();
-    protected readonly CartFaker CartFaker = new();
     protected readonly UserFaker UserFaker = new();
+    
     protected async Task AddUserToDatabaseAsync(User user)
     {
         using var scope = Factory.Services.CreateScope();
