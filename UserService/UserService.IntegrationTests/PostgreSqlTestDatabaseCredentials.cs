@@ -2,8 +2,8 @@
 
 public static class PostgreSqlTestDatabaseCredentials
 {
-    public static readonly string ImageName = "postgres:latest";
-    public static readonly string DatabaseName = "test_db";
-    public static readonly string Username = "user";
-    public static readonly string Password = "password";
+    public const string ImageName = "postgres:latest";
+    public const string DatabaseName = "test_db";
+    public const string Username = "user";
+    public const string Password = "password";
 }
