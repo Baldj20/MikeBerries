@@ -28,7 +28,10 @@ public class UsersController(IMediator mediator, IMapper mapper) : ControllerBas
     [HttpDelete("{id}")]
     public async Task<ActionStatusDto> DeleteUserById(string id, CancellationToken cancellationToken)
     {
-        var command = mapper.Map<DeleteUserCommand>(id);
+        var command = new DeleteUserCommand
+        {
+            Auth0Id = id
+        };
         
         var success = await mediator.Send(command, cancellationToken);
         
