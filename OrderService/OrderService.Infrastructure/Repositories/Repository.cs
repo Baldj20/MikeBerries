@@ -24,4 +24,9 @@ public class Repository<T>(OrderServiceDbContext context) : IRepository<T> where
 
         return Task.CompletedTask;
     }
+
+    public async Task SaveChangesAsync(CancellationToken token)
+    {
+        await Context.SaveChangesAsync(token);
+    }
 }
