@@ -228,6 +228,19 @@ public class ProductService : IProductService
 
             return Result.Success(204);
         }
+    }
+    
+    public async Task<Result<bool>> IsProductAvailable(Guid id, CancellationToken token)
+    {
+        var product = await _unitOfWork.Products.GetByIdAsync(id, token);
+        
+        if (product is null)
+        {
+            return new Result<bool>(CustomError.ResourceNotFound<Product>(), 404);
+        }
 
+        bool isAvailable = product.Count > 0;
+        
+        return new Result<bool>(isAvailable, 200);
     }
 }
