@@ -12,6 +12,9 @@ public class OrderService(IOrderRepository orderRepository) : IOrderService
     {
         var order = orderModel.Adapt<Order>();
         
+        var isAvailable = 
+        
+
         await orderRepository.AddAsync(order, cancellationToken);
         
         await orderRepository.SaveChangesAsync(cancellationToken);

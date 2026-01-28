@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+option csharp_namespace = "Shared.Protos";
+
+service ProductService {
+  rpc IsProductAvailable (ProductAvailabilityRequest) returns (ProductAvailabilityResponse);
+}
+
+message ProductAvailabilityRequest {
+  string product_id = 1;
+}
+
+message ProductAvailabilityResponse {
+  bool is_available = 1;
+}
