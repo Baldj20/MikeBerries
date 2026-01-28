@@ -1,5 +1,4 @@
-﻿using Google.Protobuf.Collections;
-using Mapster;
+﻿using Mapster;
 using OrderService.Application.Models;
 using OrderService.Application.Services.Interfaces;
 using OrderService.Domain.Entities;
@@ -17,10 +16,10 @@ public class OrderService(IOrderRepository orderRepository, ProductService.Produ
         var ids = order.Items.Select(i => i.ProductId.ToString()).ToList();
         
         var request = new ProductsAvailabilityRequest();
-        request.ProductId.AddRange(ids);
+        request.ProductIdsList.AddRange(ids);
         
         var response = await grpcClient.AreProductsAvailableAsync(request);
-        var isAvailableList = response.IsAvailable;
+        var isAvailableList = response.IsAvailableList;
 
         foreach (var isAvailable in isAvailableList)
         {
