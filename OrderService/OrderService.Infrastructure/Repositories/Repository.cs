@@ -11,17 +11,13 @@ public class Repository<T>(OrderServiceDbContext context) : IRepository<T> where
         await Context.Set<T>().AddAsync(entity, token);
     }
 
-    public Task DeleteAsync(T entity, CancellationToken token)
+    public void Delete(T entity)
     {
         Context.Set<T>().Remove(entity);
-
-        return Task.CompletedTask;
     }
 
-    public Task UpdateAsync(T entity, CancellationToken token)
+    public void Update(T entity)
     {
         Context.Set<T>().Update(entity);
-
-        return Task.CompletedTask;
     }
 }
