@@ -1,4 +1,4 @@
-﻿namespace OrderService.Presentation;
+﻿namespace OrderService.Infrastructure;
 
 public record GrpcSettings
 {

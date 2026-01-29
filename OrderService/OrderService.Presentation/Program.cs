@@ -1,4 +1,4 @@
-using OrderService.Presentation.Configurations;
+using OrderService.Infrastructure.Configurations;
 
 namespace OrderService.Presentation;
 

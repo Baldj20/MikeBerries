@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Shared.Protos;
 
-namespace OrderService.Presentation.Configurations;
+namespace OrderService.Infrastructure.Configurations;
 
 public static class GrpcConfiguration
 {
