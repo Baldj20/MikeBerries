@@ -178,6 +178,7 @@ public static class TestDataHelper
                 Email = providerEmail,
                 Name = providerName
             },
+            Count = 10,
             Images = new()
         };
     }
