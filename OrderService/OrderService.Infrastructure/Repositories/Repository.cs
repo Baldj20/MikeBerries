@@ -20,4 +20,9 @@ public class Repository<T>(OrderServiceDbContext context) : IRepository<T> where
     {
         Context.Set<T>().Update(entity);
     }
+
+    public async Task SaveChangesAsync(CancellationToken token)
+    {
+        await Context.SaveChangesAsync(token);
+    }
 }
