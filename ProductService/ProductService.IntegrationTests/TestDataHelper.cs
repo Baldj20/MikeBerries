@@ -171,6 +171,7 @@ public static class TestDataHelper
             Title = title,
             Description = description,
             Price = price,
+            Count = 10,
             ProviderId = providerId,
             Provider = new Provider
             {

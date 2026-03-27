@@ -20,14 +20,14 @@ public class MinioStorage
     {
         var config = new AmazonS3Config
         {
-            ServiceURL = settings.ServiceURL,
+            ServiceURL = settings.DockerContainerUrl,
             ForcePathStyle = true
         };
 
         var credentials = new BasicAWSCredentials(settings.AccessKey, settings.SecretKey);
         _client = new AmazonS3Client(credentials, config);
         _bucketName = settings.BucketName;
-        _serviceUrl = settings.ServiceURL;
+        _serviceUrl = settings.ServiceUrl;
         _pipeline = pipelineProvider.GetPipeline(pipelineName);
     }
 

@@ -1,51 +1,17 @@
 services:
-  product_service_api:
-    build:
-      context: ./ProductService
-      dockerfile: Dockerfile
-    ports:
-      - "8080:8080"
-    environment:
-      - ConnectionStrings__DefaultConnection=${db_connection_string}
-      - ConnectionStrings__Redis=${redis_connection_string}
-      - Minio__ServiceURL=${minio_service_url}
-      - Minio__AccessKey=${minio_access_key}
-      - Minio__SecretKey=${minio_secret_key}
-      - Minio__BucketName=${minio_bucket_name}
-    depends_on:
-      postgreDB:
-        condition: service_healthy
-      minio:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-  postgreDB:
-    image: postgres:16-alpine 
-    restart: always
-    environment:
-      POSTGRES_USER: ${postgres_user}
-      POSTGRES_PASSWORD: ${postgres_password}
-      POSTGRES_DB: MikeBerriesDB
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${postgres_user} -d MikeBerriesDB"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
   minio:
     image: minio/minio
     ports:
       - "9000:9000"
       - "9001:9001"
     environment:
-      MINIO_ROOT_USER: user
-      MINIO_ROOT_PASSWORD: password
+      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
     command: server /data --console-address ":9001"
     volumes:
-      - minio_data:/data 
+      - minio_data:/data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -58,11 +24,109 @@ services:
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 5s
       timeout: 3s
       retries: 5
+  
+  product-service:
+    build:
+      context: ./ProductService
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=${PRODUCT_SERVICE_DB_CONNECTION_STRING}
+      - ConnectionStrings__Redis=${REDIS_CONNECTION_STRING}
+      - Minio__ServiceUrl=${MINIO_SERVICE_URL}
+      - Minio__DockerContainerUrl=${MINIO_DOCKER_CONTAINER_URL}
+      - Minio__AccessKey=${MINIO_ACCESS_KEY}
+      - Minio__SecretKey=${MINIO_SECRET_KEY}
+      - Minio__BucketName=${MINIO_BUCKET_NAME}
+      - Auth0__Authority=${AUTH0_AUTHORITY}
+      - Auth0_Audience=${AUTH0_AUDIENCE}
+    depends_on:
+      product-service-DB:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+  product-service-DB:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ProductServiceDB
+    volumes:
+      - product-service-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${postgres_user} -d ProductServiceDB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  user-service:
+    build:
+      context: ./UserService
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=${USER_SERVICE_DB_CONNECTION_STRING}
+    depends_on:
+      user-service-DB:
+        condition: service_healthy
+  user-service-DB:
+    image: postgres:16-alpine
+    ports:
+      - "5433:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: UserServiceDB
+    volumes:
+      - user-service-db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${postgres_user} -d UserServiceDB" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  
+  order-service:
+    build:
+      context: ./OrderService
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8080"
+    environment:
+      - ConnectionStrings__DefaultConnection=${ORDER_SERVICE_DB_CONNECTION_STRING}
+    depends_on:
+      order-service-DB:
+        condition: service_healthy
+  order-service-DB:
+    image: postgres:16-alpine
+    ports:
+      - "5434:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: OrderServiceDB
+    volumes:
+      - order-service-db:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${postgres_user} -d OrderServiceDB" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      
 volumes:
-  pgdata:
+  product-service-db:
+  user-service-db:
+  order-service-db:
   minio_data:
   redis_data:
