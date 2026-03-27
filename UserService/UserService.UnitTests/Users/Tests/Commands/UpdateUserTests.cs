@@ -11,7 +11,7 @@ public class UpdateUserTests : UserMocks
     public async Task UpdateUserIfUserExists_UserReturnShouldNotBeNull()
     {
         //Arrange
-        _userRepositoryMock.Setup(m => m.GetUserByAuth0Id(It.IsAny<string>())).ReturnsAsync(_userFaker.Generate());
+        _userRepositoryMock.Setup(m => m.GetUserByIdentityId(It.IsAny<string>())).ReturnsAsync(_userFaker.Generate());
         _userRepositoryMock.Setup(m => m.SaveChangesAsync(CancellationToken.None)).Returns(Task.CompletedTask);
  
         var request = _updateUserCommandFaker.Generate();
@@ -27,7 +27,7 @@ public class UpdateUserTests : UserMocks
     public async Task UpdateUserIfUserNotExists_ShouldThrowNotFoundException()
     {
         //Arrange
-        _userRepositoryMock.Setup(m => m.GetUserByAuth0Id(It.IsAny<string>())).ReturnsAsync((User)null!);
+        _userRepositoryMock.Setup(m => m.GetUserByIdentityId(It.IsAny<string>())).ReturnsAsync((User)null!);
         _userRepositoryMock.Setup(m => m.SaveChangesAsync(CancellationToken.None)).Returns(Task.CompletedTask);
  
         var request = _updateUserCommandFaker.Generate();

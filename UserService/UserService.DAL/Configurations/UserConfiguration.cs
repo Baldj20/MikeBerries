@@ -8,7 +8,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.HasKey(u => u.Auth0Id);
+        builder.HasKey(u => u.IdentityId);
 
         builder.HasIndex(u => u.Email)
                .IsUnique();

@@ -15,7 +15,7 @@ public class UserControllerTests(UserServiceWebApplicationFactory factory) : Bas
         await AddUserToDatabaseAsync(user);
         
         //Act
-        var response = await Client.GetAsync($"api/Users/{user.Auth0Id}");
+        var response = await Client.GetAsync($"api/Users/{user.IdentityId}");
 
         //Assert
         response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
@@ -29,7 +29,7 @@ public class UserControllerTests(UserServiceWebApplicationFactory factory) : Bas
         await AddUserToDatabaseAsync(user);
         
         //Act
-        var response = await Client.DeleteAsync($"api/Users/{user.Auth0Id}");
+        var response = await Client.DeleteAsync($"api/Users/{user.IdentityId}");
 
         //Assert
         response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
@@ -60,7 +60,7 @@ public class UserControllerTests(UserServiceWebApplicationFactory factory) : Bas
         var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
         
         //Act
-        var response = await Client.PutAsync($"api/Users/{user.Auth0Id}", stringContent);
+        var response = await Client.PutAsync($"api/Users/{user.IdentityId}", stringContent);
 
         //Assert
         response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);

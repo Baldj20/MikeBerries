@@ -9,7 +9,7 @@ public class UpdateUserCommandHandler(IUserRepository userRepository) : IRequest
 {
     public async Task<User> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = await userRepository.GetUserByAuth0Id(request.Auth0Id)
+        var user = await userRepository.GetUserByIdentityId(request.IdentityId)
             ?? throw new NotFoundException("User to update not found");
         
         user.Name = request.Name ?? user.Name;

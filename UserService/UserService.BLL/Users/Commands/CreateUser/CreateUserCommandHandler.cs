@@ -10,12 +10,12 @@ public class CreateUserCommandHandler(IUserRepository userRepository) : IRequest
     {
         var user = new User
         {
-            Auth0Id = request.Auth0Id,
+            IdentityId = request.IdentityId,
             Name = request.Name,
             Email = request.Email,
             Cart = new Cart
             {
-                UserId = request.Auth0Id,
+                UserId = request.IdentityId,
                 Items = new List<CartItem>(),
                 TotalCount = 0,
                 TotalPrice = 0,

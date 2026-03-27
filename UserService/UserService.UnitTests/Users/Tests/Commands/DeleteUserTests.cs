@@ -12,7 +12,7 @@ public class DeleteUserTests : UserMocks
     {
         //Arrange
         var user = _userFaker.Generate();
-        _userRepositoryMock.Setup(m => m.GetUserByAuth0Id(It.IsAny<string>())).ReturnsAsync(user);
+        _userRepositoryMock.Setup(m => m.GetUserByIdentityId(It.IsAny<string>())).ReturnsAsync(user);
         _userRepositoryMock.Setup(m => m.Delete(user)).Returns(Task.CompletedTask);
         _userRepositoryMock.Setup(m => m.SaveChangesAsync(CancellationToken.None)).Returns(Task.CompletedTask);
  
@@ -29,7 +29,7 @@ public class DeleteUserTests : UserMocks
     public async Task DeleteUserIfUserNotExists_ShouldThrowNotFoundException()
     {
         //Arrange
-        _userRepositoryMock.Setup(m => m.GetUserByAuth0Id(It.IsAny<string>())).ReturnsAsync((User)null!);
+        _userRepositoryMock.Setup(m => m.GetUserByIdentityId(It.IsAny<string>())).ReturnsAsync((User)null!);
         _userRepositoryMock.Setup(m => m.SaveChangesAsync(CancellationToken.None)).Returns(Task.CompletedTask);
  
         var request = _deleteUserCommandFaker.Generate();

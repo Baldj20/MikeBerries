@@ -16,7 +16,7 @@ public class CartControllerTests(UserServiceWebApplicationFactory factory) : Bas
         await AddUserToDatabaseAsync(user);
         
         //Act
-        var response = await Client.GetAsync($"api/Carts/{user.Auth0Id}");
+        var response = await Client.GetAsync($"api/Carts/{user.IdentityId}");
 
         //Assert
         response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
@@ -34,7 +34,7 @@ public class CartControllerTests(UserServiceWebApplicationFactory factory) : Bas
         var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
         
         //Act
-        var response = await Client.PostAsync($"api/Carts/{user.Auth0Id}/Items", stringContent);
+        var response = await Client.PostAsync($"api/Carts/{user.IdentityId}/Items", stringContent);
 
         //Assert
         response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
@@ -50,7 +50,7 @@ public class CartControllerTests(UserServiceWebApplicationFactory factory) : Bas
         var itemId = user.Cart.Items.First().Id;
         
         //Act
-        var response = await Client.DeleteAsync($"api/Carts/{user.Auth0Id}/Items/{itemId}");
+        var response = await Client.DeleteAsync($"api/Carts/{user.IdentityId}/Items/{itemId}");
 
         //Assert
         response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.OK);
@@ -67,7 +67,7 @@ public class CartControllerTests(UserServiceWebApplicationFactory factory) : Bas
         var itemId = Guid.NewGuid();
         
         //Act
-        var response = await Client.DeleteAsync($"api/Carts/{user.Auth0Id}/Items/{itemId}");
+        var response = await Client.DeleteAsync($"api/Carts/{user.IdentityId}/Items/{itemId}");
 
         //Assert
         response.StatusCode.ShouldBeEquivalentTo(HttpStatusCode.NotFound);

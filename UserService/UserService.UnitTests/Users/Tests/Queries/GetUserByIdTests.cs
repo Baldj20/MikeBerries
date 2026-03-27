@@ -9,7 +9,7 @@ public class GetUserByIdTests : UserMocks
     public async Task GetUserById_ShouldReturnUser()
     {
         //Arrange
-        _userRepositoryMock.Setup(m => m.GetUserByAuth0Id(It.IsAny<string>())).ReturnsAsync(_userFaker.Generate());
+        _userRepositoryMock.Setup(m => m.GetUserByIdentityId(It.IsAny<string>())).ReturnsAsync(_userFaker.Generate());
         _userRepositoryMock.Setup(m => m.SaveChangesAsync(CancellationToken.None)).Returns(Task.CompletedTask);
  
         var request = _getUserByIdFaker.Generate();

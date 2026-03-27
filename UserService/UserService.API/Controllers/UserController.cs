@@ -17,7 +17,7 @@ public class UsersController(IMediator mediator, IMapper mapper) : ControllerBas
     {
         var query = new GetUserByIdQuery
         {
-            Auth0Id = id
+            IdentityId = id
         };
         
         var user = await mediator.Send(query, cancellationToken);
@@ -30,7 +30,7 @@ public class UsersController(IMediator mediator, IMapper mapper) : ControllerBas
     {
         var command = new DeleteUserCommand
         {
-            Auth0Id = id
+            IdentityId = id
         };
         
         var success = await mediator.Send(command, cancellationToken);
@@ -47,7 +47,7 @@ public class UsersController(IMediator mediator, IMapper mapper) : ControllerBas
     {
         var command = mapper.Map<UpdateUserCommand>(dto);
         
-        command.Auth0Id = id;
+        command.IdentityId = id;
 
         var user = await mediator.Send(command, cancellationToken);
 

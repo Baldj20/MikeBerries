@@ -7,6 +7,6 @@ public class DeleteUserCommandFaker : Faker<DeleteUserCommand>
 {
     public DeleteUserCommandFaker()
     {
-        RuleFor(c => c.Auth0Id, f => f.Lorem.Word());
+        RuleFor(c => c.IdentityId, f => f.Lorem.Word());
     }
 }

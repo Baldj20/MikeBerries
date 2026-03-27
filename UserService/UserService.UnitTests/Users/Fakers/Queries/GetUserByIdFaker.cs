@@ -7,6 +7,6 @@ public class GetUserByIdFaker : Faker<GetUserByIdQuery>
 {
     public GetUserByIdFaker()
     {
-        RuleFor(c => c.Auth0Id, f => f.Lorem.Word());
+        RuleFor(c => c.IdentityId, f => f.Lorem.Word());
     }
 }
