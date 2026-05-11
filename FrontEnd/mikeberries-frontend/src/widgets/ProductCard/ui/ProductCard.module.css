@@ -1,0 +1,36 @@
+.productCard {
+    margin-left: 1vw;
+    max-width: 20vw;
+    max-height: 50vh;
+}
+
+.productCardMedia{
+    margin-left: 10%;
+    margin-top: 10%;
+    max-width: 80%;
+    height: 50%;
+}
+
+.actions{
+    display: flex;
+    justify-content: center;
+}
+
+.price{
+    padding: 0 !important;
+    margin-left: 10%;
+    margin-top: 5%;
+    color: red;
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+.title{
+    padding: 0 !important;
+    margin-left: 10%;
+    margin-bottom: 5%;
+}
+
+.button{
+    background-color: lightcoral !important;
+}
