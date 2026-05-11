@@ -28,6 +28,14 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+  api-gateway:
+    environment:
+      - ConnectionStrings__Redis=${REDIS_CONNECTION_STRING}
+    build:
+      context: ./ApiGateway
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
   
   product-service:
     build:
@@ -68,6 +76,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+      
   user-service:
     build:
       context: ./UserService
@@ -76,6 +85,7 @@ services:
       - "8081:8080"
     environment:
       - ConnectionStrings__DefaultConnection=${USER_SERVICE_DB_CONNECTION_STRING}
+      - ConnectionStrings__Redis=${REDIS_CONNECTION_STRING}
     depends_on:
       user-service-DB:
         condition: service_healthy
