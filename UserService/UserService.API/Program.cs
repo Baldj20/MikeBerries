@@ -26,6 +26,8 @@ public class Program
             cfg.RegisterServicesFromAssembly(typeof(CreateUserCommand).Assembly);
         });
         
+        builder.Services.AddRedis(builder.Configuration);
+        
         var app = builder.Build();
 
         app.UseMiddleware<ExceptionMiddleware>();
@@ -35,8 +37,6 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-
-        app.UseHttpsRedirection();
 
         app.UseAuthorization();
 
