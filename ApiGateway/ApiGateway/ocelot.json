@@ -1,0 +1,58 @@
+﻿{
+  "Routes": [
+    {
+      "UpstreamPathTemplate": "/products/{everything}",
+      "DownstreamPathTemplate": "/api/products/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Put", "Delete" ],
+      "DownstreamHostAndPorts": [{
+        "Host": "product-service", 
+        "Port": 8080
+      }]
+    },
+    {
+      "UpstreamPathTemplate": "/api/products",
+      "DownstreamPathTemplate": "/api/products",
+      "UpstreamHttpMethod": [ "Post", "Get" ],
+      "DownstreamHostAndPorts": [{
+        "Host": "product-service",
+        "Port": 8080
+      }]
+    },
+    {
+      "UpstreamPathTemplate": "/users/{everything}",
+      "DownstreamPathTemplate": "/api/users/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Put", "Delete" ],
+      "DownstreamHostAndPorts": [{
+        "Host": "user-service",
+        "Port": 8080
+      }]
+    },
+    {
+      "UpstreamPathTemplate": "/api/users",
+      "DownstreamPathTemplate": "/api/users",
+      "UpstreamHttpMethod": [ "Post", "Get" ],
+      "DownstreamHostAndPorts": [{
+        "Host": "user-service",
+        "Port": 8080
+      }]
+    },
+    {
+      "UpstreamPathTemplate": "/orders/{everything}",
+      "DownstreamPathTemplate": "/api/orders/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Put", "Delete" ],
+      "DownstreamHostAndPorts": [{
+        "Host": "order-service",
+        "Port": 8080
+      }]
+    },
+    {
+      "UpstreamPathTemplate": "/api/orders",
+      "DownstreamPathTemplate": "/api/orders",
+      "UpstreamHttpMethod": [ "Post", "Get" ],
+      "DownstreamHostAndPorts": [{
+        "Host": "order-service",
+        "Port": 8080
+      }]
+    }
+  ]
+}
