@@ -1,0 +1,24 @@
+<style>
+    body.sb-show-main.sb-main-padded {
+        padding: 0;
+    }
+
+    @keyframes fadeToTransparent {
+        from {
+            background-color: #393939;
+        }
+
+        to {
+            background-color: transparent;
+        }
+    }
+    html {
+        animation: fadeToTransparent 500ms forwards ease-in;
+    }
+    body > .sb-preparing-docs {
+        visibility: hidden;
+    }
+    body > .sb-preparing-story {
+        visibility: hidden;
+    }
+</style>

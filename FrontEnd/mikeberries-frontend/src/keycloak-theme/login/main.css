@@ -1,0 +1,35 @@
+.kcBodyClass{
+    background-image: none !important;
+    background-color: wheat !important;
+}
+
+.kcLoginClass{
+    background-color: wheat !important;
+}
+
+.kcFormCardClass{
+    background-color: #ffc75f;
+}
+
+.kcButtonClass{
+    background-color: #ff9671 !important;
+}
+
+.card-pf {
+    border-top: none !important;
+}
+
+.kcInfoAreaWrapperClass{
+    background-color: #ffb76e !important;
+}
+
+.kcLocaleItemClass{
+    background-color: coral;
+    color: white !important;
+}
+
+.kcFormSocialAccountListButtonClass{
+    background-color: #ff9671 !important;
+    color: white !important;
+}
+
