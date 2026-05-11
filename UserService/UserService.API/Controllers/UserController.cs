@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using UserService.API.DTOs;
+using UserService.BLL.Users.Commands.CreateUser;
 using UserService.BLL.Users.Commands.DeleteUser;
 using UserService.BLL.Users.Commands.UpdateUser;
 using UserService.BLL.Users.Queries.GetUserById;
@@ -56,5 +57,15 @@ public class UsersController(IMediator mediator, IMapper mapper) : ControllerBas
             Name = user.Name,
             Email = user.Email,
         };
+    }
+    
+    [HttpPost]
+    public async Task<GetUserDto> CreateUser(CreateUserDto dto, CancellationToken cancellationToken)
+    {
+        var command = mapper.Map<CreateUserCommand>(dto);
+
+        var user = await mediator.Send(command, cancellationToken);
+        
+        return mapper.Map<GetUserDto>(user);
     }
 }
